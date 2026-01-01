@@ -1,246 +1,391 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { 
+  motion, 
+  useScroll, 
+  useTransform, 
+  useSpring, 
+  useMotionValue, 
+  useMotionTemplate 
+} from "framer-motion";
 import { 
   ArrowRight, CheckCircle2, Cloud, Truck, 
-  CreditCard, Layout, BookOpen, Quote 
+  CreditCard, Layout, BookOpen, Quote, 
+  Server, Zap, ShieldCheck, Plane, Briefcase, 
+  Terminal, Mic, MapPin, Phone, Mail 
 } from "lucide-react";
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
-// --- ANIMATION UTILS ---
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.6 }
+// --- CUSTOM COLORS (Tailwind Arbitrary Values used in code) ---
+// Dark Navy: #0B1120
+// Mint Green: #34D399
+// Marigold: #FBBF24
+
+// --- ANIMATION COMPONENTS ---
+
+const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 50, filter: "blur(10px)" }}
+    whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+    viewport={{ once: true, margin: "-100px" }}
+    transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+  >
+    {children}
+  </motion.div>
+);
+
+const TiltCard = ({ children, className }: { children: React.ReactNode, className?: string }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const mouseX = useSpring(x, { stiffness: 500, damping: 100 });
+  const mouseY = useSpring(y, { stiffness: 500, damping: 100 });
+
+  function onMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
+    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+    x.set(clientX - left - width / 2);
+    y.set(clientY - top - height / 2);
+  }
+
+  function onMouseLeave() {
+    x.set(0);
+    y.set(0);
+  }
+
+  return (
+    <motion.div
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      style={{
+        rotateX: useTransform(mouseY, [-300, 300], [15, -15]),
+        rotateY: useTransform(mouseX, [-300, 300], [-15, 15]),
+        transformStyle: "preserve-3d",
+      }}
+      className={`relative perspective-1000 ${className}`}
+    >
+      {children}
+    </motion.div>
+  );
 };
+
+// --- DATA ---
+const services = [
+  // ROW 1: INFRASTRUCTURE
+  { title: "SakuraHost", desc: "Enterprise Cloud & Domains", icon: Server, href: "/hosting", color: "text-blue-400" },
+  { title: "Axis Core", desc: "Unified Comm API", icon: Zap, href: "/axis", color: "text-amber-400" },
+  { title: "SakuraPay", desc: "Fintech Gateway", icon: CreditCard, href: "/sakurapay", color: "text-emerald-400" },
+  // ROW 2: OPERATIONS
+  { title: "Logistics", desc: "Supply Chain & Haulage", icon: Truck, href: "/logistics", color: "text-rose-400" },
+  { title: "Construction", desc: "RCS & Industrial Epoxy", icon: ShieldCheck, href: "/industrial", color: "text-cyan-400" },
+  { title: "Travels", desc: "Corporate Booking", icon: Plane, href: "/travel", color: "text-indigo-400" },
+  // ROW 3: GROWTH
+  { title: "Agency", desc: "Strategy & Branding", icon: Briefcase, href: "/marketing", color: "text-orange-400" },
+  { title: "The Terminal", desc: "LMS & Certification", icon: Terminal, href: "/learn", color: "text-yellow-400" },
+  { title: "Think Loko", desc: "Media & Podcast", icon: Mic, href: "/media", color: "text-red-500" },
+];
 
 // --- SECTIONS ---
 
-const Hero = () => (
-  <section className="relative min-h-screen flex items-center px-6 pt-20 overflow-hidden bg-neutral-950">
-    {/* Abstract Background */}
-    <div className="absolute inset-0 z-0 opacity-40">
-       <Image 
-         src="https://storage.googleapis.com/sakura-web/hero-gradient.jpg" 
-         alt="Background" 
-         fill 
-         className="object-cover"
-         priority
-       />
-       <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent" />
-    </div>
+const Hero = () => {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 1000], [0, 400]);
+  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
-    <div className="relative z-10 max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
-      <motion.div {...fadeIn} className="space-y-8">
-        <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-white leading-[1.1]">
-          Empower Your <br />
-          Business to <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-rose-600">Blossom.</span>
-        </h1>
-        <p className="text-xl text-neutral-400 max-w-lg leading-relaxed font-light">
-          We deliver cloud, logistics, finance, and digital solutions under one roof, so you can focus on growth.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 pt-4">
-          <Link href="/#contact" className="px-8 py-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-full transition-all flex items-center justify-center gap-2 group">
-            Book a Free Consultation
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-          <span className="text-neutral-500 text-sm flex items-center justify-center h-full py-4">
-            No obligations • 30-minute call
-          </span>
-        </div>
+  return (
+    <section className="relative h-screen min-h-[900px] flex items-center px-6 pt-20 overflow-hidden bg-[#0B1120]">
+      {/* BACKGROUND VIDEO */}
+      <motion.div style={{ y, opacity }} className="absolute inset-0 z-0 opacity-40">
+         <video autoPlay loop muted playsInline className="w-full h-full object-cover grayscale mix-blend-luminosity">
+           <source src="https://storage.googleapis.com/sakura-web/hero-video.mp4" type="video/mp4" />
+         </video>
+         <div className="absolute inset-0 bg-gradient-to-r from-[#0B1120] via-[#0B1120]/80 to-transparent" />
+         <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] to-transparent" />
       </motion.div>
-    </div>
-  </section>
-);
 
-const TrustBar = () => (
-  <section className="py-12 bg-neutral-900 border-y border-white/5">
-    <div className="max-w-7xl mx-auto px-6">
-      <p className="text-center text-sm font-mono uppercase tracking-widest text-neutral-500 mb-8">
-        Trusted by leading companies worldwide
+      <div className="relative z-10 max-w-7xl mx-auto w-full">
+        <ScrollReveal>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 mb-8 backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-xs font-bold tracking-widest text-emerald-400 uppercase">
+              Est. 2018 • East Africa
+            </span>
+          </div>
+          
+          <h1 className="text-7xl md:text-9xl font-bold tracking-tighter text-white leading-[0.9] mb-8">
+            Build. <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-amber-400">
+              Bloom.
+            </span>
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-slate-400 max-w-xl leading-relaxed font-light mb-12">
+            We deliver cloud, logistics, finance, and digital solutions under one roof. 
+            The integrated ecosystem for the modern African enterprise.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-6">
+            <Link href="/#contact" className="px-10 py-5 bg-emerald-500 hover:bg-emerald-400 text-[#0B1120] font-bold rounded-full transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-[0_0_40px_-10px_rgba(52,211,153,0.5)]">
+              Book Consultation
+              <ArrowRight size={20} />
+            </Link>
+            <button className="px-10 py-5 border border-white/10 hover:bg-white/5 text-white font-medium rounded-full transition-all">
+              Explore Solutions
+            </button>
+          </div>
+        </ScrollReveal>
+      </div>
+    </section>
+  );
+};
+
+const TrustTicker = () => (
+  <section className="py-12 bg-[#080d1a] border-y border-white/5 overflow-hidden">
+    <div className="max-w-7xl mx-auto px-6 mb-8 text-center">
+      <p className="text-xs font-mono uppercase tracking-[0.2em] text-slate-500">
+        Trusted by Industry Leaders
       </p>
-      <div className="flex flex-wrap justify-center gap-12 md:gap-24 opacity-50 grayscale">
-        {/* Placeholder Logos - In prod, use real SVGs */}
-        {['Vodacom', 'Tigo', 'CRDB', 'NMB', 'Azam'].map((brand) => (
-          <span key={brand} className="text-xl font-bold text-white">{brand}</span>
+    </div>
+    <div className="relative flex overflow-x-hidden group">
+      <motion.div 
+        className="flex gap-24 items-center whitespace-nowrap animate-marquee"
+        animate={{ x: [0, -1000] }}
+        transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
+      >
+        {[...Array(2)].map((_, i) => (
+          <React.Fragment key={i}>
+            {['VODACOM', 'CRDB BANK', 'AZAM GROUP', 'TIGO PESA', 'TRA', 'NMB'].map((brand) => (
+              <span key={brand} className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white/20 to-white/5 uppercase tracking-tighter">
+                {brand}
+              </span>
+            ))}
+          </React.Fragment>
         ))}
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 pt-12 border-t border-white/5">
-          {[
-              { label: "Global Coverage", val: "TZ / KE / MW" },
-              { label: "Data Security", val: "ISO 27001" },
-              { label: "Projects Delivered", val: "500+" },
-          ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                  <div className="text-white font-bold text-lg">{stat.val}</div>
-                  <div className="text-neutral-500 text-xs uppercase tracking-wider">{stat.label}</div>
-              </div>
-          ))}
-      </div>
+      </motion.div>
+      {/* Gradient fade on sides */}
+      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#080d1a] to-transparent z-10" />
+      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#080d1a] to-transparent z-10" />
     </div>
   </section>
 );
 
-const OurStory = () => (
-  <section id="story" className="py-32 px-6 bg-neutral-950">
-    <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-       <motion.div {...fadeIn} className="relative aspect-square md:aspect-[4/5] rounded-2xl overflow-hidden bg-neutral-900">
-           {/* Replace with Founder/Team Image */}
-           <div className="absolute inset-0 bg-gradient-to-tr from-rose-900/20 to-neutral-800" />
-           <div className="absolute bottom-8 left-8 right-8">
-               <Quote className="text-rose-500 mb-4" size={32} />
-               <p className="text-white text-xl font-light italic">"Innovation drives us. Your success is our mission."</p>
-           </div>
-       </motion.div>
-       
-       <motion.div {...fadeIn} className="space-y-8">
-           <h2 className="text-4xl md:text-5xl font-bold text-white">How Sakura Group Began</h2>
-           <div className="space-y-6 text-neutral-400 text-lg leading-relaxed">
-               <p>
-                   Founded on the belief that every business deserves world-class support, Sakura Group was born from a passion to simplify complexity.
-               </p>
-               <p>
-                   What started as a tech consultancy quickly grew into a multi-service partner. Today, we blend cutting-edge technology with dedicated people to help your company thrive in the East African market.
-               </p>
-           </div>
-           <Link href="/#contact" className="text-white border-b border-rose-500 pb-1 hover:text-rose-500 transition-colors inline-flex items-center gap-2">
-               Learn more about our journey <ArrowRight size={16} />
-           </Link>
-       </motion.div>
-    </div>
-  </section>
-);
+const OurStory = () => {
+  const { scrollYProgress } = useScroll();
+  const rotate = useTransform(scrollYProgress, [0, 1], [0, 20]);
 
-const Services = () => (
-    <section id="services" className="py-32 px-6 bg-black">
+  return (
+    <section id="story" className="py-32 px-6 bg-[#0B1120] overflow-hidden">
+      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
+         {/* IMAGE SIDE */}
+         <TiltCard className="relative aspect-[4/5] rounded-3xl bg-neutral-900 group">
+             <div className="absolute inset-0 rounded-3xl overflow-hidden border border-white/10">
+                <Image 
+                    src="https://storage.googleapis.com/sakura-web/sakuragroup-founders.jpg" 
+                    alt="Jumbenylon and Omary"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-transparent to-transparent opacity-80" />
+             </div>
+             
+             {/* FLOATING BADGE */}
+             <motion.div 
+                style={{ rotate }}
+                className="absolute -bottom-8 -right-8 w-40 h-40 bg-amber-400 rounded-full flex items-center justify-center text-[#0B1120] font-black text-xl leading-none text-center p-4 shadow-2xl z-20"
+             >
+                SINCE 2018
+             </motion.div>
+         </TiltCard>
+         
+         {/* TEXT SIDE */}
+         <div className="space-y-10 relative">
+             <ScrollReveal>
+                <div className="inline-block px-3 py-1 border border-amber-400/30 rounded-full text-amber-400 text-xs font-bold uppercase tracking-widest mb-6">
+                    The Origin
+                </div>
+                <h2 className="text-5xl md:text-7xl font-bold text-white mb-8">
+                    Bridging the <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
+                        Modern Gap.
+                    </span>
+                </h2>
+                <div className="space-y-6 text-slate-400 text-lg leading-relaxed font-light">
+                    <p>
+                        It started with a conversation between two friends, <strong className="text-white">Jumbenylon and Omary</strong>. 
+                        They saw a fragmented market where businesses had to juggle a dozen vendors just to operate.
+                    </p>
+                    <p>
+                        They decided to build a singular ecosystem. A place where a company could host its data, 
+                        move its cargo, and train its staff—all without leaving the Sakura network.
+                    </p>
+                </div>
+             </ScrollReveal>
+         </div>
+      </div>
+    </section>
+  );
+};
+
+const EcosystemGrid = () => (
+    <section id="ecosystem" className="py-32 px-6 bg-[#080d1a]">
         <div className="max-w-7xl mx-auto">
-            <div className="mb-16">
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">How We Serve You</h2>
-                <p className="text-neutral-400 text-xl max-w-2xl">Integrated solutions for every aspect of your business operations.</p>
-            </div>
+            <ScrollReveal>
+                <div className="text-center mb-24">
+                    <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">The 9 Pillars</h2>
+                    <p className="text-slate-400 text-xl max-w-2xl mx-auto">
+                        A unified infrastructure designed to handle every stage of your business lifecycle.
+                    </p>
+                </div>
+            </ScrollReveal>
 
-            <div className="grid md:grid-cols-3 gap-6">
-                {[
-                    { title: "Cloud Infrastructure", desc: "Scalable, secure hosting & domains.", icon: Cloud, href: "/hosting" },
-                    { title: "Logistics & Supply", desc: "Cross-border haulage & forwarding.", icon: Truck, href: "/logistics" },
-                    { title: "Financial Tech", desc: "Payment gateways & bulk SMS.", icon: CreditCard, href: "/sakurapay" },
-                    { title: "Digital Agency", desc: "Strategy, branding & growth.", icon: Layout, href: "/marketing" },
-                    { title: "Education (LMS)", desc: "Corporate training platforms.", icon: BookOpen, href: "/learn" },
-                    { title: "Corporate Travel", desc: "Executive booking management.", icon: Truck, href: "/travel" }, // Reused Icon for travel
-                ].map((s, i) => (
-                    <motion.div 
-                        key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        className="group p-8 bg-neutral-900/50 border border-white/5 hover:border-rose-500/50 rounded-2xl transition-all duration-300 hover:-translate-y-1"
-                    >
-                        <div className="w-12 h-12 bg-neutral-800 rounded-xl flex items-center justify-center mb-6 text-white group-hover:bg-rose-600 transition-colors">
-                            <s.icon size={24} />
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-3">{s.title}</h3>
-                        <p className="text-neutral-400 mb-6">{s.desc}</p>
-                        <Link href={s.href} className="text-sm font-bold text-white flex items-center gap-2 hover:text-rose-500 transition-colors">
-                            Learn More <ArrowRight size={14} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {services.map((s, i) => (
+                    <ScrollReveal key={i} delay={i * 0.05}>
+                        <Link href={s.href} className="block h-full">
+                            <div className="group relative h-full p-8 bg-[#0B1120] border border-white/5 rounded-3xl overflow-hidden hover:border-white/20 transition-all duration-500">
+                                {/* Hover Gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                
+                                <div className="relative z-10 flex flex-col h-full justify-between">
+                                    <div className="mb-8">
+                                        <div className={`w-14 h-14 rounded-2xl bg-[#080d1a] border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 ${s.color}`}>
+                                            <s.icon size={28} />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:translate-x-2 transition-transform duration-300">{s.title}</h3>
+                                        <p className="text-slate-500 font-mono text-sm uppercase tracking-wide">{s.desc}</p>
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-center border-t border-white/5 pt-6">
+                                        <span className="text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 -translate-x-4 group-hover:translate-x-0">EXPLORE</span>
+                                        <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center -translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 delay-75">
+                                            <ArrowRight size={14} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </Link>
-                    </motion.div>
+                    </ScrollReveal>
                 ))}
             </div>
         </div>
     </section>
 );
 
-const WhyChooseUs = () => (
-    <section className="py-32 px-6 bg-neutral-950">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16">
-            <div>
-                <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">Why Sakura Group?</h2>
-                <div className="space-y-8">
-                    {[
-                        { title: "Personalized Partnership", desc: "We tailor every solution to your business needs." },
-                        { title: "Proven Expertise", desc: "Decades of cross-industry experience drive your results." },
-                        { title: "Premium Support", desc: "Dedicated account managers ensure peace of mind." },
-                        { title: "Unified Platform", desc: "All services integrate seamlessly under one team." },
-                    ].map((item, i) => (
-                        <div key={i} className="flex gap-4">
-                            <CheckCircle2 className="text-rose-500 shrink-0 mt-1" />
-                            <div>
-                                <h3 className="text-xl font-bold text-white">{item.title}</h3>
-                                <p className="text-neutral-400">{item.desc}</p>
+const Testimonial = () => (
+    <section className="py-32 px-6 bg-[#0B1120] relative overflow-hidden">
+        {/* Decorative Blobs */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px]" />
+        
+        <div className="max-w-4xl mx-auto relative z-10">
+            <ScrollReveal>
+                <div className="bg-[#080d1a]/80 backdrop-blur-xl p-12 md:p-20 rounded-[3rem] border border-white/5 text-center shadow-2xl">
+                    <Quote className="text-emerald-500 mx-auto mb-8" size={48} />
+                    <p className="text-2xl md:text-4xl text-white font-light leading-snug mb-12">
+                        "The integration of <span className="text-emerald-400">CRM and ERP</span> within the Sakura ecosystem gave us visibility we never thought possible. We stopped guessing and started scaling."
+                    </p>
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="w-16 h-16 bg-neutral-800 rounded-full mb-4 border-2 border-emerald-500 overflow-hidden relative">
+                             {/* Placeholder for Eddy */}
+                             <div className="absolute inset-0 flex items-center justify-center text-white font-bold bg-neutral-700">ER</div>
+                        </div>
+                        <h4 className="text-xl font-bold text-white">Eddy Ronnie</h4>
+                        <p className="text-slate-500 text-sm font-mono uppercase tracking-widest">Ops Manager • RCS</p>
+                    </div>
+                </div>
+            </ScrollReveal>
+        </div>
+    </section>
+);
+
+const ContactCockpit = () => (
+    <section id="contact" className="relative bg-[#050912] text-white">
+        <div className="grid lg:grid-cols-2 min-h-screen">
+            
+            {/* LEFT: FORM */}
+            <div className="p-12 md:p-24 flex flex-col justify-center border-r border-white/5">
+                <ScrollReveal>
+                    <div className="mb-12">
+                        <div className="inline-flex items-center gap-2 text-emerald-400 mb-4">
+                            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                            <span className="font-mono text-xs uppercase tracking-widest">Online • Responding in 2h</span>
+                        </div>
+                        <h2 className="text-5xl md:text-6xl font-bold mb-6">Let's Build.</h2>
+                        <p className="text-slate-400 text-lg">
+                            Ready to modernize your operations? Book a free consultation with our solutions architects.
+                        </p>
+                    </div>
+
+                    <form className="space-y-6">
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase text-slate-500">Name</label>
+                                <input className="w-full bg-[#0B1120] border border-white/10 rounded-xl p-4 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="John Doe" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase text-slate-500">Company</label>
+                                <input className="w-full bg-[#0B1120] border border-white/10 rounded-xl p-4 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Sakura Inc." />
                             </div>
                         </div>
-                    ))}
-                </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold uppercase text-slate-500">Email</label>
+                            <input className="w-full bg-[#0B1120] border border-white/10 rounded-xl p-4 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="john@company.com" />
+                        </div>
+                        <div className="space-y-2">
+                             <label className="text-xs font-bold uppercase text-slate-500">Message</label>
+                             <textarea rows={4} className="w-full bg-[#0B1120] border border-white/10 rounded-xl p-4 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Tell us about your project..." />
+                        </div>
+                        <button className="w-full bg-white text-black font-bold py-5 rounded-xl hover:bg-emerald-400 hover:text-black transition-all duration-300 text-lg">
+                            Send Request
+                        </button>
+                    </form>
+                </ScrollReveal>
             </div>
-            <div className="bg-neutral-900 rounded-2xl p-12 flex items-center justify-center border border-white/5">
-                <div className="text-center">
-                    <h3 className="text-6xl font-bold text-white mb-4">98%</h3>
-                    <p className="text-neutral-500 uppercase tracking-widest">Client Retention Rate</p>
-                </div>
-            </div>
-        </div>
-    </section>
-);
 
-const Testimonials = () => (
-    <section id="testimonials" className="py-32 px-6 bg-black border-t border-white/5">
-        <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-bold text-white mb-16">Success Stories</h2>
-            <div className="bg-neutral-900 p-12 rounded-3xl border border-white/5 relative">
-                <Quote className="absolute top-8 left-8 text-neutral-700" size={48} />
-                <p className="text-2xl md:text-3xl text-white font-light leading-relaxed mb-8 relative z-10">
-                    "Working with Sakura Group transformed our supply chain. We cut operational costs by 30% in just 6 months while launching our new digital platform."
-                </p>
-                <div>
-                    <div className="font-bold text-white">Jane Doe</div>
-                    <div className="text-rose-500 text-sm uppercase tracking-widest">COO, TechCorp Tanzania</div>
+            {/* RIGHT: MAP VISUALIZATION */}
+            <div className="relative h-[500px] lg:h-auto bg-[#0B1120] overflow-hidden">
+                {/* Overlay details */}
+                <div className="absolute top-12 left-12 z-20 space-y-6">
+                    <div className="bg-black/80 backdrop-blur-md p-6 rounded-2xl border border-white/10 max-w-xs">
+                         <div className="flex items-start gap-4 mb-4">
+                             <MapPin className="text-emerald-500 mt-1" />
+                             <div>
+                                 <h4 className="font-bold text-white">Headquarters</h4>
+                                 <p className="text-sm text-slate-400 mt-1">Mwenge TRA Tax Offices<br/>Dar es Salaam, Tanzania</p>
+                             </div>
+                         </div>
+                         <div className="flex items-center gap-4 text-sm text-slate-400">
+                             <Phone size={14} /> <span>+255 753 930 000</span>
+                         </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </section>
-);
 
-const ContactCTA = () => (
-    <section id="contact" className="py-32 px-6 bg-gradient-to-b from-neutral-900 to-black">
-        <div className="max-w-3xl mx-auto bg-white rounded-3xl p-12 md:p-16 text-center shadow-2xl">
-            <h2 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-6">Ready to Grow?</h2>
-            <p className="text-lg text-neutral-600 mb-10 max-w-xl mx-auto">
-                Book a free, no-pressure consultation today. We’ll discuss your challenges and explore solutions tailored to your business.
-            </p>
-            <form className="max-w-md mx-auto space-y-4 text-left">
-                <div>
-                    <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Name</label>
-                    <input type="text" className="w-full bg-neutral-100 border-none rounded-lg p-3 text-neutral-900 focus:ring-2 focus:ring-rose-500" placeholder="John Doe" />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold uppercase text-neutral-500 mb-1">Email</label>
-                    <input type="email" className="w-full bg-neutral-100 border-none rounded-lg p-3 text-neutral-900 focus:ring-2 focus:ring-rose-500" placeholder="john@company.com" />
-                </div>
-                <button className="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition-colors text-lg mt-4">
-                    Book Consultation
-                </button>
-                <p className="text-center text-xs text-neutral-400 mt-4">We usually reply within 24 hours.</p>
-            </form>
+                {/* Actual Map Embed */}
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.9669675276326!2d39.2203649!3d-6.7739169!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4e6f6f6f6f6f%3A0x6f6f6f6f6f6f6f6f!2sMwenge%20TRA!5e0!3m2!1sen!2stz!4v1700000000000!5m2!1sen!2stz" 
+                    width="100%" 
+                    height="100%" 
+                    style={{ border: 0, filter: "grayscale(100%) invert(90%) opacity(0.8)" }} 
+                    allowFullScreen 
+                    loading="lazy" 
+                    className="absolute inset-0 w-full h-full"
+                ></iframe>
+            </div>
         </div>
     </section>
 );
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black selection:bg-rose-500 selection:text-white">
+    <main className="min-h-screen bg-[#0B1120] text-white selection:bg-emerald-400 selection:text-black">
       <GlobalNavbar />
       <Hero />
-      <TrustBar />
+      <TrustTicker />
       <OurStory />
-      <Services />
-      <WhyChooseUs />
-      <Testimonials />
-      <ContactCTA />
+      <EcosystemGrid />
+      <Testimonial />
+      <ContactCockpit />
       <GlobalFooter />
     </main>
   );
