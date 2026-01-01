@@ -64,19 +64,18 @@ const Hero = () => {
 
   return (
     <section className="relative h-screen flex flex-col justify-end pb-20 px-6 overflow-hidden bg-neutral-950">
-      {/* Dynamic Background */}
+      {/* Dynamic Background - Using the AFTER image as the Hero because it looks best */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <Image 
-           src="https://storage.googleapis.com/sakura-web/rcs-hero.jpg"
+           src="https://storage.googleapis.com/sakura-web/rcs-after.png"
            alt="RCS Standard"
            fill
-           className="object-cover opacity-40 scale-110"
+           className="object-cover opacity-50 scale-105"
            priority
          />
          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent" />
       </motion.div>
 
-      {/* Foreground Content */}
       <div className="relative z-10 w-full border-t border-white/20 pt-8">
         <div className="flex flex-col md:flex-row justify-between items-end gap-8">
             <h1 className="text-7xl md:text-[10rem] leading-[0.8] font-black tracking-tighter text-white uppercase">
@@ -98,7 +97,7 @@ const Hero = () => {
   );
 };
 
-// The "Lens" Slider (Premium Interaction)
+// The "Lens" Slider (Updated with REAL Images)
 const ComparisonLens = () => {
   const [position, setPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -124,42 +123,42 @@ const ComparisonLens = () => {
             onTouchMove={handleMove}
             className="relative w-full aspect-[16/9] md:aspect-[2.35/1] overflow-hidden cursor-crosshair group border border-white/10"
         >
-            {/* AFTER IMAGE (Bottom Layer) */}
+            {/* AFTER IMAGE (Bottom Layer - Clean) */}
             <div className="absolute inset-0">
                 <Image 
-                    src="https://storage.googleapis.com/sakura-web/rcs-hero.jpg" 
+                    src="https://storage.googleapis.com/sakura-web/rcs-after.png" 
                     alt="Restored"
                     fill
                     className="object-cover"
                 />
-                 <div className="absolute bottom-8 right-8 text-white font-mono text-xs bg-black/50 px-3 py-1 backdrop-blur-md">
+                 <div className="absolute bottom-8 right-8 text-white font-mono text-xs bg-black/50 px-3 py-1 backdrop-blur-md border border-cyan-500/30">
                     STATUS: RESTORED
                 </div>
             </div>
 
-            {/* BEFORE IMAGE (Top Layer - Clipped) */}
+            {/* BEFORE IMAGE (Top Layer - Dirty - Clipped) */}
             <div 
-                className="absolute inset-0 bg-neutral-800"
+                className="absolute inset-0 bg-neutral-900"
                 style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
             >
                 <Image 
-                    src="https://storage.googleapis.com/sakura-web/rcs-hero.jpg" 
+                    src="https://storage.googleapis.com/sakura-web/rcs-before.png" 
                     alt="Original"
                     fill
-                    className="object-cover grayscale contrast-125 sepia-[.5] brightness-50" 
+                    className="object-cover" 
                 />
-                <div className="absolute bottom-8 left-8 text-white font-mono text-xs bg-black/50 px-3 py-1 backdrop-blur-md">
-                    STATUS: OXIDIZED
+                <div className="absolute bottom-8 left-8 text-white font-mono text-xs bg-black/50 px-3 py-1 backdrop-blur-md border border-rose-500/30">
+                    STATUS: ORGANIC_GROWTH
                 </div>
             </div>
 
             {/* The Lens Line */}
             <div 
-                className="absolute inset-y-0 w-px bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)] z-20"
+                className="absolute inset-y-0 w-px bg-cyan-500 shadow-[0_0_20px_rgba(6,182,212,1)] z-20"
                 style={{ left: `${position}%` }}
             >
-                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 border border-cyan-500 rounded-full flex items-center justify-center bg-black/20 backdrop-blur-sm text-cyan-500">
-                    <div className="w-1 h-1 bg-cyan-500 rounded-full" />
+                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 border border-cyan-500 rounded-full flex items-center justify-center bg-black/20 backdrop-blur-sm text-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                    <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full" />
                 </div>
             </div>
         </div>
@@ -167,7 +166,6 @@ const ComparisonLens = () => {
   );
 };
 
-// "Specs" Style Services
 const SpecsList = () => (
     <section className="py-20 px-6 bg-neutral-950">
         <div className="max-w-7xl mx-auto">
