@@ -1,24 +1,19 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { 
-  motion, 
-  useScroll, 
-  useTransform, 
-  useMotionTemplate, 
-  useMotionValue 
-} from "framer-motion";
+import { motion, useScroll, useTransform, useMotionTemplate, useMotionValue } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link"; 
 import { 
   Server, CreditCard, Mic, Briefcase, Truck, ShieldCheck, 
-  ArrowUpRight, Globe, Users, TrendingUp, Plane, Terminal, Zap 
+  ArrowUpRight, Plane, Terminal, Zap 
 } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
+// IMPORT THE NEW GLOBAL COMPONENTS
+import { GlobalNavbar } from "@/components/global-navbar";
+import { GlobalFooter } from "@/components/global-footer";
 
 // --- THE LOGICAL 3x3 MATRIX ---
 const pillars = [
-  // --- ROW 1: DIGITAL INFRASTRUCTURE (The Backbone) ---
+  // ... (Keep your pillars array exactly as it was in Phase 12) ...
   {
     title: "SakuraHost",
     category: "Cloud Infrastructure",
@@ -46,8 +41,6 @@ const pillars = [
     iconColor: "text-emerald-500",
     href: "/sakurapay",
   },
-
-  // --- ROW 2: PHYSICAL OPERATIONS (The Engine) ---
   {
     title: "Sakura Logistics",
     category: "Supply Chain",
@@ -75,8 +68,6 @@ const pillars = [
     iconColor: "text-indigo-500",
     href: "/travel",
   },
-
-  // --- ROW 3: INFLUENCE & GROWTH (The Mind) ---
   {
     title: "Sakura Agency",
     category: "Strategic Growth",
@@ -106,27 +97,7 @@ const pillars = [
   },
 ];
 
-// --- Components ---
-
-const Navbar = () => (
-  <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center border-b border-white/5 dark:border-white/5 bg-white/60 dark:bg-neutral-950/60 backdrop-blur-xl transition-all duration-300">
-    <div className="flex items-center gap-3">
-      <div className="relative w-8 h-8">
-        <Image 
-          src="https://storage.googleapis.com/sakura-web/logo-icon.png" 
-          alt="Sakura Group" 
-          fill
-          className="object-contain"
-        />
-      </div>
-      <span className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
-        Sakura Group.
-      </span>
-    </div>
-    <ThemeToggle />
-  </nav>
-);
-
+// --- (Keep RevealText, SpotlightCard, VelocityMarquee, Manifesto) ---
 const RevealText = ({ text, delay = 0 }: { text: string, delay?: number }) => (
   <span className="inline-block overflow-hidden align-bottom">
     <motion.span
@@ -139,56 +110,6 @@ const RevealText = ({ text, delay = 0 }: { text: string, delay?: number }) => (
     </motion.span>
   </span>
 );
-
-const Hero = () => {
-  const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
-
-  return (
-    <section className="relative h-screen min-h-[800px] flex items-center px-6 overflow-hidden">
-      <motion.div style={{ y: y1, opacity }} className="absolute inset-0 z-0">
-         <Image 
-          src="https://storage.googleapis.com/sakura-web/hero-gradient.jpg"
-          alt="Background"
-          fill
-          className="object-cover opacity-80 dark:opacity-30 scale-110"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white dark:via-neutral-950/60 dark:to-neutral-950" />
-      </motion.div>
-
-      <div className="relative z-10 max-w-7xl mx-auto w-full">
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="mb-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-900/5 dark:bg-white/10 backdrop-blur-md border border-neutral-900/10 dark:border-white/10"
-        >
-          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-          <span className="text-xs font-semibold tracking-wider text-neutral-600 dark:text-neutral-300 uppercase">
-            Est. 2018 • East Africa
-          </span>
-        </motion.div>
-
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-neutral-900 dark:text-white leading-[0.9] mb-8">
-          <RevealText text="Build." /> <br />
-          <span className="text-neutral-400 dark:text-neutral-600"><RevealText text="Scale." delay={0.1} /></span> <br />
-          <RevealText text="Empower." delay={0.2} />
-        </h1>
-        
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="max-w-xl text-xl text-neutral-700 dark:text-neutral-400 leading-relaxed font-light"
-        >
-          We are an industrial and technology conglomerate engineering the infrastructure of tomorrow for Tanzania, Kenya, and Malawi.
-        </motion.p>
-      </div>
-    </section>
-  );
-};
 
 const SpotlightCard = ({ item }: { item: typeof pillars[0] }) => {
   const mouseX = useMotionValue(0);
@@ -271,25 +192,61 @@ const Manifesto = () => {
   );
 };
 
-const Footer = () => (
-  <footer className="border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 pt-24 pb-12 px-6">
-    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end">
-      <div>
-         <h2 className="text-9xl font-bold text-neutral-100 dark:text-neutral-900 tracking-tighter">Sakura.</h2>
+const Hero = () => {
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+
+  return (
+    <section className="relative h-screen min-h-[800px] flex items-center px-6 overflow-hidden">
+      <motion.div style={{ y: y1, opacity }} className="absolute inset-0 z-0">
+         <Image 
+          src="https://storage.googleapis.com/sakura-web/hero-gradient.jpg"
+          alt="Background"
+          fill
+          className="object-cover opacity-80 dark:opacity-30 scale-110"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white dark:via-neutral-950/60 dark:to-neutral-950" />
+      </motion.div>
+
+      <div className="relative z-10 max-w-7xl mx-auto w-full">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="mb-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-900/5 dark:bg-white/10 backdrop-blur-md border border-neutral-900/10 dark:border-white/10"
+        >
+          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+          <span className="text-xs font-semibold tracking-wider text-neutral-600 dark:text-neutral-300 uppercase">
+            Est. 2018 • East Africa
+          </span>
+        </motion.div>
+
+        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-neutral-900 dark:text-white leading-[0.9] mb-8">
+          <RevealText text="Build." /> <br />
+          <span className="text-neutral-400 dark:text-neutral-600"><RevealText text="Scale." delay={0.1} /></span> <br />
+          <RevealText text="Empower." delay={0.2} />
+        </h1>
+        
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="max-w-xl text-xl text-neutral-700 dark:text-neutral-400 leading-relaxed font-light"
+        >
+          We are an industrial and technology conglomerate engineering the infrastructure of tomorrow for Tanzania, Kenya, and Malawi.
+        </motion.p>
       </div>
-      <div className="flex gap-8 mb-8 md:mb-4 text-sm font-medium text-neutral-500">
-        <a href="https://instagram.com/sakuragroup.tz" target="_blank" className="hover:text-rose-500 transition-colors">@sakuragroup.tz</a>
-        <a href="#" className="hover:text-rose-500 transition-colors">LinkedIn</a>
-        <a href="#" className="hover:text-rose-500 transition-colors">Twitter</a>
-      </div>
-    </div>
-  </footer>
-);
+    </section>
+  );
+};
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950 transition-colors duration-500 selection:bg-rose-500 selection:text-white">
-      <Navbar />
+      {/* USE GLOBAL COMPONENTS */}
+      <GlobalNavbar /> 
       <Hero />
       <VelocityMarquee />
       <Manifesto />
@@ -305,7 +262,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Footer />
+      <GlobalFooter />
     </main>
   );
 }
