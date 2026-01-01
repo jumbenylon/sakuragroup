@@ -1,172 +1,139 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
   motion, 
   useScroll, 
   useTransform, 
   useSpring, 
-  useMotionTemplate, 
-  useMotionValue 
+  useMotionValue, 
+  useMotionTemplate,
+  AnimatePresence 
 } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link"; 
+import Link from "next/link";
 import { 
-  Server, CreditCard, Mic, Briefcase, Truck, ShieldCheck, 
-  ArrowUpRight, Globe, Users, TrendingUp 
+  ArrowLeft, Truck, Anchor, Map, Clock, ArrowUpRight, 
+  Activity, Shield, Crosshair, Search 
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-// --- FUTURE-PROOF DATA STRUCTURE ---
-// We define the links now. To make them work later, just create the folder in /app
-const pillars = [
+// --- HOOKS & UTILS ---
+
+// Hacker Text Effect (Decrypts text on load)
+const useHackerText = (text: string, speed = 30) => {
+  const [display, setDisplay] = useState("");
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$";
+  
+  useEffect(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplay(
+        text.split("").map((char, index) => {
+          if (index < i) return char;
+          return chars[Math.floor(Math.random() * chars.length)];
+        }).join("")
+      );
+      i += 1/3;
+      if (i > text.length) clearInterval(interval);
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return display;
+};
+
+// --- DATA ---
+const telemetry = [
+  { label: "Active Fleet", value: "142", unit: "UNITS" },
+  { label: "Transit Vol", value: "8.4", unit: "KT" },
+  { label: "On-Time Rate", value: "99.2", unit: "%" },
+  { label: "Grid Status", value: "ONLINE", unit: "SECURE" },
+];
+
+const services = [
   {
-    title: "SakuraHost",
-    category: "Digital Infrastructure",
-    description: "Enterprise-grade cloud hosting and .tz domain registrar services.",
-    icon: Server,
-    color: "from-blue-500/20 to-blue-500/0",
-    iconColor: "text-blue-500",
-    href: "/hosting", // Future File: app/hosting/page.tsx
-  },
-  {
-    title: "Axis & SakuraPay",
-    category: "Fintech & Omni-Channel",
-    description: "Seamless financial modules and SMS/WhatsApp communication bridges.",
-    icon: CreditCard,
-    color: "from-emerald-500/20 to-emerald-500/0",
-    iconColor: "text-emerald-500",
-    href: "/fintech", // Future File: app/fintech/page.tsx
-  },
-  {
-    title: "Think Loko",
-    category: "Media & Culture",
-    description: "Podcast & intelligence on Tanzanian consumer behavior and business culture.",
-    icon: Mic,
-    color: "from-rose-500/20 to-rose-500/0",
-    iconColor: "text-rose-500",
-    href: "/media", // Future File: app/media/page.tsx
-  },
-  {
-    title: "Sakura Consulting",
-    category: "B2B Services",
-    description: "High-level business development, market research, and strategic growth.",
-    icon: Briefcase,
-    color: "from-purple-500/20 to-purple-500/0",
-    iconColor: "text-purple-500",
-    href: "/consulting", // Future File: app/consulting/page.tsx
-  },
-  {
-    title: "Sakura Logistics",
-    category: "Supply Chain",
-    description: "Dedicated logistics division moving goods across East Africa.",
+    id: "01",
+    title: "Heavy Haulage",
+    desc: "Industrial machinery transport across the Dar-Nairobi corridor.",
     icon: Truck,
-    color: "from-yellow-500/20 to-yellow-500/0",
-    iconColor: "text-yellow-500",
-    href: "/logistics", // LIVE: app/logistics/page.tsx
+    color: "text-rose-500",
   },
   {
-    title: "Roof Solutions",
-    category: "Industrial Services",
-    description: "Premium roof cleaning and restoration solutions for residential and commercial.",
-    icon: ShieldCheck,
-    color: "from-cyan-500/20 to-cyan-500/0",
-    iconColor: "text-cyan-500",
-    href: "/industrial", // Future File: app/industrial/page.tsx
+    id: "02",
+    title: "Ocean Freight",
+    desc: "Customs clearance & forwarding for Port of Dar es Salaam.",
+    icon: Anchor,
+    color: "text-blue-500",
+  },
+  {
+    id: "03",
+    title: "Telematics",
+    desc: "Real-time satellite tracking and geo-fenced asset security.",
+    icon: Map,
+    color: "text-emerald-500",
+  },
+  {
+    id: "04",
+    title: "Last Mile",
+    desc: "Precision urban delivery network with digital proof-of-delivery.",
+    icon: Clock,
+    color: "text-yellow-500",
   },
 ];
 
-const stats = [
-  { label: "Active Markets", value: "3", icon: Globe },
-  { label: "Business Clients", value: "500+", icon: Users },
-  { label: "Years of Impact", value: "7+", icon: TrendingUp },
-];
+// --- COMPONENTS ---
 
-// --- Components ---
+const Radar = () => (
+  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none flex items-center justify-center opacity-20 dark:opacity-10">
+    <div className="absolute w-[800px] h-[800px] border border-rose-500/20 rounded-full" />
+    <div className="absolute w-[600px] h-[600px] border border-rose-500/20 rounded-full" />
+    <div className="absolute w-[400px] h-[400px] border border-rose-500/20 rounded-full" />
+    {/* Rotating Scan Line */}
+    <motion.div 
+      animate={{ rotate: 360 }}
+      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+      className="absolute w-[800px] h-[800px] bg-gradient-to-r from-transparent via-transparent to-rose-500/10 rounded-full"
+      style={{ clipPath: "polygon(50% 50%, 100% 0, 100% 50%)" }}
+    />
+  </div>
+);
 
 const Navbar = () => (
-  <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center border-b border-white/5 dark:border-white/5 bg-white/60 dark:bg-neutral-950/60 backdrop-blur-xl transition-all duration-300">
-    <div className="flex items-center gap-3">
-      <div className="relative w-8 h-8">
-        <Image 
-          src="https://storage.googleapis.com/sakura-web/logo-icon.png" 
-          alt="Sakura Group" 
-          fill
-          className="object-contain"
-        />
-      </div>
-      <span className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
-        Sakura Group.
-      </span>
+  <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center border-b border-white/5 bg-white/5 backdrop-blur-md">
+    <div className="flex items-center gap-4">
+      <Link href="/" className="group flex items-center gap-2 text-xs font-mono text-neutral-500 hover:text-rose-500 transition-colors">
+        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+        BACK_TO_HQ
+      </Link>
     </div>
-    <ThemeToggle />
+    <div className="flex items-center gap-6">
+      <div className="hidden md:flex items-center gap-2 text-[10px] font-mono text-rose-500 animate-pulse">
+        <Activity size={12} />
+        SYSTEM_LIVE
+      </div>
+      <ThemeToggle />
+    </div>
   </nav>
 );
 
-const RevealText = ({ text, delay = 0 }: { text: string, delay?: number }) => (
-  <span className="inline-block overflow-hidden align-bottom">
-    <motion.span
-      initial={{ y: "100%" }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.8, delay, ease: [0.33, 1, 0.68, 1] }}
-      className="inline-block"
-    >
-      {text}
-    </motion.span>
-  </span>
+const TelemetryBar = () => (
+  <div className="grid grid-cols-2 md:grid-cols-4 border-y border-white/10 bg-black/20 backdrop-blur-sm">
+    {telemetry.map((item, idx) => (
+      <div key={idx} className="p-6 border-r border-white/10 flex flex-col items-center justify-center text-center">
+        <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-1">
+          {item.label}
+        </span>
+        <div className="flex items-end gap-1">
+          <span className="text-3xl font-black text-white">{item.value}</span>
+          <span className="text-[10px] font-bold text-rose-500 mb-1">{item.unit}</span>
+        </div>
+      </div>
+    ))}
+  </div>
 );
 
-const Hero = () => {
-  const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
-
-  return (
-    <section className="relative h-screen min-h-[800px] flex items-center px-6 overflow-hidden">
-      <motion.div style={{ y: y1, opacity }} className="absolute inset-0 z-0">
-         <Image 
-          src="https://storage.googleapis.com/sakura-web/hero-gradient.jpg"
-          alt="Background"
-          fill
-          className="object-cover opacity-80 dark:opacity-30 scale-110"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white dark:via-neutral-950/60 dark:to-neutral-950" />
-      </motion.div>
-
-      <div className="relative z-10 max-w-7xl mx-auto w-full">
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="mb-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-900/5 dark:bg-white/10 backdrop-blur-md border border-neutral-900/10 dark:border-white/10"
-        >
-          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-          <span className="text-xs font-semibold tracking-wider text-neutral-600 dark:text-neutral-300 uppercase">
-            Est. 2018 • East Africa
-          </span>
-        </motion.div>
-
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-neutral-900 dark:text-white leading-[0.9] mb-8">
-          <RevealText text="Build." /> <br />
-          <span className="text-neutral-400 dark:text-neutral-600"><RevealText text="Scale." delay={0.1} /></span> <br />
-          <RevealText text="Empower." delay={0.2} />
-        </h1>
-        
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="max-w-xl text-xl text-neutral-700 dark:text-neutral-400 leading-relaxed font-light"
-        >
-          We are an industrial and technology conglomerate engineering the infrastructure of tomorrow for Tanzania, Kenya, and Malawi.
-        </motion.p>
-      </div>
-    </section>
-  );
-};
-
-const SpotlightCard = ({ item }: { item: typeof pillars[0] }) => {
+const HolographicCard = ({ service }: { service: typeof services[0] }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -177,108 +144,145 @@ const SpotlightCard = ({ item }: { item: typeof pillars[0] }) => {
   }
 
   return (
-    <Link href={item.href} className="block h-full">
-      <div
-        className="group relative h-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden rounded-3xl transition-all duration-300 hover:scale-[1.02]"
-        onMouseMove={handleMouseMove}
-      >
-        <motion.div
-          className={`pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100 bg-gradient-to-r ${item.color}`}
-          style={{
-            background: useMotionTemplate`
-              radial-gradient(
-                650px circle at ${mouseX}px ${mouseY}px,
-                rgba(255,255,255,0.1),
-                transparent 80%
-              )
-            `,
-          }}
-        />
-        <div className="relative h-full p-8 flex flex-col justify-between z-10">
-          <div className="mb-8 flex items-start justify-between">
-             <div className={`p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800/50 ${item.iconColor}`}>
-               <item.icon size={28} />
-             </div>
-             <ArrowUpRight className="text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">{item.title}</h3>
-            <p className="text-sm text-neutral-500 leading-relaxed">{item.description}</p>
-          </div>
+    <div
+      onMouseMove={handleMouseMove}
+      className="group relative h-96 border border-white/10 bg-neutral-900/50 backdrop-blur-md overflow-hidden rounded-none hover:border-rose-500/50 transition-colors duration-500"
+    >
+      <motion.div
+        className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition duration-300"
+        style={{
+          background: useMotionTemplate`
+            radial-gradient(
+              400px circle at ${mouseX}px ${mouseY}px,
+              rgba(244, 63, 94, 0.1),
+              transparent 80%
+            )
+          `,
+        }}
+      />
+      
+      {/* Decorative Corner Marks (HUD Style) */}
+      <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+      <div className="relative z-10 h-full p-8 flex flex-col justify-between">
+        <div className="flex justify-between items-start">
+          <span className="text-4xl font-black text-white/10 group-hover:text-rose-500/20 transition-colors">
+            {service.id}
+          </span>
+          <service.icon className={`w-8 h-8 ${service.color}`} />
+        </div>
+        
+        <div>
+          <h3 className="text-2xl font-bold text-white mb-2">{service.title}</h3>
+          <p className="text-sm text-neutral-400 leading-relaxed group-hover:text-white transition-colors">
+            {service.desc}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs font-mono text-rose-500 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+          ACCESS_MODULE <ArrowUpRight size={12} />
         </div>
       </div>
-    </Link>
-  );
-};
-
-const VelocityMarquee = () => (
-  <div className="py-20 overflow-hidden bg-neutral-900 dark:bg-white text-white dark:text-black">
-    <motion.div 
-      animate={{ x: [0, -1000] }}
-      transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
-      className="flex whitespace-nowrap"
-    >
-       {[...Array(4)].map((_, i) => (
-         <div key={i} className="flex items-center gap-8 mx-4">
-           <span className="text-8xl font-black uppercase tracking-tighter">Innovation</span>
-           <span className="w-4 h-4 rounded-full bg-rose-500" />
-           <span className="text-8xl font-black uppercase tracking-tighter">Energy</span>
-           <span className="w-4 h-4 rounded-full bg-rose-500" />
-           <span className="text-8xl font-black uppercase tracking-tighter">Fintech</span>
-           <span className="w-4 h-4 rounded-full bg-rose-500" />
-         </div>
-       ))}
-    </motion.div>
-  </div>
-);
-
-const Manifesto = () => {
-  return (
-    <section className="py-32 px-6 max-w-5xl mx-auto">
-      <h2 className="text-4xl md:text-6xl font-bold leading-tight text-neutral-900 dark:text-white">
-        <span className="text-neutral-300 dark:text-neutral-700">We don't just invest. </span>
-        We build the rails that East African commerce runs on. From the 
-        <span className="text-rose-500"> cloud servers </span> 
-        hosting your data to the 
-        <span className="text-rose-500"> logistics </span> 
-        moving your cargo.
-      </h2>
-    </section>
-  );
-};
-
-const Footer = () => (
-  <footer className="border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 pt-24 pb-12 px-6">
-    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end">
-      <div>
-         <h2 className="text-9xl font-bold text-neutral-100 dark:text-neutral-900 tracking-tighter">Sakura.</h2>
-      </div>
-      <div className="flex gap-8 mb-8 md:mb-4 text-sm font-medium text-neutral-500">
-        <a href="#" className="hover:text-rose-500 transition-colors">LinkedIn</a>
-        <a href="#" className="hover:text-rose-500 transition-colors">Twitter</a>
-        <a href="#" className="hover:text-rose-500 transition-colors">Instagram</a>
-      </div>
     </div>
-  </footer>
-);
+  );
+};
 
-export default function Home() {
+const TrackingConsole = () => {
+    const [focused, setFocused] = useState(false);
+
+    return (
+        <div className="relative w-full max-w-2xl mx-auto mt-20">
+            <div className={`relative flex items-center bg-black border ${focused ? 'border-rose-500' : 'border-white/20'} transition-colors duration-300`}>
+                <div className="px-6 py-6 border-r border-white/10">
+                    <Search className={`w-6 h-6 ${focused ? 'text-rose-500' : 'text-neutral-500'} transition-colors`} />
+                </div>
+                <input 
+                    type="text" 
+                    placeholder="ENTER_WAYBILL_ID..."
+                    className="w-full bg-transparent border-none text-white font-mono px-6 focus:ring-0 placeholder:text-neutral-700 outline-none h-full py-6"
+                    onFocus={() => setFocused(true)}
+                    onBlur={() => setFocused(false)}
+                />
+                <button className="absolute right-2 top-2 bottom-2 px-8 bg-white text-black font-bold hover:bg-rose-500 hover:text-white transition-colors uppercase tracking-wider text-sm">
+                    Track
+                </button>
+            </div>
+            {/* HUD Elements */}
+            <div className="flex justify-between mt-2 text-[10px] font-mono text-neutral-600 uppercase">
+                <span>Database: Connected</span>
+                <span>Latency: 12ms</span>
+            </div>
+        </div>
+    );
+};
+
+export default function LogisticsPage() {
+  const { scrollYProgress } = useScroll();
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+  const title = useHackerText("SAKURA LOGISTICS");
+
   return (
-    <main className="min-h-screen bg-white dark:bg-neutral-950 transition-colors duration-500 selection:bg-rose-500 selection:text-white">
+    <main className="min-h-screen bg-neutral-950 text-white selection:bg-rose-500 selection:text-white overflow-x-hidden">
       <Navbar />
-      <Hero />
-      <VelocityMarquee />
-      <Manifesto />
       
-      <section className="py-24 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[350px]">
-          {pillars.map((item) => (
-            <SpotlightCard key={item.title} item={item} />
-          ))}
+      {/* SECTION 1: THE RADAR HERO */}
+      <section className="relative h-screen flex flex-col justify-center items-center px-6 pt-20">
+        <Radar />
+        
+        <motion.div 
+            style={{ scale }}
+            className="relative z-10 text-center space-y-6 max-w-4xl"
+        >
+            <div className="inline-flex items-center gap-2 px-3 py-1 border border-rose-500/30 rounded-full bg-rose-500/10 mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                <span className="text-[10px] font-mono tracking-widest text-rose-400">OPERATIONS LIVE</span>
+            </div>
+            
+            <h1 className="text-6xl md:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">
+                {title}
+            </h1>
+            
+            <p className="max-w-xl mx-auto text-neutral-400 text-lg md:text-xl font-light leading-relaxed">
+                We engineer movement. A digital-first supply chain network synchronizing 
+                <span className="text-white font-medium"> cargo, data, and borders</span> in real-time.
+            </p>
+
+            <TrackingConsole />
+        </motion.div>
+      </section>
+
+      {/* SECTION 2: TELEMETRY STRIP */}
+      <TelemetryBar />
+
+      {/* SECTION 3: THE HOLOGRAPHIC GRID */}
+      <section className="py-32 px-6">
+        <div className="max-w-7xl mx-auto mb-16 flex items-end justify-between">
+            <div>
+                <h2 className="text-4xl font-bold mb-2">Capabilities</h2>
+                <div className="h-1 w-20 bg-rose-500" />
+            </div>
+            <p className="hidden md:block text-neutral-500 font-mono text-xs text-right">
+                SECURE_PROTOCOL_V4<br />
+                AUTHORIZED_PERSONNEL_ONLY
+            </p>
+        </div>
+        
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border border-white/10">
+            {services.map((service) => (
+                <HolographicCard key={service.id} service={service} />
+            ))}
         </div>
       </section>
 
-      <Footer />
+      {/* FOOTER */}
+      <footer className="border-t border-white/10 bg-black py-12 px-6 text-center">
+        <p className="text-neutral-600 font-mono text-xs">
+          SAKURA_GROUP © {new Date().getFullYear()} // ALL_SYSTEMS_NOMINAL
+        </p>
+      </footer>
     </main>
   );
 }
