@@ -6,7 +6,7 @@ import { Phone, Mail, MapPin, Instagram, Linkedin, Twitter } from "lucide-react"
 
 export function GlobalFooter() {
   return (
-    <footer id="footer" className="bg-neutral-950 pt-24 pb-12 border-t border-white/10 text-white">
+    <footer className="bg-neutral-950 pt-24 pb-12 border-t border-white/10 text-white">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
         
         {/* COL 1: BRAND */}
@@ -26,7 +26,7 @@ export function GlobalFooter() {
 
         {/* COL 2: DIVISIONS */}
         <div>
-          <h4 className="font-bold mb-6">Business Units</h4>
+          <h4 className="font-bold mb-6 text-white">Business Units</h4>
           <ul className="space-y-4 text-sm text-neutral-400">
             <li><Link href="/hosting" className="hover:text-white transition-colors">SakuraHost</Link></li>
             <li><Link href="/sakurapay" className="hover:text-white transition-colors">SakuraPay</Link></li>
@@ -36,9 +36,9 @@ export function GlobalFooter() {
           </ul>
         </div>
 
-        {/* COL 3: QUICK LINKS */}
+        {/* COL 3: COMPANY */}
         <div>
-          <h4 className="font-bold mb-6">Company</h4>
+          <h4 className="font-bold mb-6 text-white">Company</h4>
           <ul className="space-y-4 text-sm text-neutral-400">
             <li><Link href="/travel" className="hover:text-white transition-colors">Corporate Travel</Link></li>
             <li><Link href="/media" className="hover:text-white transition-colors">Think Loko Media</Link></li>
@@ -47,9 +47,9 @@ export function GlobalFooter() {
           </ul>
         </div>
 
-        {/* COL 4: CONTACT (From Flyer) */}
+        {/* COL 4: CONTACT */}
         <div>
-          <h4 className="font-bold mb-6">Get in Touch</h4>
+          <h4 className="font-bold mb-6 text-white">Get in Touch</h4>
           <ul className="space-y-4 text-sm text-neutral-400">
             <li className="flex items-start gap-3">
               <Phone size={16} className="mt-1 text-rose-500" />
