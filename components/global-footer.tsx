@@ -101,8 +101,8 @@ export function GlobalFooter() {
                 <div className="flex items-start gap-4">
                     <MapPin className="text-emerald-500 mt-1 shrink-0" />
                     <div>
-                        <p className="text-white font-medium">Mwenge TRA Tax Offices</p>
-                        <p className="text-slate-500 text-sm">Dar es Salaam, Tanzania</p>
+                        <p className="text-white font-medium">Mwenge opposite TRA Tax Offices</p>
+                        <p className="text-slate-500 text-sm">Mabatini Road - Kijitonyama<br/>Dar es Salaam, Tanzania</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
