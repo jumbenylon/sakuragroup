@@ -58,11 +58,11 @@ const PlayerBar = () => (
 export default function MediaPage() {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-rose-600 selection:text-white pb-24">
-      <GlobalNavbar pageName="THINK_LOKO" />
+      {/* UPDATED: No Props */}
+      <GlobalNavbar />
       
       <section className="pt-32 pb-16 px-6 bg-gradient-to-b from-neutral-900 to-black">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-end gap-8">
-          {/* LOGO UPDATE */}
           <div className="w-64 h-64 bg-black rounded-lg shadow-2xl relative overflow-hidden flex-shrink-0 border border-white/10 group">
              <Image 
                 src="https://storage.googleapis.com/sakura-web/think-logo-logo.png"
