@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { 
@@ -9,7 +9,8 @@ import {
   useTransform, 
   useSpring, 
   useMotionValue, 
-  useMotionTemplate 
+  useMotionTemplate,
+  AnimatePresence 
 } from "framer-motion";
 import { 
   ArrowRight, CheckCircle2, Cloud, Truck, 
@@ -20,10 +21,69 @@ import {
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
-// --- CUSTOM COLORS (Tailwind Arbitrary Values used in code) ---
+// --- CUSTOM COLORS ---
 // Dark Navy: #0B1120
 // Mint Green: #34D399
 // Marigold: #FBBF24
+
+// --- 1. CUSTOM CURSOR COMPONENT ---
+const CustomCursor = () => {
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  const springConfig = { damping: 25, stiffness: 700 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
+
+  useEffect(() => {
+    const moveCursor = (e: MouseEvent) => {
+      cursorX.set(e.clientX - 16);
+      cursorY.set(e.clientY - 16);
+    };
+    window.addEventListener("mousemove", moveCursor);
+    return () => window.removeEventListener("mousemove", moveCursor);
+  }, [cursorX, cursorY]);
+
+  return (
+    <motion.div
+      className="fixed top-0 left-0 w-8 h-8 rounded-full border border-emerald-500 pointer-events-none z-[9999] hidden md:block mix-blend-difference"
+      style={{
+        translateX: cursorXSpring,
+        translateY: cursorYSpring,
+      }}
+    >
+      <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-sm" />
+    </motion.div>
+  );
+};
+
+// --- 2. PRELOADER COMPONENT ---
+const Preloader = ({ onComplete }: { onComplete: () => void }) => {
+    return (
+        <motion.div
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.5, delay: 2.5 }}
+            onAnimationComplete={onComplete}
+            className="fixed inset-0 z-[100] bg-[#050912] flex items-center justify-center"
+        >
+            <div className="text-center">
+                <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: 200 }}
+                    transition={{ duration: 2, ease: "easeInOut" }}
+                    className="h-1 bg-emerald-500 mb-4 mx-auto rounded-full"
+                />
+                <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="font-mono text-xs text-emerald-500 uppercase tracking-widest"
+                >
+                    System Initializing...
+                </motion.p>
+            </div>
+        </motion.div>
+    );
+};
 
 // --- ANIMATION COMPONENTS ---
 
@@ -93,6 +153,9 @@ const Hero = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 400]);
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+  
+  // Parallax Text Effect
+  const textY = useTransform(scrollY, [0, 500], [0, 100]); 
 
   return (
     <section className="relative h-screen min-h-[900px] flex items-center px-6 pt-20 overflow-hidden bg-[#0B1120]">
@@ -114,12 +177,12 @@ const Hero = () => {
             </span>
           </div>
           
-          <h1 className="text-7xl md:text-9xl font-bold tracking-tighter text-white leading-[0.9] mb-8">
+          <motion.h1 style={{ y: textY }} className="text-7xl md:text-9xl font-bold tracking-tighter text-white leading-[0.9] mb-8">
             Build. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-amber-400">
               Bloom.
             </span>
-          </h1>
+          </motion.h1>
           
           <p className="text-xl md:text-2xl text-slate-400 max-w-xl leading-relaxed font-light mb-12">
             We deliver cloud, logistics, finance, and digital solutions under one roof. 
@@ -156,7 +219,7 @@ const TrustTicker = () => (
       >
         {[...Array(2)].map((_, i) => (
           <React.Fragment key={i}>
-            {['Coop Bank', 'Capys Travel', 'CRDB Bank', 'JK Cement', 'Fahad Fuad', 'Afrinuva', "AGS Engineering', City-Pest', 'Eristic'].map((brand) => (
+            {['Coop Bank', 'Capys Travel', 'CRDB Bank', 'JK Cement', 'Fahad Fuad', 'Afrinuva', 'AGS Engineering', 'City-Pest', 'Eristic'].map((brand) => (
               <span key={brand} className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white/20 to-white/5 uppercase tracking-tighter">
                 {brand}
               </span>
@@ -357,6 +420,8 @@ const ContactCockpit = () => (
                          </div>
                          <div className="flex items-center gap-4 text-sm text-slate-400">
                              <Phone size={14} /> <span>+255 753 930 000</span>
+                         </div>
+                         <div className="flex items-center gap-4 text-sm text-slate-400">
                              <Phone size={14} /> <span>+255 782 020 840</span>
                          </div>
                     </div>
@@ -378,16 +443,27 @@ const ContactCockpit = () => (
 );
 
 export default function Home() {
+  const [loading, setLoading] = useState(true);
+
   return (
-    <main className="min-h-screen bg-[#0B1120] text-white selection:bg-emerald-400 selection:text-black">
-      <GlobalNavbar />
-      <Hero />
-      <TrustTicker />
-      <OurStory />
-      <EcosystemGrid />
-      <Testimonial />
-      <ContactCockpit />
-      <GlobalFooter />
+    <main className="min-h-screen bg-[#0B1120] text-white selection:bg-emerald-400 selection:text-black cursor-none">
+      <CustomCursor />
+      <AnimatePresence>
+        {loading && <Preloader onComplete={() => setLoading(false)} />}
+      </AnimatePresence>
+      
+      {!loading && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+            <GlobalNavbar />
+            <Hero />
+            <TrustTicker />
+            <OurStory />
+            <EcosystemGrid />
+            <Testimonial />
+            <ContactCockpit />
+            <GlobalFooter />
+        </motion.div>
+      )}
     </main>
   );
 }
