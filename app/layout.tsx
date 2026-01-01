@@ -5,6 +5,7 @@ import "./globals.css";
 // Loading a premium, clean font
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
+// ONE single metadata block (Merging your icons and description)
 export const metadata: Metadata = {
   title: "Sakura Group | Industrial & Technology Conglomerate",
   description: "The digital headquarters of Sakura Group. Innovating in Logistics, Fintech, and Media.",
