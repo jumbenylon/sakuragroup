@@ -131,7 +131,7 @@ const Hero = () => {
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center px-6 pt-20 overflow-hidden bg-[#050a14]">
+    <section className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#050a14]">
       {/* VIDEO BACKGROUND */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <video 
@@ -139,78 +139,43 @@ const Hero = () => {
             loop 
             muted 
             playsInline 
-            className="w-full h-full object-cover opacity-60 mix-blend-overlay"
+            className="w-full h-full object-cover opacity-50 mix-blend-overlay"
          >
              <source src="https://storage.googleapis.com/sakura-web/sakurapay-video.mp4" type="video/mp4" />
          </video>
          {/* Digital Grid Overlay */}
          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-         <div className="absolute inset-0 bg-gradient-to-t from-[#050a14] via-[#050a14]/80 to-transparent" />
+         <div className="absolute inset-0 bg-gradient-to-t from-[#050a14] via-[#050a14]/60 to-transparent" />
       </motion.div>
 
-      <div className="relative z-10 max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center">
+      {/* CENTERED CONTENT - IMAGE REMOVED */}
+      <div className="relative z-10 max-w-5xl mx-auto w-full text-center">
         <ScrollReveal>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8 backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8 backdrop-blur-md mx-auto">
              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
              <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">PCI-DSS Level 1 Certified</span>
           </div>
           
-          <h1 className="text-6xl md:text-8xl font-bold text-white tracking-tighter leading-[0.9] mb-8">
+          <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-bold text-white tracking-tighter leading-[0.9] mb-8">
             Global Reach. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-600">
                 Local Power.
             </span>
           </h1>
           
-          <p className="text-xl text-slate-400 leading-relaxed max-w-lg mb-10">
+          <p className="text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto mb-12 font-light drop-shadow-lg">
              The unified payment gateway for Africa. Accept M-Pesa, Card, and Bank transfers through a single, secure API.
           </p>
              
-          <div className="flex flex-col sm:flex-row gap-6">
-            <Link href="/#contact" className="group relative px-8 py-4 bg-emerald-600 text-white font-bold text-lg rounded-full overflow-hidden hover:scale-105 transition-transform shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link href="/#contact" className="group relative px-10 py-5 bg-emerald-600 text-white font-bold text-lg rounded-full overflow-hidden hover:scale-105 transition-transform shadow-[0_0_40px_rgba(16,185,129,0.4)]">
                 <span className="relative flex items-center gap-2">Start Integration <Code size={20}/></span>
             </Link>
-            <button className="px-8 py-4 border border-white/10 hover:bg-white/5 text-white font-medium rounded-full transition-all">
+            <button className="px-10 py-5 border border-white/20 hover:bg-white/10 text-white font-medium rounded-full transition-all backdrop-blur-sm">
                 View Documentation
             </button>
           </div>
         </ScrollReveal>
-
-        {/* HERO IMAGE DISPLAY */}
-        <motion.div 
-            style={{ y: useTransform(scrollY, [0, 500], [0, 50]) }}
-            className="relative hidden lg:block perspective-1000"
-        >
-            <motion.div 
-                animate={{ y: [0, -20, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="relative w-full aspect-square max-w-lg mx-auto"
-            >
-                {/* Glow Effect Behind Image */}
-                <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-[100px]" />
-                
-                <Image 
-                    src="https://storage.googleapis.com/sakura-web/sakurapay-hero.png" 
-                    alt="SakuraPay Dashboard"
-                    fill
-                    className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
-                    priority
-                />
-
-                {/* Floating Elements */}
-                <motion.div 
-                    animate={{ y: [0, -15, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, delay: 1 }}
-                    className="absolute -bottom-8 -right-8 bg-white/90 backdrop-blur text-black p-4 rounded-xl shadow-xl flex items-center gap-3 border border-white/20"
-                >
-                    <div className="bg-emerald-100 p-2 rounded-full"><CheckCircle2 className="text-emerald-600" size={20} /></div>
-                    <div>
-                        <div className="text-xs font-bold uppercase text-neutral-500">Payment Success</div>
-                        <div className="font-bold text-lg">TZS 1,500,000</div>
-                    </div>
-                </motion.div>
-            </motion.div>
-        </motion.div>
       </div>
     </section>
   );
