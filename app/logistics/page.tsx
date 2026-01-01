@@ -15,7 +15,8 @@ import {
 import { 
   ArrowRight, Truck, Package, ShieldCheck, 
   MapPin, Clock, FileCheck, Building2, 
-  Navigation, Lock, FileText, CheckCircle2 
+  Navigation, Lock, FileText, CheckCircle2,
+  Globe // Added this import
 } from "lucide-react";
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
