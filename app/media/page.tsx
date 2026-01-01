@@ -15,7 +15,7 @@ import {
   Play, Mic, Headphones, Youtube, 
   ArrowRight, Heart, Share2, Info, 
   Calendar, Clock, User, Send, Pause, 
-  Radio, Signal 
+  Radio, Signal, Hash 
 } from "lucide-react";
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
@@ -194,9 +194,56 @@ const Hero = () => {
   );
 };
 
+const AboutContext = () => (
+    <section className="py-24 px-6 bg-[#0B1120] relative">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+            
+            {/* LEFT: TEXT CONTEXT */}
+            <ScrollReveal>
+                <div className="inline-flex items-center gap-2 mb-6 text-red-500">
+                    <Radio size={16} className="animate-pulse" />
+                    <span className="font-mono text-xs uppercase tracking-widest">The Signal</span>
+                </div>
+                <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">
+                    How Tanzania thinks, builds, works, and innovates.
+                </h2>
+                <div className="space-y-6 text-slate-400 text-lg leading-relaxed">
+                    <p>
+                        Think Loko is a storytelling and insight-driven podcast by Sakura Group. 
+                        We dive into the real stories behind marketing, business, clean energy, 
+                        technology, money, and everyday Tanzanian life — <span className="text-white font-medium">without the clichés or imported playbooks.</span>
+                    </p>
+                    <p>
+                        Hosted by <span className="text-red-400 font-mono">@Jumbenylon</span> and <span className="text-red-400 font-mono">@omaryraymond</span>.
+                    </p>
+                </div>
+            </ScrollReveal>
+
+            {/* RIGHT: TOPICS LIST */}
+            <div className="space-y-4">
+                {[
+                    "How consumers behave in our markets",
+                    "What drives adoption of new technologies",
+                    "The shift from charcoal to clean energy",
+                    "Lessons from the field, campaigns, and activations",
+                    "How Tanzanians build businesses"
+                ].map((topic, i) => (
+                    <ScrollReveal key={i} delay={i * 0.1}>
+                        <div className="group flex items-center gap-4 p-4 rounded-xl bg-[#080d1a] border border-white/5 hover:border-red-500/30 transition-colors">
+                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-all">
+                                <Hash size={18} />
+                            </div>
+                            <span className="text-slate-300 font-medium group-hover:text-white transition-colors">{topic}</span>
+                        </div>
+                    </ScrollReveal>
+                ))}
+            </div>
+        </div>
+    </section>
+);
+
 const LatestDrops = () => {
     // This replicates fetching from an API. 
-    // In production, you'd replace this array with data from YouTube Data API.
     const videos = [
         { 
             id: 1, 
@@ -331,6 +378,7 @@ export default function MediaPage() {
             <GlobalNavbar />
             <Marquee />
             <Hero />
+            <AboutContext />
             <LatestDrops />
             <Invitation />
             <GlobalFooter />
