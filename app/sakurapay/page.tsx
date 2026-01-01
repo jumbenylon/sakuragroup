@@ -55,7 +55,8 @@ const SecuritySection = () => (
 export default function SakuraPayPage() {
   return (
     <main className="min-h-screen bg-neutral-950 selection:bg-emerald-500 selection:text-black">
-      <GlobalNavbar pageName="SAKURA_PAY" />
+      {/* UPDATED: No Props */}
+      <GlobalNavbar />
       
       <section className="relative min-h-[90vh] flex items-center justify-center px-6 bg-neutral-950 overflow-hidden pt-20">
         <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px]" />
@@ -67,7 +68,6 @@ export default function SakuraPayPage() {
               <span className="text-[10px] font-bold tracking-widest text-emerald-500 uppercase">Live in Tanzania</span>
             </div>
             
-            {/* LOGO REPLACEMENT */}
             <div className="relative w-64 h-24">
                 <Image 
                     src="https://storage.googleapis.com/sakura-web/sakurapay-logo.png" 
