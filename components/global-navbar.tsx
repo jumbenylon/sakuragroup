@@ -3,18 +3,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 interface NavbarProps {
-  pageName?: string; // Optional: "SAKURA_PAY", "AXIS_CORE", etc.
-  backLink?: string; // Optional: Default is "/"
+  pageName?: string; // e.g. "SAKURA_PAY"
+  backLink?: string; // Default is "/"
 }
 
 export function GlobalNavbar({ pageName, backLink = "/" }: NavbarProps) {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 px-6 py-6 flex justify-between items-center transition-all duration-300 mix-blend-difference text-white">
       <div className="flex items-center gap-4">
-        {/* If it's not the homepage, show the Back Arrow */}
+        {/* If pageName exists, it means we are inside a sub-page, so show Back Arrow */}
         {pageName && (
           <Link 
             href={backLink} 
@@ -34,7 +33,7 @@ export function GlobalNavbar({ pageName, backLink = "/" }: NavbarProps) {
             />
           </div>
           {pageName ? (
-            <span className="text-sm font-mono tracking-widest uppercase opacity-80 border-l border-white/30 pl-3">
+            <span className="text-xs md:text-sm font-mono tracking-widest uppercase opacity-80 border-l border-white/30 pl-3">
               {pageName}
             </span>
           ) : (
@@ -45,9 +44,9 @@ export function GlobalNavbar({ pageName, backLink = "/" }: NavbarProps) {
         </div>
       </div>
 
+      {/* Right side is now clean - no toggle */}
       <div className="flex items-center gap-4">
-         {/* We can add a "Contact" button here globally if needed */}
-        <ThemeToggle />
+        {/* Optional: Add a 'Contact' button here later if needed */}
       </div>
     </nav>
   );
