@@ -7,13 +7,12 @@ import {
   Server, CreditCard, Mic, Briefcase, Truck, ShieldCheck, 
   ArrowUpRight, Plane, Terminal, Zap 
 } from "lucide-react";
-// IMPORT THE NEW GLOBAL COMPONENTS
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
 // --- THE LOGICAL 3x3 MATRIX ---
 const pillars = [
-  // ... (Keep your pillars array exactly as it was in Phase 12) ...
+  // --- ROW 1: DIGITAL INFRASTRUCTURE (The Backbone) ---
   {
     title: "SakuraHost",
     category: "Cloud Infrastructure",
@@ -41,6 +40,8 @@ const pillars = [
     iconColor: "text-emerald-500",
     href: "/sakurapay",
   },
+
+  // --- ROW 2: PHYSICAL OPERATIONS (The Engine) ---
   {
     title: "Sakura Logistics",
     category: "Supply Chain",
@@ -68,6 +69,8 @@ const pillars = [
     iconColor: "text-indigo-500",
     href: "/travel",
   },
+
+  // --- ROW 3: INFLUENCE & GROWTH (The Mind) ---
   {
     title: "Sakura Agency",
     category: "Strategic Growth",
@@ -97,7 +100,8 @@ const pillars = [
   },
 ];
 
-// --- (Keep RevealText, SpotlightCard, VelocityMarquee, Manifesto) ---
+// --- Sub-Components ---
+
 const RevealText = ({ text, delay = 0 }: { text: string, delay?: number }) => (
   <span className="inline-block overflow-hidden align-bottom">
     <motion.span
@@ -245,7 +249,6 @@ const Hero = () => {
 export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950 transition-colors duration-500 selection:bg-rose-500 selection:text-white">
-      {/* USE GLOBAL COMPONENTS */}
       <GlobalNavbar /> 
       <Hero />
       <VelocityMarquee />
