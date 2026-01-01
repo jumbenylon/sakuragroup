@@ -1,4 +1,12 @@
 import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Sakura Group | Industrial & Technology Conglomerate",
+  description: "The digital headquarters of Sakura Group.",
+  icons: {
+    icon: 'https://storage.googleapis.com/sakura-web/logo-icon.png', // Pulls from your bucket
+    apple: 'https://storage.googleapis.com/sakura-web/logo-icon.png',
+  },
+};
 import { Inter } from "next/font/google";
 import "./globals.css";
 
