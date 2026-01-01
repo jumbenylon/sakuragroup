@@ -15,7 +15,6 @@ import {
   Truck, ShieldCheck, Plane, Briefcase, 
   Terminal, Mic, Menu, X, ArrowRight 
 } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 // --- DATA STRUCTURE ---
 const menuGroups = [
@@ -159,7 +158,6 @@ export function GlobalNavbar() {
 
           {/* ACTIONS */}
           <div className="flex items-center gap-4">
-             <ThemeToggle />
              <Link 
                 href="/#footer" 
                 className="rounded-full bg-white px-5 py-2 text-xs font-bold text-black transition-transform hover:scale-105 hover:bg-rose-500 hover:text-white"
