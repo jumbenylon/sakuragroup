@@ -1,18 +1,18 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Image from "next/image"; // Added for Logo
+import { useRef, useState, useEffect } from "react";
 import { 
-  Server, 
-  CreditCard, 
-  Mic, 
-  Briefcase, 
-  Truck, 
-  ShieldCheck, 
-  ArrowUpRight,
-  Globe,
-  Users,
-  TrendingUp
+  motion, 
+  useScroll, 
+  useTransform, 
+  useSpring, 
+  useMotionTemplate, 
+  useMotionValue 
+} from "framer-motion";
+import Image from "next/image";
+import { 
+  Server, CreditCard, Mic, Briefcase, Truck, ShieldCheck, 
+  ArrowUpRight, Globe, Users, TrendingUp 
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -23,48 +23,48 @@ const pillars = [
     category: "Digital Infrastructure",
     description: "Enterprise-grade cloud hosting and .tz domain registrar services.",
     icon: Server,
-    color: "text-blue-600 dark:text-blue-400",
-    bg: "bg-blue-100 dark:bg-blue-900/20",
+    color: "from-blue-500/20 to-blue-500/0",
+    iconColor: "text-blue-500",
   },
   {
     title: "Axis & SakuraPay",
     category: "Fintech & Omni-Channel",
     description: "Seamless financial modules and SMS/WhatsApp communication bridges.",
     icon: CreditCard,
-    color: "text-emerald-600 dark:text-emerald-400",
-    bg: "bg-emerald-100 dark:bg-emerald-900/20",
+    color: "from-emerald-500/20 to-emerald-500/0",
+    iconColor: "text-emerald-500",
   },
   {
     title: "Think Loko",
     category: "Media & Culture",
     description: "Podcast & intelligence on Tanzanian consumer behavior and business culture.",
     icon: Mic,
-    color: "text-rose-600 dark:text-rose-500",
-    bg: "bg-rose-100 dark:bg-rose-900/20",
+    color: "from-rose-500/20 to-rose-500/0",
+    iconColor: "text-rose-500",
   },
   {
     title: "Sakura Consulting",
     category: "B2B Services",
     description: "High-level business development, market research, and strategic growth.",
     icon: Briefcase,
-    color: "text-purple-600 dark:text-purple-400",
-    bg: "bg-purple-100 dark:bg-purple-900/20",
+    color: "from-purple-500/20 to-purple-500/0",
+    iconColor: "text-purple-500",
   },
   {
     title: "Sakura Logistics",
     category: "Supply Chain",
     description: "Dedicated logistics division moving goods across East Africa.",
     icon: Truck,
-    color: "text-yellow-600 dark:text-yellow-400",
-    bg: "bg-yellow-100 dark:bg-yellow-900/20",
+    color: "from-yellow-500/20 to-yellow-500/0",
+    iconColor: "text-yellow-500",
   },
   {
     title: "Roof Solutions",
     category: "Industrial Services",
     description: "Premium roof cleaning and restoration solutions for residential and commercial.",
     icon: ShieldCheck,
-    color: "text-cyan-600 dark:text-cyan-400",
-    bg: "bg-cyan-100 dark:bg-cyan-900/20",
+    color: "from-cyan-500/20 to-cyan-500/0",
+    iconColor: "text-cyan-500",
   },
 ];
 
@@ -77,7 +77,7 @@ const stats = [
 // --- Components ---
 
 const Navbar = () => (
-  <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-900 transition-colors duration-300">
+  <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center border-b border-white/5 dark:border-white/5 bg-white/60 dark:bg-neutral-950/60 backdrop-blur-xl transition-all duration-300">
     <div className="flex items-center gap-3">
       <div className="relative w-8 h-8">
         <Image 
@@ -95,96 +95,163 @@ const Navbar = () => (
   </nav>
 );
 
-const Hero = () => (
-  <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="space-y-6"
+// Kinetic Text Component
+const RevealText = ({ text, delay = 0 }: { text: string, delay?: number }) => (
+  <span className="inline-block overflow-hidden align-bottom">
+    <motion.span
+      initial={{ y: "100%" }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.8, delay, ease: [0.33, 1, 0.68, 1] }}
+      className="inline-block"
     >
-      <h2 className="text-sm font-medium tracking-[0.2em] text-neutral-500 uppercase">
-        The Conglomerate
-      </h2>
-      <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white leading-[1.1]">
-        Building the future <br />
-        of <span className="text-neutral-500">East African Industry.</span>
-      </h1>
-      <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
-        Sakura Group operates at the intersection of technology, energy, and infrastructure. 
-        We build systems that empower businesses and communities.
-      </p>
-    </motion.div>
-  </section>
+      {text}
+    </motion.span>
+  </span>
 );
 
-const StatsSection = () => (
-  <section className="py-12 border-y border-neutral-200 dark:border-neutral-900 bg-neutral-50 dark:bg-neutral-900/50">
-    <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-      {stats.map((stat, idx) => (
-        <div key={idx} className="flex items-center gap-4">
-          <div className="p-3 bg-white dark:bg-neutral-800 rounded-xl shadow-sm">
-            <stat.icon className="w-6 h-6 text-neutral-900 dark:text-white" />
-          </div>
-          <div>
-            <h4 className="text-2xl font-bold text-neutral-900 dark:text-white">{stat.value}</h4>
-            <p className="text-sm text-neutral-500 uppercase tracking-wide">{stat.label}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  </section>
-);
+const Hero = () => {
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
-const BentoGrid = () => (
-  <section className="py-24 px-6 max-w-7xl mx-auto">
-    <div className="mb-12">
-      <h3 className="text-3xl font-bold text-neutral-900 dark:text-white">Our Ecosystem</h3>
-    </div>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[280px]">
-      {pillars.map((item, idx) => (
-        <motion.div
-          key={item.title}
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: idx * 0.1 }}
-          className="group relative flex flex-col justify-between p-8 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl hover:shadow-xl dark:hover:bg-neutral-800/50 transition-all duration-300 cursor-pointer overflow-hidden"
+  return (
+    <section className="relative h-screen min-h-[800px] flex items-center px-6 overflow-hidden">
+      {/* Dynamic Background */}
+      <motion.div style={{ y: y1, opacity }} className="absolute inset-0 z-0">
+         <Image 
+          src="https://storage.googleapis.com/sakura-web/hero-gradient.jpg"
+          alt="Background"
+          fill
+          className="object-cover opacity-80 dark:opacity-30 scale-110"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white dark:via-neutral-950/60 dark:to-neutral-950" />
+      </motion.div>
+
+      <div className="relative z-10 max-w-7xl mx-auto w-full">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="mb-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-900/5 dark:bg-white/10 backdrop-blur-md border border-neutral-900/10 dark:border-white/10"
         >
-          {/* Top Section */}
-          <div className="flex justify-between items-start">
-            <div className={`p-3 rounded-full ${item.bg} ${item.color} transition-colors duration-300`}>
-              <item.icon size={24} />
-            </div>
-            <ArrowUpRight className="text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors" size={20} />
-          </div>
-
-          {/* Content */}
-          <div className="space-y-3 relative z-10">
-            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
-              {item.category}
-            </p>
-            <h3 className="text-2xl font-bold text-neutral-900 dark:text-white group-hover:translate-x-1 transition-transform duration-300">
-              {item.title}
-            </h3>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
-              {item.description}
-            </p>
-          </div>
+          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+          <span className="text-xs font-semibold tracking-wider text-neutral-600 dark:text-neutral-300 uppercase">
+            Est. 2018 • East Africa
+          </span>
         </motion.div>
-      ))}
+
+        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-neutral-900 dark:text-white leading-[0.9] mb-8">
+          <RevealText text="Build." /> <br />
+          <span className="text-neutral-400 dark:text-neutral-600"><RevealText text="Scale." delay={0.1} /></span> <br />
+          <RevealText text="Empower." delay={0.2} />
+        </h1>
+        
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="max-w-xl text-xl text-neutral-700 dark:text-neutral-400 leading-relaxed font-light"
+        >
+          We are an industrial and technology conglomerate engineering the infrastructure of tomorrow for Tanzania, Kenya, and Malawi.
+        </motion.p>
+      </div>
+    </section>
+  );
+};
+
+// Spotlight Card Component (The "Wow" Factor)
+const SpotlightCard = ({ item }: { item: typeof pillars[0] }) => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
+    const { left, top } = currentTarget.getBoundingClientRect();
+    mouseX.set(clientX - left);
+    mouseY.set(clientY - top);
+  }
+
+  return (
+    <div
+      className="group relative border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden rounded-3xl"
+      onMouseMove={handleMouseMove}
+    >
+      <motion.div
+        className={`pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100 bg-gradient-to-r ${item.color}`} // Uses the item specific color
+        style={{
+          background: useMotionTemplate`
+            radial-gradient(
+              650px circle at ${mouseX}px ${mouseY}px,
+              rgba(255,255,255,0.1),
+              transparent 80%
+            )
+          `,
+        }}
+      />
+      <div className="relative h-full p-8 flex flex-col justify-between z-10">
+        <div className="mb-8 flex items-start justify-between">
+           <div className={`p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800/50 ${item.iconColor}`}>
+             <item.icon size={28} />
+           </div>
+           <ArrowUpRight className="text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors" />
+        </div>
+        <div>
+          <h3 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">{item.title}</h3>
+          <p className="text-sm text-neutral-500 leading-relaxed">{item.description}</p>
+        </div>
+      </div>
     </div>
-  </section>
+  );
+};
+
+// Infinite Velocity Scroll
+const VelocityMarquee = () => (
+  <div className="py-20 overflow-hidden bg-neutral-900 dark:bg-white text-white dark:text-black">
+    <motion.div 
+      animate={{ x: [0, -1000] }}
+      transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+      className="flex whitespace-nowrap"
+    >
+       {[...Array(4)].map((_, i) => (
+         <div key={i} className="flex items-center gap-8 mx-4">
+           <span className="text-8xl font-black uppercase tracking-tighter">Innovation</span>
+           <span className="w-4 h-4 rounded-full bg-rose-500" />
+           <span className="text-8xl font-black uppercase tracking-tighter">Energy</span>
+           <span className="w-4 h-4 rounded-full bg-rose-500" />
+           <span className="text-8xl font-black uppercase tracking-tighter">Fintech</span>
+           <span className="w-4 h-4 rounded-full bg-rose-500" />
+         </div>
+       ))}
+    </motion.div>
+  </div>
 );
+
+// The Manifesto (Scroll Reveal)
+const Manifesto = () => {
+  return (
+    <section className="py-32 px-6 max-w-5xl mx-auto">
+      <h2 className="text-4xl md:text-6xl font-bold leading-tight text-neutral-900 dark:text-white">
+        <span className="text-neutral-300 dark:text-neutral-700">We don't just invest. </span>
+        We build the rails that East African commerce runs on. From the 
+        <span className="text-rose-500"> cloud servers </span> 
+        hosting your data to the 
+        <span className="text-rose-500"> logistics </span> 
+        moving your cargo.
+      </h2>
+    </section>
+  );
+};
 
 const Footer = () => (
-  <footer className="border-t border-neutral-200 dark:border-neutral-900 bg-neutral-50 dark:bg-neutral-950 py-12 px-6">
-    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-sm text-neutral-500">
-      <p>&copy; {new Date().getFullYear()} Sakura Group. All rights reserved.</p>
-      <div className="flex gap-6 mt-4 md:mt-0">
-        <span className="hover:text-neutral-900 dark:hover:text-white cursor-pointer transition-colors">Dar es Salaam</span>
-        <span className="hover:text-neutral-900 dark:hover:text-white cursor-pointer transition-colors">Nairobi</span>
-        <span className="hover:text-neutral-900 dark:hover:text-white cursor-pointer transition-colors">Lilongwe</span>
+  <footer className="border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 pt-24 pb-12 px-6">
+    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end">
+      <div>
+         <h2 className="text-9xl font-bold text-neutral-100 dark:text-neutral-900 tracking-tighter">Sakura.</h2>
+      </div>
+      <div className="flex gap-8 mb-8 md:mb-4 text-sm font-medium text-neutral-500">
+        <a href="#" className="hover:text-rose-500 transition-colors">LinkedIn</a>
+        <a href="#" className="hover:text-rose-500 transition-colors">Twitter</a>
+        <a href="#" className="hover:text-rose-500 transition-colors">Instagram</a>
       </div>
     </div>
   </footer>
@@ -192,11 +259,20 @@ const Footer = () => (
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white dark:bg-neutral-950 transition-colors duration-300">
+    <main className="min-h-screen bg-white dark:bg-neutral-950 transition-colors duration-500 selection:bg-rose-500 selection:text-white">
       <Navbar />
       <Hero />
-      <StatsSection />
-      <BentoGrid />
+      <VelocityMarquee />
+      <Manifesto />
+      
+      <section className="py-24 px-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[350px]">
+          {pillars.map((item) => (
+            <SpotlightCard key={item.title} item={item} />
+          ))}
+        </div>
+      </section>
+
       <Footer />
     </main>
   );
