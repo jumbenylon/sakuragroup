@@ -1,9 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone", // CRITICAL: This enables Docker optimization for Cloud Run
+  output: "standalone",
   reactStrictMode: true,
   images: {
-    domains: [], // Add domains here if you use external images later
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        port: '',
+        pathname: '/sakura-web/**',
+      },
+    ],
   },
 };
 
