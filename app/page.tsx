@@ -75,15 +75,15 @@ const TiltCard = ({ children, className }: { children: React.ReactNode, classNam
 const services = [
   // ROW 1: INFRASTRUCTURE
   { title: "SakuraHost", desc: "Enterprise Cloud & Domains", icon: Server, href: "/hosting", color: "text-blue-400" },
-  { title: "Axis Core", desc: "Unified Comm API", icon: Zap, href: "/axis", color: "text-amber-400" },
-  { title: "SakuraPay", desc: "Fintech Gateway", icon: CreditCard, href: "/sakurapay", color: "text-emerald-400" },
+  { title: "Axis by Sakura", desc: "Unified Comm API", icon: Zap, href: "/axis", color: "text-amber-400" },
+  { title: "Sakura Pay", desc: "Fintech Gateway", icon: CreditCard, href: "/sakurapay", color: "text-emerald-400" },
   // ROW 2: OPERATIONS
-  { title: "Logistics", desc: "Supply Chain & Haulage", icon: Truck, href: "/logistics", color: "text-rose-400" },
-  { title: "Construction", desc: "RCS & Industrial Epoxy", icon: ShieldCheck, href: "/industrial", color: "text-cyan-400" },
-  { title: "Travels", desc: "Corporate Booking", icon: Plane, href: "/travel", color: "text-indigo-400" },
+  { title: "Sakura Logistics", desc: "Supply Chain & Haulage", icon: Truck, href: "/logistics", color: "text-rose-400" },
+  { title: "Roof Cleaning Solutions", desc: "RCS & Industrial Epoxy", icon: ShieldCheck, href: "/industrial", color: "text-cyan-400" },
+  { title: "Sakura Travels", desc: "Travel Agency", icon: Plane, href: "/travel", color: "text-indigo-400" },
   // ROW 3: GROWTH
-  { title: "Agency", desc: "Strategy & Branding", icon: Briefcase, href: "/marketing", color: "text-orange-400" },
-  { title: "The Terminal", desc: "LMS & Certification", icon: Terminal, href: "/learn", color: "text-yellow-400" },
+  { title: "Sakura Agency", desc: "Strategy & Branding", icon: Briefcase, href: "/marketing", color: "text-orange-400" },
+  { title: "Xhule", desc: "LMS & Certification", icon: Terminal, href: "/learn", color: "text-yellow-400" },
   { title: "Think Loko", desc: "Media & Podcast", icon: Mic, href: "/media", color: "text-red-500" },
 ];
 
@@ -156,7 +156,7 @@ const TrustTicker = () => (
       >
         {[...Array(2)].map((_, i) => (
           <React.Fragment key={i}>
-            {['VODACOM', 'CRDB BANK', 'AZAM GROUP', 'TIGO PESA', 'TRA', 'NMB'].map((brand) => (
+            {['Coop Bank', 'Capys Travel', 'CRDB Bank', 'JK Cement', 'Fahad Fuad', 'Afrinuva', "AGS Engineering', City-Pest', 'Eristic'].map((brand) => (
               <span key={brand} className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white/20 to-white/5 uppercase tracking-tighter">
                 {brand}
               </span>
@@ -195,7 +195,7 @@ const OurStory = () => {
                 style={{ rotate }}
                 className="absolute -bottom-8 -right-8 w-40 h-40 bg-amber-400 rounded-full flex items-center justify-center text-[#0B1120] font-black text-xl leading-none text-center p-4 shadow-2xl z-20"
              >
-                SINCE 2018
+                SINCE 2017
              </motion.div>
          </TiltCard>
          
@@ -291,7 +291,7 @@ const Testimonial = () => (
                              <div className="absolute inset-0 flex items-center justify-center text-white font-bold bg-neutral-700">ER</div>
                         </div>
                         <h4 className="text-xl font-bold text-white">Eddy Ronnie</h4>
-                        <p className="text-slate-500 text-sm font-mono uppercase tracking-widest">Ops Manager • RCS</p>
+                        <p className="text-slate-500 text-sm font-mono uppercase tracking-widest">Operations Manager • RCS</p>
                     </div>
                 </div>
             </ScrollReveal>
@@ -352,11 +352,12 @@ const ContactCockpit = () => (
                              <MapPin className="text-emerald-500 mt-1" />
                              <div>
                                  <h4 className="font-bold text-white">Headquarters</h4>
-                                 <p className="text-sm text-slate-400 mt-1">Mwenge TRA Tax Offices<br/>Dar es Salaam, Tanzania</p>
+                                 <p className="text-sm text-slate-400 mt-1">Mwenge opposite TRA Tax Offices<br/>Mabatini Road - Kijitonyama<br/>Dar es Salaam, Tanzania</p>
                              </div>
                          </div>
                          <div className="flex items-center gap-4 text-sm text-slate-400">
                              <Phone size={14} /> <span>+255 753 930 000</span>
+                             <Phone size={14} /> <span>+255 782 020 840</span>
                          </div>
                     </div>
                 </div>
