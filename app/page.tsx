@@ -10,13 +10,15 @@ import {
   useMotionValue 
 } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link"; 
 import { 
   Server, CreditCard, Mic, Briefcase, Truck, ShieldCheck, 
   ArrowUpRight, Globe, Users, TrendingUp 
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-// --- Data ---
+// --- FUTURE-PROOF DATA STRUCTURE ---
+// We define the links now. To make them work later, just create the folder in /app
 const pillars = [
   {
     title: "SakuraHost",
@@ -25,6 +27,7 @@ const pillars = [
     icon: Server,
     color: "from-blue-500/20 to-blue-500/0",
     iconColor: "text-blue-500",
+    href: "/hosting", // Future File: app/hosting/page.tsx
   },
   {
     title: "Axis & SakuraPay",
@@ -33,6 +36,7 @@ const pillars = [
     icon: CreditCard,
     color: "from-emerald-500/20 to-emerald-500/0",
     iconColor: "text-emerald-500",
+    href: "/fintech", // Future File: app/fintech/page.tsx
   },
   {
     title: "Think Loko",
@@ -41,6 +45,7 @@ const pillars = [
     icon: Mic,
     color: "from-rose-500/20 to-rose-500/0",
     iconColor: "text-rose-500",
+    href: "/media", // Future File: app/media/page.tsx
   },
   {
     title: "Sakura Consulting",
@@ -49,6 +54,7 @@ const pillars = [
     icon: Briefcase,
     color: "from-purple-500/20 to-purple-500/0",
     iconColor: "text-purple-500",
+    href: "/consulting", // Future File: app/consulting/page.tsx
   },
   {
     title: "Sakura Logistics",
@@ -57,6 +63,7 @@ const pillars = [
     icon: Truck,
     color: "from-yellow-500/20 to-yellow-500/0",
     iconColor: "text-yellow-500",
+    href: "/logistics", // LIVE: app/logistics/page.tsx
   },
   {
     title: "Roof Solutions",
@@ -65,6 +72,7 @@ const pillars = [
     icon: ShieldCheck,
     color: "from-cyan-500/20 to-cyan-500/0",
     iconColor: "text-cyan-500",
+    href: "/industrial", // Future File: app/industrial/page.tsx
   },
 ];
 
@@ -95,7 +103,6 @@ const Navbar = () => (
   </nav>
 );
 
-// Kinetic Text Component
 const RevealText = ({ text, delay = 0 }: { text: string, delay?: number }) => (
   <span className="inline-block overflow-hidden align-bottom">
     <motion.span
@@ -116,7 +123,6 @@ const Hero = () => {
 
   return (
     <section className="relative h-screen min-h-[800px] flex items-center px-6 overflow-hidden">
-      {/* Dynamic Background */}
       <motion.div style={{ y: y1, opacity }} className="absolute inset-0 z-0">
          <Image 
           src="https://storage.googleapis.com/sakura-web/hero-gradient.jpg"
@@ -160,7 +166,6 @@ const Hero = () => {
   );
 };
 
-// Spotlight Card Component (The "Wow" Factor)
 const SpotlightCard = ({ item }: { item: typeof pillars[0] }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -172,39 +177,40 @@ const SpotlightCard = ({ item }: { item: typeof pillars[0] }) => {
   }
 
   return (
-    <div
-      className="group relative border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden rounded-3xl"
-      onMouseMove={handleMouseMove}
-    >
-      <motion.div
-        className={`pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100 bg-gradient-to-r ${item.color}`} // Uses the item specific color
-        style={{
-          background: useMotionTemplate`
-            radial-gradient(
-              650px circle at ${mouseX}px ${mouseY}px,
-              rgba(255,255,255,0.1),
-              transparent 80%
-            )
-          `,
-        }}
-      />
-      <div className="relative h-full p-8 flex flex-col justify-between z-10">
-        <div className="mb-8 flex items-start justify-between">
-           <div className={`p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800/50 ${item.iconColor}`}>
-             <item.icon size={28} />
-           </div>
-           <ArrowUpRight className="text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors" />
-        </div>
-        <div>
-          <h3 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">{item.title}</h3>
-          <p className="text-sm text-neutral-500 leading-relaxed">{item.description}</p>
+    <Link href={item.href} className="block h-full">
+      <div
+        className="group relative h-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden rounded-3xl transition-all duration-300 hover:scale-[1.02]"
+        onMouseMove={handleMouseMove}
+      >
+        <motion.div
+          className={`pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100 bg-gradient-to-r ${item.color}`}
+          style={{
+            background: useMotionTemplate`
+              radial-gradient(
+                650px circle at ${mouseX}px ${mouseY}px,
+                rgba(255,255,255,0.1),
+                transparent 80%
+              )
+            `,
+          }}
+        />
+        <div className="relative h-full p-8 flex flex-col justify-between z-10">
+          <div className="mb-8 flex items-start justify-between">
+             <div className={`p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800/50 ${item.iconColor}`}>
+               <item.icon size={28} />
+             </div>
+             <ArrowUpRight className="text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">{item.title}</h3>
+            <p className="text-sm text-neutral-500 leading-relaxed">{item.description}</p>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
-// Infinite Velocity Scroll
 const VelocityMarquee = () => (
   <div className="py-20 overflow-hidden bg-neutral-900 dark:bg-white text-white dark:text-black">
     <motion.div 
@@ -226,7 +232,6 @@ const VelocityMarquee = () => (
   </div>
 );
 
-// The Manifesto (Scroll Reveal)
 const Manifesto = () => {
   return (
     <section className="py-32 px-6 max-w-5xl mx-auto">
