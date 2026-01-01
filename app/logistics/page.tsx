@@ -14,275 +14,309 @@ import Image from "next/image";
 import Link from "next/link";
 import { 
   ArrowLeft, Truck, Anchor, Map, Clock, ArrowUpRight, 
-  Activity, Shield, Crosshair, Search 
+  Activity, Shield, Crosshair, Search, Globe, Server, 
+  Zap, Database, Wifi, Lock, ChevronRight 
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-// --- HOOKS & UTILS ---
-
-// Hacker Text Effect (Decrypts text on load)
-const useHackerText = (text: string, speed = 30) => {
-  const [display, setDisplay] = useState("");
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$";
-  
-  useEffect(() => {
-    let i = 0;
-    const interval = setInterval(() => {
-      setDisplay(
-        text.split("").map((char, index) => {
-          if (index < i) return char;
-          return chars[Math.floor(Math.random() * chars.length)];
-        }).join("")
-      );
-      i += 1/3;
-      if (i > text.length) clearInterval(interval);
-    }, speed);
-    return () => clearInterval(interval);
-  }, [text, speed]);
-
-  return display;
-};
-
-// --- DATA ---
-const telemetry = [
-  { label: "Active Fleet", value: "142", unit: "UNITS" },
-  { label: "Transit Vol", value: "8.4", unit: "KT" },
-  { label: "On-Time Rate", value: "99.2", unit: "%" },
-  { label: "Grid Status", value: "ONLINE", unit: "SECURE" },
+// --- COMPLEX DATA SIMULATION ---
+const liveLogs = [
+  "Packet_Trace: DAR_PORT -> TERMINAL_3 [ACK]",
+  "Vehicle_ID: KZ-992 // Telemetry: ONLINE",
+  "Customs_Clearance: REF_22910 // STATUS: CLEARED",
+  "Cold_Chain_Sensor: -18°C // STABLE",
+  "Route_Optim: NAIROBI_EXPRESS // TRAFFIC: LOW",
+  "Grid_Load: 42% // LATENCY: 12ms",
 ];
 
-const services = [
+const capabilities = [
   {
-    id: "01",
-    title: "Heavy Haulage",
-    desc: "Industrial machinery transport across the Dar-Nairobi corridor.",
-    icon: Truck,
-    color: "text-rose-500",
-  },
-  {
-    id: "02",
-    title: "Ocean Freight",
-    desc: "Customs clearance & forwarding for Port of Dar es Salaam.",
+    id: "freight",
+    label: "Global Freight",
     icon: Anchor,
-    color: "text-blue-500",
+    title: "Multi-Modal Cargo Execution",
+    desc: "Seamlessly integrated sea, air, and land transport. We handle the complexity of cross-border logistics so you don't have to.",
+    stats: [
+      { label: "Annual Tonnage", value: "450k+" },
+      { label: "Ports Served", value: "12" },
+      { label: "Customs Speed", value: "< 24h" }
+    ]
   },
   {
-    id: "03",
-    title: "Telematics",
-    desc: "Real-time satellite tracking and geo-fenced asset security.",
-    icon: Map,
-    color: "text-emerald-500",
+    id: "tech",
+    label: "Digital Twin",
+    icon: Database,
+    title: "Real-Time Supply Chain Visibility",
+    desc: "Our proprietary 'Glass Pipeline' technology gives you a digital twin of your supply chain. Track every SKU, pallet, and container in real-time.",
+    stats: [
+      { label: "API Uptime", value: "99.99%" },
+      { label: "Data Points", value: "2M/day" },
+      { label: "Predictive Acc", value: "94%" }
+    ]
   },
   {
-    id: "04",
-    title: "Last Mile",
-    desc: "Precision urban delivery network with digital proof-of-delivery.",
-    icon: Clock,
-    color: "text-yellow-500",
-  },
+    id: "fleet",
+    label: "Smart Fleet",
+    icon: Truck,
+    title: "Telematics-Driven Haulage",
+    desc: "A modern fleet equipped with IoT sensors for fuel optimization, driver safety monitoring, and predictive maintenance scheduling.",
+    stats: [
+      { label: "Active Units", value: "140+" },
+      { label: "Fuel Eff", value: "+18%" },
+      { label: "Safety Rating", value: "A+" }
+    ]
+  }
 ];
 
 // --- COMPONENTS ---
 
-const Radar = () => (
-  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none flex items-center justify-center opacity-20 dark:opacity-10">
-    <div className="absolute w-[800px] h-[800px] border border-rose-500/20 rounded-full" />
-    <div className="absolute w-[600px] h-[600px] border border-rose-500/20 rounded-full" />
-    <div className="absolute w-[400px] h-[400px] border border-rose-500/20 rounded-full" />
-    {/* Rotating Scan Line */}
-    <motion.div 
-      animate={{ rotate: 360 }}
-      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-      className="absolute w-[800px] h-[800px] bg-gradient-to-r from-transparent via-transparent to-rose-500/10 rounded-full"
-      style={{ clipPath: "polygon(50% 50%, 100% 0, 100% 50%)" }}
-    />
-  </div>
-);
-
 const Navbar = () => (
-  <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center border-b border-white/5 bg-white/5 backdrop-blur-md">
-    <div className="flex items-center gap-4">
-      <Link href="/" className="group flex items-center gap-2 text-xs font-mono text-neutral-500 hover:text-rose-500 transition-colors">
-        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-        BACK_TO_HQ
-      </Link>
-    </div>
-    <div className="flex items-center gap-6">
-      <div className="hidden md:flex items-center gap-2 text-[10px] font-mono text-rose-500 animate-pulse">
-        <Activity size={12} />
-        SYSTEM_LIVE
+  <nav className="fixed top-0 left-0 w-full z-50 border-b border-white/10 bg-black/50 backdrop-blur-xl">
+    <div className="flex justify-between items-center px-6 py-4">
+      <div className="flex items-center gap-6">
+        <Link href="/" className="group flex items-center gap-2 text-xs font-mono text-rose-500 hover:text-white transition-colors">
+          <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+          // RETURN_ROOT
+        </Link>
+        <div className="hidden md:flex h-4 w-px bg-white/20" />
+        <span className="hidden md:block text-xs font-mono text-neutral-500">
+          LOGISTICS_MODULE::V2.4
+        </span>
       </div>
       <ThemeToggle />
     </div>
   </nav>
 );
 
-const TelemetryBar = () => (
-  <div className="grid grid-cols-2 md:grid-cols-4 border-y border-white/10 bg-black/20 backdrop-blur-sm">
-    {telemetry.map((item, idx) => (
-      <div key={idx} className="p-6 border-r border-white/10 flex flex-col items-center justify-center text-center">
-        <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest mb-1">
-          {item.label}
+const RollingLogs = () => (
+  <div className="h-8 overflow-hidden bg-rose-500/10 border-y border-rose-500/20 flex items-center">
+    <motion.div 
+      animate={{ x: ["0%", "-50%"] }}
+      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      className="flex whitespace-nowrap gap-8 px-4"
+    >
+      {[...liveLogs, ...liveLogs, ...liveLogs].map((log, i) => (
+        <span key={i} className="text-[10px] font-mono text-rose-400">
+          {log}
         </span>
-        <div className="flex items-end gap-1">
-          <span className="text-3xl font-black text-white">{item.value}</span>
-          <span className="text-[10px] font-bold text-rose-500 mb-1">{item.unit}</span>
-        </div>
-      </div>
-    ))}
+      ))}
+    </motion.div>
   </div>
 );
 
-const HolographicCard = ({ service }: { service: typeof services[0] }) => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
-
+const Hero = () => {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 500], [0, 200]);
+  
   return (
-    <div
-      onMouseMove={handleMouseMove}
-      className="group relative h-96 border border-white/10 bg-neutral-900/50 backdrop-blur-md overflow-hidden rounded-none hover:border-rose-500/50 transition-colors duration-500"
-    >
-      <motion.div
-        className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition duration-300"
-        style={{
-          background: useMotionTemplate`
-            radial-gradient(
-              400px circle at ${mouseX}px ${mouseY}px,
-              rgba(244, 63, 94, 0.1),
-              transparent 80%
-            )
-          `,
-        }}
+    <section className="relative h-screen min-h-[900px] flex flex-col pt-20 overflow-hidden bg-neutral-950">
+      {/* Background Grid */}
+      <div className="absolute inset-0 z-0 opacity-20" 
+           style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '40px 40px' }} 
       />
       
-      {/* Decorative Corner Marks (HUD Style) */}
-      <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+      {/* The "Globe" or Central Visual */}
+      <motion.div style={{ y }} className="absolute right-[-10%] top-[10%] w-[800px] h-[800px] rounded-full bg-gradient-to-br from-rose-900/20 to-transparent blur-3xl" />
 
-      <div className="relative z-10 h-full p-8 flex flex-col justify-between">
-        <div className="flex justify-between items-start">
-          <span className="text-4xl font-black text-white/10 group-hover:text-rose-500/20 transition-colors">
-            {service.id}
-          </span>
-          <service.icon className={`w-8 h-8 ${service.color}`} />
-        </div>
-        
-        <div>
-          <h3 className="text-2xl font-bold text-white mb-2">{service.title}</h3>
-          <p className="text-sm text-neutral-400 leading-relaxed group-hover:text-white transition-colors">
-            {service.desc}
-          </p>
-        </div>
+      <div className="relative z-10 flex-1 flex flex-col justify-center px-6 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col gap-6">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="flex items-center gap-3"
+          >
+            <div className="px-3 py-1 border border-rose-500 text-rose-500 text-[10px] font-mono font-bold uppercase tracking-widest bg-rose-500/10">
+              System Online
+            </div>
+            <div className="h-px w-20 bg-gradient-to-r from-rose-500 to-transparent" />
+          </motion.div>
 
-        <div className="flex items-center gap-2 text-xs font-mono text-rose-500 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-          ACCESS_MODULE <ArrowUpRight size={12} />
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-7xl md:text-[120px] font-black leading-[0.8] tracking-tighter text-white mix-blend-difference"
+          >
+            COMMAND <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-500 to-neutral-800">CONTROL.</span>
+          </motion.h1>
+
+          <motion.div 
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             transition={{ delay: 0.5 }}
+             className="flex flex-col md:flex-row gap-12 mt-12 border-t border-white/10 pt-8 max-w-4xl"
+          >
+             <div className="flex-1">
+               <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                 <Globe size={16} className="text-rose-500" /> Network Reach
+               </h3>
+               <p className="text-neutral-400 text-sm leading-relaxed">
+                 Operating across the entire East African Community (EAC) + SADC corridor. 
+                 Direct lines to China, Dubai, and Mumbai.
+               </p>
+             </div>
+             <div className="flex-1">
+               <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                 <Server size={16} className="text-rose-500" /> Digital Infrastructure
+               </h3>
+               <p className="text-neutral-400 text-sm leading-relaxed">
+                 API-first logistics. Integrate your ERP directly with our WMS/TMS 
+                 for instantaneous booking and tracking.
+               </p>
+             </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+
+      <div className="relative z-20">
+        <RollingLogs />
+      </div>
+    </section>
   );
 };
 
-const TrackingConsole = () => {
-    const [focused, setFocused] = useState(false);
-
-    return (
-        <div className="relative w-full max-w-2xl mx-auto mt-20">
-            <div className={`relative flex items-center bg-black border ${focused ? 'border-rose-500' : 'border-white/20'} transition-colors duration-300`}>
-                <div className="px-6 py-6 border-r border-white/10">
-                    <Search className={`w-6 h-6 ${focused ? 'text-rose-500' : 'text-neutral-500'} transition-colors`} />
-                </div>
-                <input 
-                    type="text" 
-                    placeholder="ENTER_WAYBILL_ID..."
-                    className="w-full bg-transparent border-none text-white font-mono px-6 focus:ring-0 placeholder:text-neutral-700 outline-none h-full py-6"
-                    onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
-                />
-                <button className="absolute right-2 top-2 bottom-2 px-8 bg-white text-black font-bold hover:bg-rose-500 hover:text-white transition-colors uppercase tracking-wider text-sm">
-                    Track
-                </button>
-            </div>
-            {/* HUD Elements */}
-            <div className="flex justify-between mt-2 text-[10px] font-mono text-neutral-600 uppercase">
-                <span>Database: Connected</span>
-                <span>Latency: 12ms</span>
-            </div>
-        </div>
-    );
-};
-
-export default function LogisticsPage() {
-  const { scrollYProgress } = useScroll();
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
-  const title = useHackerText("SAKURA LOGISTICS");
+const InteractiveCapabilities = () => {
+  const [activeTab, setActiveTab] = useState("freight");
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-white selection:bg-rose-500 selection:text-white overflow-x-hidden">
-      <Navbar />
-      
-      {/* SECTION 1: THE RADAR HERO */}
-      <section className="relative h-screen flex flex-col justify-center items-center px-6 pt-20">
-        <Radar />
+    <section className="py-32 px-6 bg-neutral-900 border-t border-white/5">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16">
         
-        <motion.div 
-            style={{ scale }}
-            className="relative z-10 text-center space-y-6 max-w-4xl"
-        >
-            <div className="inline-flex items-center gap-2 px-3 py-1 border border-rose-500/30 rounded-full bg-rose-500/10 mb-4">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-                <span className="text-[10px] font-mono tracking-widest text-rose-400">OPERATIONS LIVE</span>
-            </div>
-            
-            <h1 className="text-6xl md:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">
-                {title}
-            </h1>
-            
-            <p className="max-w-xl mx-auto text-neutral-400 text-lg md:text-xl font-light leading-relaxed">
-                We engineer movement. A digital-first supply chain network synchronizing 
-                <span className="text-white font-medium"> cargo, data, and borders</span> in real-time.
-            </p>
-
-            <TrackingConsole />
-        </motion.div>
-      </section>
-
-      {/* SECTION 2: TELEMETRY STRIP */}
-      <TelemetryBar />
-
-      {/* SECTION 3: THE HOLOGRAPHIC GRID */}
-      <section className="py-32 px-6">
-        <div className="max-w-7xl mx-auto mb-16 flex items-end justify-between">
-            <div>
-                <h2 className="text-4xl font-bold mb-2">Capabilities</h2>
-                <div className="h-1 w-20 bg-rose-500" />
-            </div>
-            <p className="hidden md:block text-neutral-500 font-mono text-xs text-right">
-                SECURE_PROTOCOL_V4<br />
-                AUTHORIZED_PERSONNEL_ONLY
-            </p>
+        {/* Sidebar Navigation */}
+        <div className="lg:w-1/3 space-y-2">
+          <h2 className="text-xs font-mono text-neutral-500 mb-8 uppercase tracking-widest">
+            // Select Module
+          </h2>
+          {capabilities.map((cap) => (
+            <button
+              key={cap.id}
+              onClick={() => setActiveTab(cap.id)}
+              className={`w-full text-left p-6 border transition-all duration-300 group ${
+                activeTab === cap.id 
+                  ? "border-rose-500 bg-rose-500/5" 
+                  : "border-white/10 hover:border-white/30 bg-transparent"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className={`text-sm font-mono uppercase ${activeTab === cap.id ? "text-rose-400" : "text-neutral-500"}`}>
+                  0{capabilities.indexOf(cap) + 1}
+                </span>
+                <cap.icon size={20} className={activeTab === cap.id ? "text-rose-500" : "text-neutral-600"} />
+              </div>
+              <span className={`text-2xl font-bold ${activeTab === cap.id ? "text-white" : "text-neutral-400 group-hover:text-white"}`}>
+                {cap.label}
+              </span>
+            </button>
+          ))}
         </div>
-        
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border border-white/10">
-            {services.map((service) => (
-                <HolographicCard key={service.id} service={service} />
+
+        {/* Content Display Area */}
+        <div className="lg:w-2/3 relative min-h-[500px]">
+          <AnimatePresence mode="wait">
+            {capabilities.map((cap) => (
+              activeTab === cap.id && (
+                <motion.div
+                  key={cap.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.4 }}
+                  className="h-full flex flex-col justify-between"
+                >
+                  <div className="space-y-8">
+                    <h2 className="text-5xl md:text-6xl font-bold text-white tracking-tight">
+                      {cap.title}
+                    </h2>
+                    <p className="text-xl text-neutral-400 max-w-2xl leading-relaxed">
+                      {cap.desc}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+                    {cap.stats.map((stat, idx) => (
+                      <div key={idx} className="p-6 bg-black/40 border border-white/10 backdrop-blur-sm">
+                        <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
+                        <div className="text-xs font-mono text-rose-500 uppercase tracking-wider">
+                          {stat.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Decorative Elements */}
+                  <div className="absolute top-0 right-0 w-32 h-32 border-t border-r border-rose-500/20 rounded-tr-3xl" />
+                </motion.div>
+              )
             ))}
+          </AnimatePresence>
         </div>
-      </section>
 
-      {/* FOOTER */}
-      <footer className="border-t border-white/10 bg-black py-12 px-6 text-center">
-        <p className="text-neutral-600 font-mono text-xs">
-          SAKURA_GROUP © {new Date().getFullYear()} // ALL_SYSTEMS_NOMINAL
-        </p>
-      </footer>
+      </div>
+    </section>
+  );
+};
+
+const DataGrid = () => (
+  <section className="py-20 bg-black border-y border-white/10 overflow-hidden">
+    <div className="max-w-7xl mx-auto px-6">
+      <div className="flex items-center justify-between mb-12">
+        <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+          <Activity className="text-emerald-500" /> Live Operations
+        </h3>
+        <div className="flex gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-mono text-emerald-500">REALTIME_FEED</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10">
+        {[
+            { label: "Server Load", val: "42%", icon: Wifi, col: "text-emerald-500" },
+            { label: "Encryption", val: "AES-256", icon: Lock, col: "text-blue-500" },
+            { label: "Active Routes", val: "84", icon: Map, col: "text-purple-500" },
+            { label: "Power Grid", val: "STABLE", icon: Zap, col: "text-yellow-500" },
+        ].map((item, idx) => (
+            <div key={idx} className="bg-neutral-900 p-8 flex flex-col gap-4 group hover:bg-neutral-800 transition-colors">
+                <div className="flex justify-between items-start">
+                    <item.icon className={`w-6 h-6 ${item.col}`} />
+                    <ArrowUpRight className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors" />
+                </div>
+                <div>
+                    <h4 className="text-3xl font-bold text-white">{item.val}</h4>
+                    <p className="text-xs font-mono text-neutral-500 mt-1 uppercase">{item.label}</p>
+                </div>
+            </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const Footer = () => (
+  <footer className="bg-neutral-950 pt-24 pb-12 px-6 border-t border-white/5">
+    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end">
+      <div>
+         <h2 className="text-9xl font-bold text-neutral-900 tracking-tighter select-none">SAKURA.</h2>
+      </div>
+      <div className="flex gap-8 mb-8 md:mb-4 text-xs font-mono text-neutral-600 uppercase">
+        <span>// DAR_ES_SALAAM_HQ</span>
+        <span>// NAIROBI_HUB</span>
+        <span>// LILONGWE_LINK</span>
+      </div>
+    </div>
+  </footer>
+);
+
+export default function LogisticsPage() {
+  return (
+    <main className="min-h-screen bg-neutral-950 text-white selection:bg-rose-500 selection:text-white">
+      <Navbar />
+      <Hero />
+      <DataGrid />
+      <InteractiveCapabilities />
+      <Footer />
     </main>
   );
 }
