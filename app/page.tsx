@@ -31,13 +31,6 @@ const pillars: PillarProps[] = [
     color: "group-hover:text-blue-400",
   },
   {
-    title: "Sakura Energy",
-    category: "Social Impact",
-    description: "Revolutionizing clean cooking with institutional stoves and induction technology.",
-    icon: Flame,
-    color: "group-hover:text-orange-500",
-  },
-  {
     title: "Axis & SakuraPay",
     category: "Fintech & Omni-Channel",
     description: "Seamless financial modules and SMS/WhatsApp communication bridges.",
