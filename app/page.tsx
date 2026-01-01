@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image"; // Added for Logo
 import { 
   Server, 
   CreditCard, 
@@ -76,10 +77,20 @@ const stats = [
 // --- Components ---
 
 const Navbar = () => (
-  <nav className="fixed top-0 left-0 w-full z-50 px-6 py-6 flex justify-between items-center bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-900">
-    <span className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
-      Sakura Group.
-    </span>
+  <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-900 transition-colors duration-300">
+    <div className="flex items-center gap-3">
+      <div className="relative w-8 h-8">
+        <Image 
+          src="https://storage.googleapis.com/sakura-web/logo-icon.png" 
+          alt="Sakura Group" 
+          fill
+          className="object-contain"
+        />
+      </div>
+      <span className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+        Sakura Group.
+      </span>
+    </div>
     <ThemeToggle />
   </nav>
 );
