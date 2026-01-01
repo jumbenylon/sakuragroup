@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { 
@@ -9,12 +9,13 @@ import {
   useTransform, 
   useSpring, 
   useMotionValue, 
+  useMotionTemplate,
   AnimatePresence 
 } from "framer-motion";
 import { 
   ArrowRight, ShieldCheck, CheckCircle2, 
   Layers, ArrowLeftRight, Activity, Droplets, 
-  Sun, TrendingUp, Anchor 
+  Sun, TrendingUp, Anchor, MousePointer2, AlertTriangle, Construction
 } from "lucide-react";
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
@@ -39,7 +40,7 @@ const CustomCursor = () => {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 w-8 h-8 rounded-full border border-cyan-500 pointer-events-none z-[9999] hidden md:block mix-blend-difference"
+      className="fixed top-0 left-0 w-8 h-8 rounded-full border border-orange-500 pointer-events-none z-[9999] hidden md:block mix-blend-difference"
       style={{ translateX: cursorXSpring, translateY: cursorYSpring }}
     >
       <div className="absolute inset-0 bg-cyan-500/20 rounded-full blur-sm" />
@@ -60,31 +61,93 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => (
                 initial={{ width: 0 }}
                 animate={{ width: 200 }}
                 transition={{ duration: 2, ease: "easeInOut" }}
-                className="h-1 bg-cyan-500 mb-4 mx-auto rounded-full"
+                className="h-1 bg-gradient-to-r from-cyan-500 to-orange-500 mb-4 mx-auto rounded-full"
             />
             <motion.p 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="font-mono text-xs text-cyan-500 uppercase tracking-widest"
+                className="font-mono text-xs text-orange-500 uppercase tracking-widest"
             >
-                Calibrating Systems...
+                Loading Schematics...
             </motion.p>
         </div>
     </motion.div>
 );
 
-const ScrollReveal = ({ children }: { children: React.ReactNode }) => (
+const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
     initial={{ opacity: 0, y: 50 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-100px" }}
-    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
   >
     {children}
   </motion.div>
 );
 
-// --- 2. CUSTOM PAGE COMPONENTS ---
+// --- 2. SPECIAL EFFECTS ---
+
+const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
+    const { left, top } = currentTarget.getBoundingClientRect();
+    mouseX.set(clientX - left);
+    mouseY.set(clientY - top);
+  }
+
+  return (
+    <div
+      className={`relative border border-white/10 bg-[#0B1120] overflow-hidden group ${className}`}
+      onMouseMove={handleMouseMove}
+    >
+      <motion.div
+        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100"
+        style={{
+          background: useMotionTemplate`
+            radial-gradient(
+              650px circle at ${mouseX}px ${mouseY}px,
+              rgba(249, 115, 22, 0.1),
+              transparent 80%
+            )
+          `,
+        }}
+      />
+      <div className="relative h-full">{children}</div>
+    </div>
+  );
+};
+
+const ScrambleText = ({ text }: { text: string }) => {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const [displayText, setDisplayText] = useState(text);
+  
+  useEffect(() => {
+    let iteration = 0;
+    const interval = setInterval(() => {
+      setDisplayText(text
+        .split("")
+        .map((letter, index) => {
+          if (index < iteration) {
+            return text[index];
+          }
+          return letters[Math.floor(Math.random() * 26)];
+        })
+        .join("")
+      );
+      if (iteration >= text.length) {
+        clearInterval(interval);
+      }
+      iteration += 1 / 3;
+    }, 30);
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return <span>{displayText}</span>;
+};
+
+// --- 3. PAGE SECTIONS ---
 
 const Hero = () => {
   const { scrollY } = useScroll();
@@ -93,47 +156,53 @@ const Hero = () => {
 
   return (
     <section className="relative h-[90vh] flex items-center px-6 pt-20 overflow-hidden bg-[#0B1120]">
-      <motion.div style={{ y }} className="absolute inset-0 z-0 opacity-50">
+      {/* VIBRANT VIDEO BACKGROUND */}
+      <motion.div style={{ y }} className="absolute inset-0 z-0 opacity-70">
          <video 
             autoPlay 
             loop 
             muted 
             playsInline 
-            className="w-full h-full object-cover grayscale mix-blend-overlay"
+            className="w-full h-full object-cover" // Removed grayscale, let the color breathe
          >
              <source src="https://storage.googleapis.com/sakura-web/roof%20cleaning/roof-cleaning.mp4" type="video/mp4" />
          </video>
-         <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-[#0B1120]/60 to-transparent" />
+         {/* Cinematic Grading: Dark at bottom, clear at top */}
+         <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-[#0B1120]/40 to-transparent" />
+         <div className="absolute inset-0 bg-gradient-to-r from-[#0B1120] via-[#0B1120]/20 to-transparent" />
       </motion.div>
 
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         <ScrollReveal>
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 mb-8 backdrop-blur-md">
-            <ShieldCheck size={14} className="text-cyan-400" />
-            <span className="text-xs font-bold tracking-widest text-cyan-400 uppercase">
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-orange-500/30 bg-orange-500/10 mb-8 backdrop-blur-md shadow-[0_0_20px_rgba(249,115,22,0.3)]">
+            <ShieldCheck size={14} className="text-orange-500 animate-pulse" />
+            <span className="text-xs font-bold tracking-widest text-orange-400 uppercase">
                ISO-Compliant • Warranty-Ready
             </span>
           </div>
           
-          <motion.h1 style={{ y: textY }} className="text-7xl md:text-[10rem] font-bold tracking-tighter text-white leading-[0.85] mb-8">
-            PERMANENCE.
+          {/* MULTI-COLOR GRADIENT HEADLINE */}
+          <motion.h1 style={{ y: textY }} className="text-6xl md:text-[9rem] font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-orange-500 leading-[0.85] mb-8">
+            <ScrambleText text="PERMANENCE." />
           </motion.h1>
           
           <div className="grid md:grid-cols-2 gap-12 items-end">
-              <p className="text-xl text-slate-400 leading-relaxed font-light border-l border-cyan-500/50 pl-6">
+              <p className="text-xl text-slate-300 leading-relaxed font-light border-l-2 border-orange-500 pl-6 drop-shadow-md">
                 Industrial-grade roof cleaning, restoration, and protective coating — engineered to extend lifespan, prevent biological growth, and preserve structural integrity.
                 <br/>
-                <span className="text-sm font-mono text-cyan-500 mt-4 block uppercase tracking-widest">
+                <span className="text-sm font-mono text-cyan-400 mt-4 block uppercase tracking-widest">
                     Powered by Certified Material Systems
                 </span>
               </p>
               
               <div className="flex flex-col sm:flex-row gap-6">
-                <Link href="/#contact" className="px-10 py-5 bg-cyan-500 hover:bg-cyan-400 text-[#0B1120] font-bold rounded-full transition-all hover:scale-105 flex items-center justify-center gap-2">
-                  Book a Roof Assessment
-                  <ArrowRight size={20} />
+                <Link href="/#contact" className="group relative px-8 py-4 bg-orange-500 text-[#0B1120] font-bold rounded-full overflow-hidden transition-all hover:scale-105 shadow-[0_0_30px_rgba(249,115,22,0.5)]">
+                  <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  <span className="relative flex items-center gap-2">
+                    Book a Roof Assessment <ArrowRight size={20} />
+                  </span>
                 </Link>
-                <button className="px-10 py-5 border border-white/10 hover:bg-white/5 text-white font-medium rounded-full transition-all">
+                <button className="px-10 py-4 border border-white/20 hover:bg-white/10 text-white font-medium rounded-full transition-all backdrop-blur-sm">
                   Learn How It Works
                 </button>
               </div>
@@ -145,33 +214,33 @@ const Hero = () => {
 };
 
 const WhyItMatters = () => (
-    <section className="py-24 px-6 bg-[#080d1a] border-t border-white/5">
+    <section className="py-24 px-6 bg-[#080d1a] border-t border-white/5 relative">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16">
             <ScrollReveal>
                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-                    A clean roof isn't cosmetic — <span className="text-cyan-400">it's structural preservation.</span>
+                    A clean roof isn't cosmetic — <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-orange-400">it's structural preservation.</span>
                 </h2>
                 <p className="text-slate-400 text-lg leading-relaxed mb-8">
                     Uncontrolled algae, oxidation, and moisture accelerate surface decay, leak risk, and thermal inefficiency. Our restoration systems remove biological growth at the pore level and seal surfaces to prevent recurrence.
                 </p>
-                <div className="inline-block px-4 py-2 bg-white/5 rounded-lg border border-white/10 text-xs text-cyan-500 font-mono uppercase tracking-widest">
+                <div className="inline-block px-4 py-2 bg-white/5 rounded-lg border border-white/10 text-xs text-orange-400 font-mono uppercase tracking-widest">
                     Designed for Industrial & Commercial Assets
                 </div>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                    { title: "Extends Lifespan", desc: "Prevents premature deterioration.", icon: Activity },
-                    { title: "Prevents Moisture", desc: "Reduces leak risk & breakdown.", icon: Droplets },
-                    { title: "Improves Efficiency", desc: "Restores reflectivity.", icon: Sun },
-                    { title: "Property Value", desc: "Preserves asset integrity.", icon: TrendingUp },
+                    { title: "Extends Lifespan", desc: "Prevents premature deterioration.", icon: Activity, color: "text-orange-500" },
+                    { title: "Prevents Moisture", desc: "Reduces leak risk & breakdown.", icon: Droplets, color: "text-cyan-500" },
+                    { title: "Improves Efficiency", desc: "Restores reflectivity.", icon: Sun, color: "text-yellow-400" },
+                    { title: "Property Value", desc: "Preserves asset integrity.", icon: TrendingUp, color: "text-green-500" },
                 ].map((item, i) => (
-                    <ScrollReveal key={i}>
-                        <div className="p-6 bg-[#0B1120] border border-white/5 rounded-xl hover:border-cyan-500/30 transition-colors">
-                            <item.icon className="text-cyan-500 mb-4" size={24} />
+                    <ScrollReveal key={i} delay={i * 0.1}>
+                        <SpotlightCard className="p-6 rounded-2xl h-full">
+                            <item.icon className={`${item.color} mb-4`} size={24} />
                             <h3 className="font-bold text-white mb-2">{item.title}</h3>
                             <p className="text-sm text-slate-500">{item.desc}</p>
-                        </div>
+                        </SpotlightCard>
                     </ScrollReveal>
                 ))}
             </div>
@@ -179,66 +248,105 @@ const WhyItMatters = () => (
     </section>
 );
 
-const BeforeAfter = () => (
-    <section className="py-24 px-6 bg-[#0B1120]">
-        <div className="max-w-7xl mx-auto">
-            <ScrollReveal>
-                <div className="grid md:grid-cols-12 gap-16 items-center">
-                    <div className="md:col-span-5">
-                        <h2 className="text-4xl font-bold text-white mb-6">The Difference</h2>
-                        <p className="text-slate-400 text-lg mb-8">
-                            Biological growth doesn’t just stain — it weakens material surfaces. Our process restores structural integrity and seals the substrate for long-term protection.
-                        </p>
-                        <div className="p-4 bg-[#080d1a] border border-white/5 rounded-xl">
-                            <p className="text-xs text-slate-500 leading-relaxed">
-                                <strong className="text-white block mb-1">System Specs:</strong>
-                                Restoration powered by Sika®, Synroof®, epoxy-grade resin systems, and polymer-modified Bitumen membranes.
+const InteractiveComparison = () => {
+    const [sliderPosition, setSliderPosition] = useState(50);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const isDragging = useRef(false);
+
+    const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isDragging.current || !containerRef.current) return;
+        
+        const rect = containerRef.current.getBoundingClientRect();
+        const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+        const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+        const percentage = (x / rect.width) * 100;
+        
+        setSliderPosition(percentage);
+    };
+
+    const handleInteractionStart = () => { isDragging.current = true; };
+    const handleInteractionEnd = () => { isDragging.current = false; };
+
+    return (
+        <section className="py-24 px-6 bg-[#0B1120]">
+            <div className="max-w-7xl mx-auto">
+                <ScrollReveal>
+                    <div className="grid md:grid-cols-12 gap-16 items-center mb-12">
+                        <div className="md:col-span-5">
+                            <h2 className="text-4xl font-bold text-white mb-6">The Difference</h2>
+                            <p className="text-slate-400 text-lg mb-8">
+                                Biological growth doesn’t just stain — it weakens material surfaces. Our process restores structural integrity and seals the substrate.
                             </p>
+                            <div className="p-4 bg-[#080d1a] border border-white/5 rounded-xl border-l-4 border-l-cyan-500">
+                                <p className="text-xs text-slate-500 leading-relaxed">
+                                    <strong className="text-white block mb-1">System Specs:</strong>
+                                    Restoration powered by Sika®, Synroof®, epoxy-grade resin systems, and polymer-modified Bitumen membranes.
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    {/* Visual Slider Concept */}
-                    <div className="md:col-span-7 relative aspect-video rounded-3xl overflow-hidden border border-white/10 group cursor-ew-resize">
-                        {/* Background (After) */}
-                        <div className="absolute inset-0">
-                           <Image 
-                                src="https://images.unsplash.com/photo-1632759145351-1d592919f522?q=80&w=2000&auto=format&fit=crop" 
-                                alt="Restored Roof"
-                                fill
-                                className="object-cover"
-                           />
-                           <div className="absolute inset-0 bg-black/20" /> {/* Subtle overlay for text readability */}
-                           <div className="absolute top-6 right-6 px-4 py-2 bg-cyan-500/90 backdrop-blur text-[#0B1120] text-xs font-bold uppercase tracking-widest rounded-full">
-                               Status: Restored & Sealed
-                           </div>
-                        </div>
-
-                        {/* Foreground (Before) - Clipped 50% */}
-                        <div className="absolute inset-0 w-1/2 overflow-hidden border-r-2 border-cyan-500 bg-[#0B1120]">
-                             <div className="relative w-[200vw] h-full md:w-[calc(100%*2)]"> {/* Counter-stretch to keep image static */}
-                                <Image 
-                                    src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?q=80&w=2000&auto=format&fit=crop" 
-                                    alt="Weathered Roof"
+                        
+                        {/* INTERACTIVE SLIDER */}
+                        <div 
+                            ref={containerRef}
+                            className="md:col-span-7 relative aspect-video rounded-3xl overflow-hidden border border-white/10 group cursor-ew-resize select-none touch-none shadow-2xl"
+                            onMouseMove={handleMouseMove}
+                            onTouchMove={handleMouseMove}
+                            onMouseDown={handleInteractionStart}
+                            onTouchStart={handleInteractionStart}
+                            onMouseUp={handleInteractionEnd}
+                            onTouchEnd={handleInteractionEnd}
+                            onMouseLeave={handleInteractionEnd}
+                        >
+                            {/* AFTER IMAGE (Background) */}
+                            <div className="absolute inset-0">
+                               <Image 
+                                    src="https://storage.googleapis.com/sakura-web/roof%20cleaning/rcs-after.png" 
+                                    alt="Restored Roof"
                                     fill
-                                    className="object-cover grayscale contrast-125" // Grayscale for "Before" effect
-                                />
-                                <div className="absolute inset-0 bg-black/40" />
-                             </div>
-                             <div className="absolute top-6 left-6 px-4 py-2 bg-black/80 backdrop-blur text-white text-xs font-bold uppercase tracking-widest rounded-full border border-white/10">
-                                 Status: Organic Growth
-                             </div>
-                        </div>
+                                    className="object-cover"
+                                    draggable={false}
+                               />
+                               <div className="absolute top-6 right-6 px-4 py-2 bg-cyan-500/90 backdrop-blur text-[#0B1120] text-xs font-bold uppercase tracking-widest rounded-full shadow-xl">
+                                   Status: Restored & Sealed
+                               </div>
+                            </div>
 
-                        {/* Slider Handle */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-cyan-500 rounded-full flex items-center justify-center text-[#0B1120] shadow-[0_0_30px_rgba(6,182,212,0.6)] z-20">
-                            <ArrowLeftRight size={20} />
+                            {/* BEFORE IMAGE (Clipped Foreground) */}
+                            <div 
+                                className="absolute inset-0 overflow-hidden border-r-2 border-orange-500 bg-[#0B1120]"
+                                style={{ width: `${sliderPosition}%` }}
+                            >
+                                 <div className="relative w-full h-full"> 
+                                    <Image 
+                                        src="https://storage.googleapis.com/sakura-web/roof%20cleaning/rcs-before.png" 
+                                        alt="Weathered Roof"
+                                        fill
+                                        className="object-cover object-left" 
+                                        draggable={false}
+                                    />
+                                    <div className="absolute inset-0 bg-black/10" />
+                                 </div>
+                                 <div className="absolute top-6 left-6 px-4 py-2 bg-black/80 backdrop-blur text-white text-xs font-bold uppercase tracking-widest rounded-full border border-white/10">
+                                     Status: Organic Growth
+                                 </div>
+                            </div>
+
+                            {/* Slider Handle */}
+                            <div 
+                                className="absolute top-0 bottom-0 w-1 bg-orange-500 z-20 shadow-[0_0_20px_rgba(249,115,22,0.8)]"
+                                style={{ left: `${sliderPosition}%` }}
+                            >
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-[#0B1120] shadow-2xl">
+                                    <ArrowLeftRight size={20} />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </ScrollReveal>
-        </div>
-    </section>
-);
+                </ScrollReveal>
+            </div>
+        </section>
+    );
+};
 
 const PartnerStrip = () => (
     <section className="py-24 px-6 bg-[#080d1a] border-y border-white/5">
@@ -252,28 +360,27 @@ const PartnerStrip = () => (
                     <p className="text-slate-400 leading-relaxed mb-6">
                         We work exclusively with certified, globally recognized product ecosystems — ensuring quality, traceability, and warranty-aligned application standards.
                     </p>
-                    <p className="text-xs font-mono text-cyan-500 uppercase tracking-widest">
+                    <p className="text-xs font-mono text-orange-500 uppercase tracking-widest">
                         Never One-Size-Fits-All.
                     </p>
                 </ScrollReveal>
             </div>
             <div className="md:col-span-7 grid grid-cols-2 gap-8">
-                {/* PARTNER LOGOS - EXACTLY 4 AS REQUESTED */}
                 {[
                     { name: "Synroof", url: "https://storage.googleapis.com/sakura-web/roof%20cleaning/synroof-logo.png" },
                     { name: "Sika", url: "https://storage.googleapis.com/sakura-web/roof%20cleaning/sika-logo.png" },
                     { name: "Nabaki", url: "https://storage.googleapis.com/sakura-web/roof%20cleaning/nabaki-logo.png" },
                     { name: "Dr. Fixit", url: "https://storage.googleapis.com/sakura-web/roof%20cleaning/dr.fixit-logo.png" },
                 ].map((p, i) => (
-                    <ScrollReveal key={i}>
-                        <div className="h-32 bg-[#0B1120] border border-white/5 rounded-2xl flex items-center justify-center p-6 hover:border-cyan-500/30 transition-all group relative overflow-hidden">
+                    <ScrollReveal key={i} delay={i * 0.1}>
+                        <div className="h-32 bg-[#0B1120] border border-white/5 rounded-2xl flex items-center justify-center p-6 hover:border-orange-500/30 transition-all group relative overflow-hidden">
                             <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                             <div className="relative w-full h-full">
                                 <Image 
                                     src={p.url} 
                                     alt={p.name} 
                                     fill 
-                                    className="object-contain filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+                                    className="object-contain filter grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
                                 />
                             </div>
                         </div>
@@ -296,26 +403,26 @@ const ProcessSteps = () => (
              
              <div className="grid md:grid-cols-5 gap-4">
                 {[
-                    { step: "01", title: "Condition Audit", desc: "Full-surface inspection for cracks & water ingress.", note: "Safety Planning" },
-                    { step: "02", title: "Prep & Protect", desc: "Safety-zoning, anchor points & drainage mapping.", note: "Site Safety" },
-                    { step: "03", title: "Bio-Treatment", desc: "Low-pressure soft wash removing pore-depth algae.", note: "Roof-Safe" },
-                    { step: "04", title: "Rinse & Flush", desc: "Controlled rinse cycle & substrate stabilization.", note: "Debris Extraction" },
-                    { step: "05", title: "Seal & Protect", desc: "Hydrophobic seal coats or epoxy protection.", note: "Optional Upgrade" },
+                    { step: "01", title: "Condition Audit", desc: "Full-surface inspection for cracks & water ingress.", note: "Safety Planning", icon: Activity, color: "text-orange-500" },
+                    { step: "02", title: "Prep & Protect", desc: "Safety-zoning, anchor points & drainage mapping.", note: "Site Safety", icon: Construction, color: "text-yellow-500" },
+                    { step: "03", title: "Bio-Treatment", desc: "Low-pressure soft wash removing pore-depth algae.", note: "Roof-Safe", icon: Droplets, color: "text-cyan-500" },
+                    { step: "04", title: "Rinse & Flush", desc: "Controlled rinse cycle & substrate stabilization.", note: "Debris Extraction", icon: Layers, color: "text-blue-500" },
+                    { step: "05", title: "Seal & Protect", desc: "Hydrophobic seal coats or epoxy protection.", note: "Optional Upgrade", icon: ShieldCheck, color: "text-emerald-500" },
                 ].map((s, i) => (
-                    <ScrollReveal key={i}>
-                        <div className="relative p-6 bg-[#080d1a] border border-white/5 rounded-2xl h-full flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                    <ScrollReveal key={i} delay={i * 0.1}>
+                        <SpotlightCard className="rounded-2xl h-full p-6 hover:-translate-y-2 transition-transform duration-500 border border-white/5">
                             <div className="text-6xl font-black text-white/5 absolute top-2 right-4">{s.step}</div>
-                            <div className="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-6">
-                                <Layers size={20} />
+                            <div className={`w-10 h-10 rounded-full bg-white/5 flex items-center justify-center ${s.color} mb-6`}>
+                                <s.icon size={20} />
                             </div>
                             <h3 className="text-lg font-bold text-white mb-2">{s.title}</h3>
                             <p className="text-slate-400 text-xs mb-4 flex-grow leading-relaxed">{s.desc}</p>
                             <div className="pt-4 border-t border-white/5">
-                                <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-500">
+                                <span className="text-[10px] font-mono uppercase tracking-widest text-slate-500 group-hover:text-white transition-colors">
                                     {s.note}
                                 </span>
                             </div>
-                        </div>
+                        </SpotlightCard>
                     </ScrollReveal>
                 ))}
              </div>
@@ -344,10 +451,10 @@ const SolutionMatrix = () => (
                         { s: "Epoxy Reinforcement", sys: "Sika® / Industrial Resin", out: "Chemical Resistance" },
                         { s: "Restoration", sys: "Hybrid Hydrophobic Seal", out: "Extended Lifespan" },
                     ].map((row, i) => (
-                        <div key={i} className="grid grid-cols-12 p-6 border-b border-white/5 hover:bg-white/5 transition-colors items-center">
-                            <div className="col-span-4 text-white font-bold text-sm md:text-base">{row.s}</div>
+                        <div key={i} className="grid grid-cols-12 p-6 border-b border-white/5 hover:bg-white/5 transition-colors items-center group">
+                            <div className="col-span-4 text-white font-bold text-sm md:text-base group-hover:text-orange-400 transition-colors">{row.s}</div>
                             <div className="col-span-4 text-cyan-400 font-mono text-xs md:text-sm">{row.sys}</div>
-                            <div className="col-span-4 text-slate-400 text-xs md:text-sm">{row.out}</div>
+                            <div className="col-span-4 text-slate-400 text-xs md:text-sm group-hover:text-white transition-colors">{row.out}</div>
                         </div>
                     ))}
                 </div>
@@ -364,10 +471,16 @@ const WhoWeServe = () => (
                 {[
                     "Residential Estates", "Commercial Offices", "Hotels & Leisure", 
                     "Hospitals", "Industrial Logistics", "Developers"
-                ].map((tag) => (
-                    <span key={tag} className="px-6 py-3 border border-white/10 rounded-full text-slate-300 hover:border-cyan-500 hover:text-cyan-400 transition-colors cursor-default">
+                ].map((tag, i) => (
+                    <motion.span 
+                        key={tag} 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.05 }}
+                        className="px-6 py-3 border border-white/10 rounded-full text-slate-300 hover:border-orange-500 hover:text-orange-400 hover:bg-orange-500/10 transition-all cursor-default"
+                    >
                         {tag}
-                    </span>
+                    </motion.span>
                 ))}
             </div>
             <p className="mt-8 text-slate-500 text-sm max-w-lg mx-auto font-mono uppercase tracking-widest">
@@ -399,12 +512,12 @@ const CaseStudies = () => (
                     },
                 ].map((c, i) => (
                     <ScrollReveal key={i}>
-                        <div className="group relative p-8 bg-[#0B1120] border border-white/5 rounded-3xl overflow-hidden hover:border-cyan-500/50 transition-all">
+                        <div className="group relative p-8 bg-[#0B1120] border border-white/5 rounded-3xl overflow-hidden hover:border-cyan-500/50 transition-all hover:shadow-[0_0_50px_rgba(6,182,212,0.1)]">
                              <div className="absolute top-0 right-0 p-4 opacity-50 group-hover:opacity-100 transition-opacity">
                                  <Anchor className="text-cyan-500" />
                              </div>
                              <div className="mb-6">
-                                 <h3 className="text-2xl font-bold text-white">{c.title}</h3>
+                                 <h3 className="text-2xl font-bold text-white group-hover:text-cyan-400 transition-colors">{c.title}</h3>
                                  <p className="text-slate-500 text-sm mt-2">Issue: {c.issue}</p>
                              </div>
                              <div className="space-y-3 border-t border-white/5 pt-6">
@@ -427,8 +540,8 @@ const CaseStudies = () => (
 
 const CTA = () => (
     <section className="py-32 px-6 bg-gradient-to-b from-[#0B1120] to-[#050912]">
-        <div className="max-w-4xl mx-auto bg-cyan-900/10 border border-cyan-500/20 p-12 md:p-20 rounded-[3rem] text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50" />
+        <div className="max-w-4xl mx-auto bg-orange-900/10 border border-orange-500/20 p-12 md:p-20 rounded-[3rem] text-center relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-50" />
             
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Book a Roof Condition Assessment</h2>
             <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
@@ -436,11 +549,11 @@ const CTA = () => (
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <Link href="/#contact" className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-cyan-500 text-[#0B1120] font-bold rounded-full hover:bg-cyan-400 transition-all hover:scale-105 shadow-[0_0_30px_rgba(6,182,212,0.4)]">
+                <Link href="/#contact" className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-orange-500 text-[#0B1120] font-bold rounded-full hover:bg-orange-400 transition-all hover:scale-105 shadow-[0_0_30px_rgba(249,115,22,0.4)]">
                     Request Inspection <ArrowRight size={20} />
                 </Link>
             </div>
-            <p className="mt-6 text-xs text-cyan-500 font-mono uppercase tracking-widest">
+            <p className="mt-6 text-xs text-orange-500 font-mono uppercase tracking-widest">
                 We respond within 24 hours.
             </p>
         </div>
@@ -451,7 +564,7 @@ export default function IndustrialPage() {
   const [loading, setLoading] = useState(true);
 
   return (
-    <main className="min-h-screen bg-[#0B1120] text-white selection:bg-cyan-500 selection:text-black cursor-none">
+    <main className="min-h-screen bg-[#0B1120] text-white selection:bg-orange-500 selection:text-black cursor-none">
       <CustomCursor />
       <AnimatePresence>
         {loading && <Preloader onComplete={() => setLoading(false)} />}
@@ -462,7 +575,7 @@ export default function IndustrialPage() {
             <GlobalNavbar />
             <Hero />
             <WhyItMatters />
-            <BeforeAfter />
+            <InteractiveComparison />
             <ProcessSteps />
             <PartnerStrip />
             <SolutionMatrix />
