@@ -1,127 +1,98 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { 
   motion, 
   useScroll, 
   useTransform, 
-  useMotionTemplate, 
-  useMotionValue 
+  useSpring, 
+  useMotionValue, 
+  useMotionTemplate,
+  AnimatePresence 
 } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
 import { 
-  ArrowLeft, Truck, Anchor, Map, Clock, ArrowUpRight, 
-  Globe, Package, ShieldCheck, Zap 
+  ArrowRight, Truck, Package, ShieldCheck, 
+  MapPin, Clock, FileCheck, Building2, 
+  Navigation, Lock, FileText, CheckCircle2 
 } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { GlobalNavbar } from "@/components/global-navbar";
+import { GlobalFooter } from "@/components/global-footer";
 
-// --- DATA ---
-const services = [
-  {
-    title: "Cross-Border Haulage",
-    description: "Heavy-duty transport across the East African Community. We manage the fleet, the fuel, and the borders.",
-    icon: Truck,
-    color: "from-rose-500/20 to-transparent",
-  },
-  {
-    title: "Ocean Freight Forwarding",
-    description: "Priority clearing at Dar es Salaam port. Direct integrations with customs authorities for faster release.",
-    icon: Anchor,
-    color: "from-blue-500/20 to-transparent",
-  },
-  {
-    title: "Cold Chain Logistics",
-    description: "Temperature-controlled supply chain for perishables and pharmaceuticals. -20°C to +25°C precision.",
-    icon: Zap,
-    color: "from-cyan-500/20 to-transparent",
-  },
-  {
-    title: "Last-Mile Distribution",
-    description: "Urban fulfillment centers ensuring products reach the final consumer within 24 hours.",
-    icon: Clock,
-    color: "from-yellow-500/20 to-transparent",
-  },
-];
+// --- 1. SHARED UNBOUND COMPONENTS ---
 
-const network = [
-  "DAR ES SALAAM", "NAIROBI", "LILONGWE", "KAMPALA", "LUSAKA", "MOMBASA", "DODOMA", "ARUSHA"
-];
+const CustomCursor = () => {
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  const springConfig = { damping: 25, stiffness: 700 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
 
-// --- COMPONENTS ---
-
-const Navbar = () => (
-  <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center border-b border-white/5 bg-white/60 dark:bg-neutral-950/60 backdrop-blur-xl transition-all duration-300">
-    <div className="flex items-center gap-4">
-      <Link href="/" className="p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group">
-        <ArrowLeft className="w-5 h-5 text-neutral-900 dark:text-white group-hover:-translate-x-1 transition-transform" />
-      </Link>
-      <div className="flex items-center gap-3">
-        <div className="relative w-6 h-6">
-          <Image 
-            src="https://storage.googleapis.com/sakura-web/logo-icon.png" 
-            alt="Sakura Group" 
-            fill
-            className="object-contain"
-          />
-        </div>
-        <span className="text-lg font-bold tracking-tight text-neutral-900 dark:text-white">
-          Sakura Logistics.
-        </span>
-      </div>
-    </div>
-    <ThemeToggle />
-  </nav>
-);
-
-const Hero = () => {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 500], [0, 200]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  useEffect(() => {
+    const moveCursor = (e: MouseEvent) => {
+      cursorX.set(e.clientX - 16);
+      cursorY.set(e.clientY - 16);
+    };
+    window.addEventListener("mousemove", moveCursor);
+    return () => window.removeEventListener("mousemove", moveCursor);
+  }, [cursorX, cursorY]);
 
   return (
-    <section className="relative h-[90vh] flex items-center px-6 overflow-hidden">
-      {/* Background with Bucket Asset */}
-      <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
-         <Image 
-          src="https://storage.googleapis.com/sakura-web/hero-gradient.jpg"
-          alt="Background"
-          fill
-          className="object-cover opacity-80 dark:opacity-40 scale-105"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white dark:via-neutral-950/50 dark:to-neutral-950" />
-      </motion.div>
-
-      <div className="relative z-10 max-w-7xl mx-auto w-full pt-20">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 mb-6">
-            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            <span className="text-xs font-bold tracking-widest text-rose-500 uppercase">
-              Supply Chain Division
-            </span>
-          </div>
-
-          <h1 className="text-6xl md:text-9xl font-bold tracking-tighter text-neutral-900 dark:text-white leading-[0.95] mb-8">
-            Moving <br />
-            <span className="text-neutral-400 dark:text-neutral-600">East Africa.</span>
-          </h1>
-          
-          <p className="max-w-xl text-xl text-neutral-600 dark:text-neutral-400 leading-relaxed">
-            We operate the arteries of commerce. From the port of Dar es Salaam to the inland depots of Lilongwe, we ensure seamless flow.
-          </p>
-        </motion.div>
-      </div>
-    </section>
+    <motion.div
+      className="fixed top-0 left-0 w-8 h-8 rounded-full border border-yellow-500 pointer-events-none z-[9999] hidden md:block mix-blend-difference"
+      style={{ translateX: cursorXSpring, translateY: cursorYSpring }}
+    >
+      <div className="absolute inset-0 bg-yellow-500/20 rounded-full blur-sm" />
+    </motion.div>
   );
 };
 
-// The "Spotlight" Card - Premium & Playful Hover
-const ServiceCard = ({ service }: { service: typeof services[0] }) => {
+const Preloader = ({ onComplete }: { onComplete: () => void }) => (
+    <motion.div
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 0.5, delay: 2.5 }}
+        onAnimationComplete={onComplete}
+        className="fixed inset-0 z-[100] bg-[#111827] flex items-center justify-center"
+    >
+        <div className="text-center w-64">
+            <div className="flex justify-between text-xs font-mono text-yellow-500 uppercase tracking-widest mb-2">
+                <span>Origin</span>
+                <span>In Transit</span>
+                <span>Dest</span>
+            </div>
+            <div className="relative h-1 bg-gray-800 rounded-full overflow-hidden">
+                <motion.div 
+                    className="absolute top-0 left-0 h-full bg-yellow-500"
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 2, ease: "easeInOut" }}
+                />
+            </div>
+            <motion.div 
+                className="mt-4 font-mono text-xs text-slate-500"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+            >
+                Optimizing Routes...
+            </motion.div>
+        </div>
+    </motion.div>
+);
+
+const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 50 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-100px" }}
+    transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+  >
+    {children}
+  </motion.div>
+);
+
+const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -133,110 +104,292 @@ const ServiceCard = ({ service }: { service: typeof services[0] }) => {
 
   return (
     <div
-      className="group relative border-b border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-12 overflow-hidden transition-all duration-500 hover:bg-neutral-50 dark:hover:bg-neutral-900"
+      className={`relative border border-white/10 bg-[#1f2937] overflow-hidden group ${className}`}
       onMouseMove={handleMouseMove}
     >
-      {/* The Flashlight Effect */}
       <motion.div
-        className={`pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100 bg-gradient-to-br ${service.color}`}
+        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100"
         style={{
           background: useMotionTemplate`
             radial-gradient(
-              600px circle at ${mouseX}px ${mouseY}px,
-              rgba(244, 63, 94, 0.08),
+              650px circle at ${mouseX}px ${mouseY}px,
+              rgba(234, 179, 8, 0.1),
               transparent 80%
             )
           `,
         }}
       />
-      
-      <div className="relative z-10 flex flex-col h-full justify-between gap-12">
-        <div className="flex justify-between items-start">
-            <div className="p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white group-hover:bg-rose-500 group-hover:text-white transition-colors duration-300 shadow-sm">
-                <service.icon size={32} />
-            </div>
-            <ArrowUpRight className="w-6 h-6 text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors duration-300" />
-        </div>
-        
-        <div>
-            <h3 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4 group-hover:translate-x-2 transition-transform duration-300">
-              {service.title}
-            </h3>
-            <p className="text-lg text-neutral-500 dark:text-neutral-400 leading-relaxed">
-              {service.description}
-            </p>
-        </div>
-      </div>
+      <div className="relative h-full">{children}</div>
     </div>
   );
 };
 
-// Infinite Scrolling Marquee (Playful Network Display)
-const NetworkMarquee = () => (
-  <div className="py-24 border-y border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
-    <div className="max-w-7xl mx-auto px-6 mb-8">
-      <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500">Active Corridors</h3>
-    </div>
-    <motion.div 
-      animate={{ x: [0, -1000] }}
-      transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
-      className="flex whitespace-nowrap gap-16"
-    >
-      {[...network, ...network, ...network, ...network].map((city, i) => (
-        <div key={i} className="flex items-center gap-4 text-5xl md:text-7xl font-bold text-neutral-300 dark:text-neutral-800">
-          <span>{city}</span>
-          <Globe className="w-8 h-8 text-rose-500" />
+// --- 2. PAGE SECTIONS ---
+
+const Hero = () => {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 1000], [0, 400]);
+
+  return (
+    <section className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#111827]">
+      {/* Background: City Skyline / Traffic */}
+      <motion.div style={{ y }} className="absolute inset-0 z-0">
+         <Image 
+            src="https://images.unsplash.com/photo-1596728080277-c93d8437d04e?q=80&w=2000&auto=format&fit=crop"
+            alt="Dar es Salaam Logistics"
+            fill
+            className="object-cover opacity-30 grayscale"
+         />
+         <div className="absolute inset-0 bg-gradient-to-r from-[#111827] via-[#111827]/80 to-transparent" />
+         
+         {/* Animated Radar Sweep */}
+         <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,rgba(234,179,8,0.05)_60deg,transparent_60deg)] animate-[spin_4s_linear_infinite] opacity-50 w-[200vw] h-[200vw] -left-[50vw] -top-[50vw]" />
+      </motion.div>
+
+      <div className="relative z-10 max-w-7xl mx-auto w-full">
+        <ScrollReveal>
+            {/* Location Badges */}
+            <div className="flex flex-wrap gap-2 mb-8">
+                {["Dar es Salaam", "Arusha", "Mwanza", "Dodoma", "Mbeya", "Kilimanjaro"].map((city) => (
+                    <span key={city} className="px-3 py-1 bg-white/5 border border-white/10 rounded text-[10px] font-mono uppercase tracking-widest text-slate-400">
+                        {city}
+                    </span>
+                ))}
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-8 leading-[1.1] max-w-4xl">
+                Trusted City-Courier & <br/>
+                <span className="text-yellow-500">Document Delivery.</span>
+            </h1>
+            
+            <p className="text-xl text-slate-300 max-w-2xl leading-relaxed mb-12 border-l-4 border-yellow-500 pl-6">
+                Same-day urban delivery, confidential document movement, and clearing & forwarding support — operated by a verified, professional logistics team.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-6 items-start">
+                <Link href="/#contact" className="px-10 py-5 bg-yellow-500 hover:bg-yellow-400 text-[#111827] font-bold rounded-sm transition-all hover:scale-105 flex items-center gap-2 clip-path-slant">
+                    Request a Pickup <Truck size={20} />
+                </Link>
+                <button className="px-10 py-5 border border-white/20 hover:bg-white/5 text-white font-medium rounded-sm transition-all">
+                    Talk to Operations
+                </button>
+            </div>
+        </ScrollReveal>
+      </div>
+    </section>
+  );
+};
+
+const TrustCards = () => (
+    <section className="py-24 px-6 bg-[#111827] border-y border-white/5">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+                { title: "Reliable by Design", desc: "Time-window delivery & dispatch control.", icon: Clock },
+                { title: "Confidential", desc: "Sealed transfers & identity-verified staff.", icon: Lock },
+                { title: "Enterprise Ready", desc: "Accounts, recurring routes & reporting.", icon: Building2 },
+                { title: "Critical Movement", desc: "We move business material, not casual errands.", icon: ShieldCheck },
+            ].map((c, i) => (
+                <ScrollReveal key={i} delay={i * 0.1}>
+                    <SpotlightCard className="p-8 h-full bg-[#1f2937] border-l-2 border-l-yellow-500/0 hover:border-l-yellow-500 transition-all rounded-r-xl">
+                        <c.icon className="text-yellow-500 mb-6" size={32} />
+                        <h3 className="text-xl font-bold text-white mb-3">{c.title}</h3>
+                        <p className="text-slate-400 text-sm leading-relaxed">{c.desc}</p>
+                    </SpotlightCard>
+                </ScrollReveal>
+            ))}
         </div>
-      ))}
-    </motion.div>
-  </div>
+    </section>
 );
 
-const Stats = () => (
-  <section className="py-24 px-6 bg-white dark:bg-neutral-950">
-    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
-      <div>
-        <h4 className="text-6xl font-bold text-neutral-900 dark:text-white mb-2">24<span className="text-rose-500">h</span></h4>
-        <p className="text-neutral-500">Maximum dwell time for transit cargo at our terminals.</p>
-      </div>
-      <div>
-        <h4 className="text-6xl font-bold text-neutral-900 dark:text-white mb-2">100<span className="text-rose-500">%</span></h4>
-        <p className="text-neutral-500">Digital visibility. Track every container in real-time.</p>
-      </div>
-      <div>
-        <h4 className="text-6xl font-bold text-neutral-900 dark:text-white mb-2">1.2<span className="text-rose-500">M</span></h4>
-        <p className="text-neutral-500">Kilometers covered annually across the SADC region.</p>
-      </div>
-    </div>
-  </section>
+const Services = () => (
+    <section className="py-32 px-6 bg-[#18212f]">
+        <div className="max-w-7xl mx-auto">
+            <ScrollReveal>
+                <h2 className="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-16 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"/>
+                    Operational Capabilities
+                </h2>
+            </ScrollReveal>
+
+            <div className="space-y-4">
+                {[
+                    { 
+                        title: "Urban Courier Delivery", 
+                        for: "Offices, Agencies, Banks",
+                        desc: "Fast when needed. Precise always.",
+                        action: "Book Delivery",
+                        icon: Navigation
+                    },
+                    { 
+                        title: "Confidential Documents", 
+                        for: "Sensitive Transfers",
+                        desc: "Sealed-package policy with chain-of-custody logs.",
+                        action: "Request Secure Transfer",
+                        icon: FileText
+                    },
+                    { 
+                        title: "Clearing & Forwarding", 
+                        for: "Import / Export Support",
+                        desc: "Document coordination across terminals & offices.",
+                        action: "Speak to Desk",
+                        icon: Globe
+                    }
+                ].map((s, i) => (
+                    <ScrollReveal key={i} delay={i * 0.1}>
+                        <div className="group relative bg-[#111827] border border-white/5 p-8 md:p-12 hover:border-yellow-500/50 transition-all">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                                <div className="flex items-start gap-6">
+                                    <div className="w-16 h-16 bg-[#1f2937] flex items-center justify-center text-slate-400 group-hover:text-yellow-500 transition-colors shrink-0">
+                                        <s.icon size={32} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{s.title}</h3>
+                                        <div className="flex items-center gap-2 text-yellow-500/80 font-mono text-xs uppercase tracking-widest mb-4">
+                                            <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full" />
+                                            {s.for}
+                                        </div>
+                                        <p className="text-slate-400 max-w-xl">{s.desc}</p>
+                                    </div>
+                                </div>
+                                <button className="px-8 py-4 border border-white/10 text-white font-bold hover:bg-yellow-500 hover:text-[#111827] hover:border-yellow-500 transition-all whitespace-nowrap">
+                                    {s.action}
+                                </button>
+                            </div>
+                        </div>
+                    </ScrollReveal>
+                ))}
+            </div>
+        </div>
+    </section>
 );
 
-const Footer = () => (
-  <footer className="py-12 px-6 text-center border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950">
-    <p className="text-sm text-neutral-500">
-      &copy; {new Date().getFullYear()} Sakura Logistics. Precision in every mile.
-    </p>
-  </footer>
+const Process = () => (
+    <section className="py-32 px-6 bg-[#111827]">
+        <div className="max-w-5xl mx-auto">
+            <ScrollReveal>
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl font-bold text-white mb-4">Simple Operational Flow</h2>
+                    <p className="text-slate-400">Every movement is recorded. Every hand-off is confirmed.</p>
+                </div>
+            </ScrollReveal>
+
+            <div className="relative">
+                {/* Connecting Line */}
+                <div className="absolute left-[19px] top-0 bottom-0 w-0.5 bg-white/10 md:left-1/2 md:-ml-px" />
+
+                {[
+                    "Submit pickup request",
+                    "Courier assigned & verified",
+                    "Secure pickup + Custody Seal",
+                    "Routed delivery with logs",
+                    "Proof-of-delivery issued"
+                ].map((step, i) => (
+                    <ScrollReveal key={i} delay={i * 0.1}>
+                        <div className={`relative flex items-center gap-8 mb-12 ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+                            {/* Dot */}
+                            <div className="absolute left-0 md:left-1/2 -ml-[5px] w-[10px] h-[10px] bg-yellow-500 rounded-full shadow-[0_0_10px_rgba(234,179,8,0.5)] z-10" />
+                            
+                            <div className={`flex-1 pl-12 md:pl-0 ${i % 2 === 0 ? 'md:text-right md:pr-12' : 'md:text-left md:pl-12'}`}>
+                                <div className="inline-block px-4 py-2 bg-[#1f2937] border border-white/10 rounded text-slate-200 font-bold hover:border-yellow-500/50 transition-colors cursor-default">
+                                    <span className="text-yellow-500 mr-3 font-mono">0{i + 1}</span>
+                                    {step}
+                                </div>
+                            </div>
+                            <div className="flex-1 hidden md:block" />
+                        </div>
+                    </ScrollReveal>
+                ))}
+            </div>
+        </div>
+    </section>
+);
+
+const Industries = () => (
+    <section className="py-24 px-6 bg-[#18212f] border-t border-white/5">
+        <div className="max-w-6xl mx-auto text-center">
+            <ScrollReveal>
+                <h2 className="text-3xl font-bold text-white mb-12">Industries We Serve</h2>
+                <div className="flex flex-wrap justify-center gap-4">
+                    {[
+                        "Finance & Banking", "Legal Offices", "Government Agencies",
+                        "Healthcare & Labs", "Tech Startups", "Engineering", "Importers"
+                    ].map((tag) => (
+                        <span key={tag} className="px-6 py-3 bg-[#111827] border border-white/5 text-slate-300 hover:text-yellow-500 hover:border-yellow-500/50 transition-all cursor-default">
+                            {tag}
+                        </span>
+                    ))}
+                </div>
+                <p className="mt-10 text-slate-500 font-mono text-sm uppercase tracking-widest">
+                    If your work depends on trust — your deliveries should too.
+                </p>
+            </ScrollReveal>
+        </div>
+    </section>
+);
+
+const TrustSignals = () => (
+    <section className="py-20 px-6 bg-[#111827]">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {[
+                "Trained Riders", "Service Guarantees", "Insurance Aware", "Code of Conduct"
+            ].map((sig, i) => (
+                <ScrollReveal key={i}>
+                    <div className="p-4 border border-white/5 bg-white/5">
+                        <CheckCircle2 className="text-yellow-500 mx-auto mb-3" size={20} />
+                        <span className="text-white font-bold text-sm uppercase tracking-wider">{sig}</span>
+                    </div>
+                </ScrollReveal>
+            ))}
+        </div>
+    </section>
+);
+
+const CTA = () => (
+    <section className="py-32 px-6 bg-yellow-500 text-[#111827]">
+        <div className="max-w-4xl mx-auto text-center">
+            <ScrollReveal>
+                <h2 className="text-4xl md:text-6xl font-black mb-8">
+                    MOVE WITH CONFIDENCE.
+                </h2>
+                <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                    <button className="px-12 py-5 bg-[#111827] text-white font-bold text-lg hover:scale-105 transition-transform shadow-2xl">
+                        Request Pickup
+                    </button>
+                    <button className="px-12 py-5 border-2 border-[#111827] text-[#111827] font-bold text-lg hover:bg-[#111827]/10 transition-colors">
+                        Contact Operations
+                    </button>
+                </div>
+                <p className="mt-8 text-[#111827]/60 font-mono uppercase tracking-widest text-sm font-bold">
+                    Built for businesses that cannot afford uncertainty.
+                </p>
+            </ScrollReveal>
+        </div>
+    </section>
 );
 
 export default function LogisticsPage() {
-  return (
-    <main className="min-h-screen bg-white dark:bg-neutral-950 transition-colors duration-500 selection:bg-rose-500 selection:text-white">
-      <Navbar />
-      <Hero />
-      
-      {/* The Grid: 2x2 Layout */}
-      <section className="border-t border-neutral-200 dark:border-neutral-800">
-        <div className="grid grid-cols-1 md:grid-cols-2 max-w-7xl mx-auto border-x border-neutral-200 dark:border-neutral-800">
-            {services.map((service) => (
-                <ServiceCard key={service.title} service={service} />
-            ))}
-        </div>
-      </section>
+  const [loading, setLoading] = useState(true);
 
-      <NetworkMarquee />
-      <Stats />
-      <Footer />
+  return (
+    <main className="min-h-screen bg-[#111827] text-white selection:bg-yellow-500 selection:text-black cursor-none">
+      <CustomCursor />
+      <AnimatePresence>
+        {loading && <Preloader onComplete={() => setLoading(false)} />}
+      </AnimatePresence>
+      
+      {!loading && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+            <GlobalNavbar />
+            <Hero />
+            <TrustCards />
+            <Services />
+            <Process />
+            <Industries />
+            <TrustSignals />
+            <CTA />
+            <GlobalFooter />
+        </motion.div>
+      )}
     </main>
   );
 }
