@@ -1,28 +1,13 @@
 "use client";
 
 import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import Link from "next/link";
+import { motion } from "framer-motion";
 import { 
-  ArrowLeft, PieChart, TrendingUp, Search, 
-  Target, Users, Lightbulb, BarChart3, ArrowRight 
+  PieChart, TrendingUp, Search, Target, Users, 
+  Lightbulb, BarChart3, ArrowRight 
 } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
-
-const Navbar = () => (
-  <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center border-b border-white/5 bg-neutral-950/80 backdrop-blur-xl">
-    <Link href="/" className="group flex items-center gap-2 text-xs font-mono text-orange-500 hover:text-white transition-colors">
-      <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-      SAKURA_AGENCY
-    </Link>
-    <div className="flex gap-4">
-        <button className="hidden md:block text-xs font-bold bg-white text-black px-4 py-2 rounded hover:bg-orange-500 transition-colors">
-            Book Consultation
-        </button>
-        <ThemeToggle />
-    </div>
-  </nav>
-);
+import { GlobalNavbar } from "@/components/global-navbar";
+import { GlobalFooter } from "@/components/global-footer";
 
 const Hero = () => (
   <section className="pt-40 pb-20 px-6 bg-neutral-950 min-h-[70vh] flex flex-col justify-center">
@@ -119,27 +104,14 @@ const Services = () => (
     </section>
 );
 
-const Footer = () => (
-  <footer className="py-12 text-center border-t border-white/10 bg-neutral-950">
-    <div className="flex flex-col items-center gap-4">
-        <div className="flex gap-6 text-sm font-medium text-neutral-500">
-             <a href="https://instagram.com/sakuragroup.tz" target="_blank" className="hover:text-orange-500 transition-colors">@sakuragroup.tz</a>
-             <span className="hover:text-orange-500 transition-colors cursor-pointer">LinkedIn</span>
-        </div>
-        <p className="text-neutral-600 text-sm">
-        &copy; {new Date().getFullYear()} Sakura Agency. Strategy Division.
-        </p>
-    </div>
-  </footer>
-);
-
 export default function MarketingPage() {
   return (
     <main className="min-h-screen bg-neutral-950 text-white selection:bg-orange-500 selection:text-black">
-      <Navbar />
+      {/* UPDATED: No Props */}
+      <GlobalNavbar />
       <Hero />
       <Services />
-      <Footer />
+      <GlobalFooter />
     </main>
   );
 }
