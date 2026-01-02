@@ -16,7 +16,7 @@ import {
   ArrowRight, Truck, Package, ShieldCheck, 
   MapPin, Clock, FileCheck, Building2, 
   Navigation, Lock, FileText, CheckCircle2,
-  Globe, Shield, BarChart3
+  Globe, Shield, BarChart3, Zap // Added Zap to imports
 } from "lucide-react";
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
@@ -109,7 +109,6 @@ const Hero = () => {
             priority
          />
          <div className="absolute inset-0 bg-gradient-to-r from-[#111827] via-[#111827]/90 to-transparent" />
-         {/* Animated Radar Sweep */}
          <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,rgba(234,179,8,0.05)_60deg,transparent_60deg)] animate-[spin_8s_linear_infinite] opacity-50 w-[200vw] h-[200vw] -left-[50vw] -top-[50vw]" />
       </motion.div>
 
@@ -148,7 +147,6 @@ const Hero = () => {
 
 const TrustCards = () => (
     <section className="py-32 px-6 bg-[#111827] border-y border-white/5 relative overflow-hidden">
-        {/* Abstract Grid Line Decor */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
@@ -184,7 +182,6 @@ const Capabilities = () => (
             </ScrollReveal>
 
             <div className="grid lg:grid-cols-12 gap-10">
-                {/* Visual Card */}
                 <div className="lg:col-span-5 relative min-h-[500px] rounded-3xl overflow-hidden border border-white/5 grayscale hover:grayscale-0 transition-all duration-1000">
                     <Image 
                         src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad21?q=80&w=1000&auto=format&fit=crop"
@@ -199,7 +196,6 @@ const Capabilities = () => (
                     </div>
                 </div>
 
-                {/* Service List */}
                 <div className="lg:col-span-7 space-y-4">
                     {[
                         { 
@@ -257,7 +253,7 @@ const Industries = () => (
                         { n: "Legal & Corporate", i: FileCheck },
                         { n: "Government Agencies", i: Building2 },
                         { n: "Healthcare & Labs", i: Shield },
-                        { n: "Tech & Startups", i: Zap },
+                        { n: "Tech & Startups", i: Zap }, // Uses the Zap import
                         { n: "Engineering", i: Package },
                         { n: "Importers & Exporters", i: Globe }
                     ].map((tag) => (
@@ -274,7 +270,6 @@ const Industries = () => (
 
 const FinalCTA = () => (
     <section className="py-40 px-6 bg-yellow-500 text-[#111827] relative overflow-hidden">
-        {/* Decorative Vector */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[40vw] font-black opacity-5 pointer-events-none select-none tracking-tighter">
             LOGISTICS
         </div>
