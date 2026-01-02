@@ -2,13 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { 
-  Send, Users, AlertCircle, CheckCircle2, 
-  MessageSquare, RefreshCw, X 
+  Send, Users, CheckCircle2, 
+  MessageSquare, RefreshCw 
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 export function QuickSendWidget() {
-  const [senderId, setSenderId] = useState("SAKURA"); // Default or fetched
+  const [senderId, setSenderId] = useState("SAKURA"); 
   const [recipients, setRecipients] = useState("");
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -27,7 +26,7 @@ export function QuickSendWidget() {
     const len = message.length;
     setCharCount(len);
     
-    // GSM-7 Standard: 160 chars = 1 SMS. If > 160, it uses 153 chars per segment (7 for header)
+    // GSM-7 Standard: 160 chars = 1 SMS. If > 160, it uses 153 chars per segment.
     const segments = len <= 160 ? 1 : Math.ceil(len / 153);
     setSmsCount(segments);
 
@@ -42,18 +41,44 @@ export function QuickSendWidget() {
     setIsSending(true);
     setStatus("idle");
 
-    // SIMULATION: API Call would go here
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      // Clean the numbers (remove spaces, ensure valid format)
+      const cleanNumbers = recipients
+        .split(/[\n, ]+/)
+        .map(n => n.trim())
+        .filter(n => n.length >= 10);
 
-    setIsSending(false);
-    setStatus("success");
-    
-    // Reset after delay
-    setTimeout(() => {
-      setStatus("idle");
-      setMessage("");
-      setRecipients("");
-    }, 3000);
+      const response = await fetch("/api/sms/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipients: cleanNumbers,
+          message: message,
+          senderId: senderId === "REQUEST_NEW" ? undefined : senderId, 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setStatus("success");
+        // Reset form after delay
+        setTimeout(() => {
+          setStatus("idle");
+          setMessage("");
+          setRecipients("");
+        }, 3000);
+      } else {
+        console.error("Send Failed", data);
+        setStatus("error");
+        alert(`Failed: ${data.details || "Check Gateway Logs"}`);
+      }
+    } catch (err) {
+      console.error("Network Error", err);
+      alert("Network Error: Could not reach the server.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -86,8 +111,7 @@ export function QuickSendWidget() {
                     className="w-full bg-[#050912] border border-white/10 rounded-xl p-3 text-sm font-bold text-white outline-none focus:border-emerald-500 transition-colors appearance-none"
                 >
                     <option value="SAKURA">SAKURA</option>
-                    <option value="AXIS">AXIS</option>
-                    <option value="REQUEST_NEW">+ Request New</option>
+                    <option value="INFO">INFO</option>
                 </select>
             </div>
 
@@ -99,7 +123,7 @@ export function QuickSendWidget() {
                 <textarea 
                     value={recipients}
                     onChange={(e) => setRecipients(e.target.value)}
-                    placeholder="Paste numbers here (comma or new line separated)..."
+                    placeholder="Paste numbers here (comma or new line)..."
                     className="w-full h-12 bg-[#050912] border border-white/10 rounded-xl p-3 text-xs font-mono text-slate-300 outline-none focus:border-emerald-500 transition-colors resize-none placeholder:text-slate-700"
                 />
             </div>
@@ -115,21 +139,13 @@ export function QuickSendWidget() {
                     <span className="text-white font-bold">{smsCount}</span> SMS unit(s)
                 </div>
             </div>
-            <div className="relative">
-                <textarea 
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Type your message..."
-                    rows={5}
-                    className="w-full bg-[#050912] border border-white/10 rounded-xl p-4 text-sm text-white outline-none focus:border-emerald-500 transition-colors resize-none leading-relaxed"
-                />
-                <button 
-                    onClick={() => setMessage(message + " {Name}")}
-                    className="absolute bottom-3 right-3 px-3 py-1 bg-white/5 hover:bg-white/10 rounded-md text-[10px] font-bold text-slate-400 hover:text-white transition-colors border border-white/5"
-                >
-                    + Variable
-                </button>
-            </div>
+            <textarea 
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Type your message..."
+                rows={5}
+                className="w-full bg-[#050912] border border-white/10 rounded-xl p-4 text-sm text-white outline-none focus:border-emerald-500 transition-colors resize-none leading-relaxed"
+            />
         </div>
 
         {/* 3. FLIGHT CHECK & ACTION */}
