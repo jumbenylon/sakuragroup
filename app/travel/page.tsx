@@ -2,332 +2,209 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { 
   motion, 
   useScroll, 
   useTransform, 
-  useSpring, 
-  useMotionValue, 
-  useMotionTemplate,
   AnimatePresence 
 } from "framer-motion";
 import { 
-  ArrowRight, Compass, Map, Sunset, 
-  Palmtree, Mountain, Anchor, Heart, 
-  Camera, Plane, Ship, Wind 
+  ArrowRight, Compass, Sunset, 
+  Heart, Wind, X, MapPin, Calendar
 } from "lucide-react";
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
-// --- 1. SHARED UNBOUND COMPONENTS ---
-
-const CustomCursor = () => {
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
-  const springConfig = { damping: 25, stiffness: 700 };
-  const cursorXSpring = useSpring(cursorX, springConfig);
-  const cursorYSpring = useSpring(cursorY, springConfig);
-
-  useEffect(() => {
-    const moveCursor = (e: MouseEvent) => {
-      cursorX.set(e.clientX - 16);
-      cursorY.set(e.clientY - 16);
-    };
-    window.addEventListener("mousemove", moveCursor);
-    return () => window.removeEventListener("mousemove", moveCursor);
-  }, [cursorX, cursorY]);
-
-  return (
-    <motion.div
-      className="fixed top-0 left-0 w-8 h-8 rounded-full border border-amber-500 pointer-events-none z-[9999] hidden md:block mix-blend-difference"
-      style={{ translateX: cursorXSpring, translateY: cursorYSpring }}
-    >
-      <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-sm" />
-    </motion.div>
-  );
-};
-
-const Preloader = ({ onComplete }: { onComplete: () => void }) => (
-    <motion.div
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 0 }}
-        transition={{ duration: 0.5, delay: 2.5 }}
-        onAnimationComplete={onComplete}
-        className="fixed inset-0 z-[100] bg-[#020617] flex items-center justify-center"
-    >
-        <div className="text-center">
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-amber-500 font-serif italic text-3xl mb-4"
-            >
-                Sakura Travels
-            </motion.div>
-            <motion.p 
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 2 }}
-                className="text-[10px] text-slate-500 uppercase tracking-[0.3em] overflow-hidden whitespace-nowrap border-b border-amber-500/30 pb-1"
-            >
-                Where journeys begin
-            </motion.p>
-        </div>
-    </motion.div>
+// --- CONCIERGE MODAL ---
+const TravelConcierge = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => (
+  <AnimatePresence>
+    {isOpen && (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-6"
+      >
+        <motion.div 
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 50, opacity: 0 }}
+          className="max-w-2xl w-full bg-[#050912] border border-white/10 p-12 rounded-[2rem] relative"
+        >
+          <button onClick={onClose} className="absolute top-8 right-8 text-slate-500 hover:text-white">
+            <X size={24} />
+          </button>
+          <h2 className="text-3xl font-serif italic text-white mb-4">The journey in your mind.</h2>
+          <p className="text-slate-400 mb-8 font-light">Share your dream, and we will shape it into something real.</p>
+          
+          <form className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="border-b border-white/10 pb-2">
+                    <label className="text-[10px] text-amber-500 uppercase tracking-widest block mb-2">Name</label>
+                    <input type="text" className="bg-transparent w-full text-white outline-none font-light" placeholder="Your name" />
+                </div>
+                <div className="border-b border-white/10 pb-2">
+                    <label className="text-[10px] text-amber-500 uppercase tracking-widest block mb-2">Destination</label>
+                    <input type="text" className="bg-transparent w-full text-white outline-none font-light" placeholder="Where to?" />
+                </div>
+            </div>
+            <div className="border-b border-white/10 pb-2">
+                <label className="text-[10px] text-amber-500 uppercase tracking-widest block mb-2">The Experience</label>
+                <textarea rows={2} className="bg-transparent w-full text-white outline-none font-light resize-none" placeholder="Adventure, Stillness, or Celebration?" />
+            </div>
+            <button className="w-full py-5 bg-white text-black font-bold uppercase tracking-widest text-xs hover:bg-amber-500 transition-colors rounded-full">
+                Begin Planning
+            </button>
+          </form>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
 );
-
-const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-100px" }}
-    transition={{ duration: 1.2, delay, ease: [0.22, 1, 0.36, 1] }}
-  >
-    {children}
-  </motion.div>
-);
-
-// --- 2. PAGE SECTIONS ---
 
 const Hero = () => {
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 300]);
-  const opacity = useTransform(scrollY, [0, 600], [1, 0]);
+  const scale = useTransform(scrollY, [0, 1000], [1, 1.1]);
+  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
   return (
-    <section className="relative h-screen flex items-center justify-center px-6 overflow-hidden bg-black">
-      {/* Background: Serengeti Sunrise (Parallax) */}
-      <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
+    <section className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
+      <motion.div style={{ scale, opacity }} className="absolute inset-0 z-0">
          <Image 
-            src="https://storage.googleapis.com/sakura-web/sakura-travels/jeremy-pelletier-MoPM7OM3D18-unsplash.jpg"
-            alt="Serengeti Sunrise"
+            src="https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=2000"
+            alt="Serengeti Sunset"
             fill
-            className="object-cover"
+            className="object-cover transition-opacity duration-1000"
             priority
          />
-         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black" />
+         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black" />
       </motion.div>
 
-      <div className="relative z-10 text-center max-w-4xl">
-        <ScrollReveal>
-            <motion.h1 
-                initial={{ letterSpacing: "0.5em", opacity: 0 }}
-                animate={{ letterSpacing: "0.2em", opacity: 1 }}
-                transition={{ duration: 2 }}
-                className="text-white text-sm md:text-base uppercase tracking-[0.5em] mb-6 font-light"
-            >
-                Sakura Travels
-            </motion.h1>
-            <h2 className="text-5xl md:text-8xl font-serif italic text-white mb-8 leading-tight">
-                Where journeys begin.
-            </h2>
-            <p className="text-amber-200/80 font-light tracking-widest text-xs md:text-sm uppercase">
-                Tanzania — told through travel, memory and adventure.
-            </p>
-        </ScrollReveal>
-      </div>
-
-      <motion.div 
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-12 left-1/2 -translate-x-1/2 text-white/30 flex flex-col items-center gap-2"
-      >
-        <span className="text-[10px] uppercase tracking-widest">Scroll to explore</span>
-        <div className="w-px h-12 bg-white/20" />
-      </motion.div>
-    </section>
-  );
-};
-
-const DestinationMosaics = () => {
-  const destinations = [
-    { name: "The Serengeti", desc: "Where the Earth Still Roams Wild", img: "https://storage.googleapis.com/sakura-web/sakura-travels/mark-attree-aJqtl7LLcLs-unsplash%20(1).jpg" },
-    { name: "Zanzibar", desc: "Salt Wind, Old Stone, Infinite Blue", img: "https://storage.googleapis.com/sakura-web/sakura-travels/moses-londo-vxo_PFcaVAw-unsplash%20(1).jpg" },
-    { name: "Kilimanjaro", desc: "The Mountain That Waits For You", img: "https://storage.googleapis.com/sakura-web/sakura-travels/gabriel-schumacher-U17K57Kwi0U-unsplash.jpg" },
-    { name: "Southern Circuit", desc: "Untouched, Uncrowded, Unrepeatable", img: "https://storage.googleapis.com/sakura-web/sakura-travels/colin-watts-DVKlFxioOnc-unsplash.jpg" },
-  ];
-
-  return (
-    <section className="py-32 px-6 bg-[#020617]">
-      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
-        {destinations.map((d, i) => (
-          <ScrollReveal key={i} delay={i * 0.1}>
-            <div className="group relative aspect-[4/5] overflow-hidden rounded-sm cursor-none">
-              <Image 
-                src={d.img}
-                alt={d.name}
-                fill
-                className="object-cover transition-transform duration-[2s] group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-700" />
-              <div className="absolute inset-0 p-12 flex flex-col justify-end">
-                <h3 className="text-white text-3xl font-serif italic mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-700">
-                  {d.name}
-                </h3>
-                <p className="text-white/60 text-sm font-light max-w-xs opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                  {d.desc}
-                </p>
-              </div>
-            </div>
-          </ScrollReveal>
-        ))}
+      <div className="relative z-10 text-center px-6">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.5 }}
+            className="text-white text-sm uppercase tracking-[0.5em] mb-8 font-light"
+          >
+            Sakura Travels
+          </motion.h1>
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 2 }}
+            className="text-6xl md:text-[10rem] font-serif italic text-white mb-8 leading-none"
+          >
+            Where journeys begin.
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 1.5 }}
+            className="text-amber-200/60 uppercase tracking-[0.3em] text-[10px] md:text-xs"
+          >
+            Tanzania — told through travel, memory and adventure.
+          </motion.p>
       </div>
     </section>
   );
 };
 
-const ImmersiveScroll = () => {
-    const { scrollYProgress } = useScroll();
-    const bgOpacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 1, 0]);
-    
+const NarrativeSection = () => (
+    <section className="py-40 px-6 bg-[#020617] text-center">
+        <div className="max-w-4xl mx-auto space-y-12">
+            {[
+                "Tanzania is not a place you visit.",
+                "It is a place that meets you.",
+                "In the wind. In the stillness. In the light."
+            ].map((line, i) => (
+                <motion.p 
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: i * 0.3 }}
+                    className="text-3xl md:text-5xl font-serif italic text-white/90 leading-tight"
+                >
+                    {line}
+                </motion.p>
+            ))}
+        </div>
+    </section>
+);
+
+const DestinationGrid = () => {
+    const destinations = [
+        { name: "Serengeti", cat: "Wildlife", img: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=1000" },
+        { name: "Zanzibar", cat: "Coast", img: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=1000" },
+        { name: "Kilimanjaro", cat: "Peak", img: "https://images.unsplash.com/photo-1589553416260-f586c8f1514f?q=80&w=1000" },
+        { name: "Ruaha", cat: "Uncrowded", img: "https://images.unsplash.com/photo-1534190239940-9ba8944ea261?q=80&w=1000" },
+    ];
+
     return (
-        <section className="relative h-[200vh] bg-[#020617] flex items-center justify-center">
-            <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
-                <motion.div style={{ opacity: bgOpacity }} className="absolute inset-0">
-                    <Image 
-                        src="https://storage.googleapis.com/sakura-web/sakura-travels/mauro-lima-i5mXPKSaG5s-unsplash.jpg"
-                        alt="Background Transition"
-                        fill
-                        className="object-cover grayscale opacity-20"
-                    />
-                </motion.div>
-                
-                <div className="relative z-10 text-center max-w-3xl px-6 space-y-12">
-                    <ScrollReveal>
-                        <p className="text-white text-2xl md:text-4xl font-serif italic leading-relaxed">
-                            “Tanzania is not a place you visit. It is a place that meets you.”
-                        </p>
-                    </ScrollReveal>
-                    <ScrollReveal delay={0.4}>
-                        <p className="text-amber-500/60 uppercase tracking-[0.3em] text-[10px]">
-                            We design moments you will return to in your mind for years.
-                        </p>
-                    </ScrollReveal>
-                </div>
+        <section className="py-20 bg-[#020617] px-6">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+                {destinations.map((d, i) => (
+                    <motion.div 
+                        key={i}
+                        whileHover={{ scale: 0.98 }}
+                        className="relative aspect-[4/5] md:aspect-video overflow-hidden group cursor-pointer"
+                    >
+                        <Image src={d.img} alt={d.name} fill className="object-cover transition-transform duration-[3s] group-hover:scale-110" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
+                        <div className="absolute bottom-10 left-10">
+                            <span className="text-[10px] text-amber-500 uppercase tracking-widest block mb-2">{d.cat}</span>
+                            <h3 className="text-4xl text-white font-serif italic">{d.name}</h3>
+                        </div>
+                    </motion.div>
+                ))}
             </div>
         </section>
-    );
-};
-
-const ServiceUniverse = () => (
-    <section className="py-32 px-6 bg-[#020617] border-y border-white/5">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-24">
-            <ScrollReveal>
-                <div className="space-y-16">
-                    <div>
-                        <h3 className="text-white text-2xl font-serif italic mb-4 flex items-center gap-4">
-                            <Compass className="text-amber-500" size={20} /> Safari & Wildlife
-                        </h3>
-                        <p className="text-slate-400 font-light leading-relaxed">
-                            Private safaris, guided journeys and small-group adventures across Tanzania’s legendary parks — designed for travelers who want to feel, not just see.
-                        </p>
-                    </div>
-                    <div>
-                        <h3 className="text-white text-2xl font-serif italic mb-4 flex items-center gap-4">
-                            <Heart className="text-amber-500" size={20} /> Honeymoons & Romance
-                        </h3>
-                        <p className="text-slate-400 font-light leading-relaxed">
-                            Intimate escapes, island sunsets, quiet villas, and ocean-light mornings shared between two people who will never forget this time.
-                        </p>
-                    </div>
-                </div>
-            </ScrollReveal>
-            <ScrollReveal delay={0.2}>
-                 <div className="space-y-16">
-                    <div>
-                        <h3 className="text-white text-2xl font-serif italic mb-4 flex items-center gap-4">
-                            <Sunset className="text-amber-500" size={20} /> Flights & Transfers
-                        </h3>
-                        <p className="text-slate-400 font-light leading-relaxed">
-                            Local and international routes, Zanzibar ferry bookings, and inter-city transfers — handled through one reliable partner, end-to-end.
-                        </p>
-                    </div>
-                    <div>
-                        <h3 className="text-white text-2xl font-serif italic mb-4 flex items-center gap-4">
-                            <Wind className="text-amber-500" size={20} /> Custom Planning
-                        </h3>
-                        <p className="text-slate-400 font-light leading-relaxed">
-                            If the journey you’re dreaming of doesn’t exist yet — we will design it with you. Hand-crafted with intention.
-                        </p>
-                    </div>
-                </div>
-            </ScrollReveal>
-        </div>
-    </section>
 );
-
-const PlanWithUs = () => (
-    <section className="py-32 px-6 bg-[#020617] relative overflow-hidden">
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-            <ScrollReveal>
-                <h2 className="text-white text-4xl md:text-5xl font-serif italic mb-8">
-                    Tell us the journey that’s been living in your mind.
-                </h2>
-                <p className="text-slate-500 mb-12 max-w-xl mx-auto font-light">
-                    Share what you’re dreaming of — and we will shape it into something real.
-                </p>
-                
-                <form className="space-y-8 text-left max-w-lg mx-auto">
-                    <div className="border-b border-white/10 pb-4">
-                        <label className="text-[10px] text-amber-500 uppercase tracking-widest block mb-2">Full Name</label>
-                        <input type="text" className="bg-transparent w-full text-white outline-none font-light" placeholder="How shall we call you?" />
-                    </div>
-                    <div className="border-b border-white/10 pb-4">
-                        <label className="text-[10px] text-amber-500 uppercase tracking-widest block mb-2">Your Destination</label>
-                        <input type="text" className="bg-transparent w-full text-white outline-none font-light" placeholder="Where do you want to go?" />
-                    </div>
-                    <div className="border-b border-white/10 pb-4">
-                        <label className="text-[10px] text-amber-500 uppercase tracking-widest block mb-2">The Dream</label>
-                        <textarea rows={3} className="bg-transparent w-full text-white outline-none font-light resize-none" placeholder="What kind of experience are you imagining?" />
-                    </div>
-                    <button className="w-full py-6 bg-white text-black font-bold uppercase tracking-widest text-xs hover:bg-amber-500 transition-colors">
-                        Begin Planning
-                    </button>
-                </form>
-            </ScrollReveal>
-        </div>
-    </section>
-);
-
-const FooterPoem = () => (
-    <section className="py-40 px-6 bg-black text-center relative">
-        <Image 
-            src="https://storage.googleapis.com/sakura-web/sakura-travels/jack-balke-JvvfgHodZUc-unsplash.jpg"
-            alt="Dusk Horizon"
-            fill
-            className="object-cover opacity-20"
-        />
-        <div className="relative z-10">
-            <ScrollReveal>
-                <p className="text-white text-2xl font-serif italic mb-4">Tanzania is never finished.</p>
-                <p className="text-amber-500/60 uppercase tracking-[0.3em] text-[10px]">Every time you return — it meets you differently.</p>
-            </ScrollReveal>
-        </div>
-    </section>
-);
+}
 
 export default function TravelPage() {
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <main className="min-h-screen bg-[#020617] text-white selection:bg-amber-500 selection:text-white cursor-none">
-      <CustomCursor />
+    <main className="bg-black min-h-screen text-white selection:bg-amber-500 selection:text-black">
+      <GlobalNavbar />
       <AnimatePresence>
-        {loading && <Preloader onComplete={() => setLoading(false)} />}
+        {loading && (
+            <motion.div exit={{ opacity: 0 }} className="fixed inset-0 z-[200] bg-black flex items-center justify-center">
+                <span className="text-amber-500 font-serif italic text-2xl animate-pulse">Unfolding...</span>
+            </motion.div>
+        )}
       </AnimatePresence>
-      
-      {!loading && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            <GlobalNavbar />
-            <Hero />
-            <DestinationMosaics />
-            <ImmersiveScroll />
-            <ServiceUniverse />
-            <PlanWithUs />
-            <FooterPoem />
-            <GlobalFooter />
-        </motion.div>
-      )}
+
+      <Hero />
+      <NarrativeSection />
+      <DestinationGrid />
+
+      <section className="py-40 bg-[#020617] text-center border-t border-white/5">
+         <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="max-w-2xl mx-auto px-6"
+         >
+            <h2 className="text-4xl font-serif italic mb-12">The art of going somewhere that stays with you.</h2>
+            <button 
+                onClick={() => setModalOpen(true)}
+                className="group inline-flex items-center gap-4 px-12 py-6 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-full hover:bg-amber-500 transition-colors"
+            >
+                Begin Your Story <ArrowRight size={16} />
+            </button>
+         </motion.div>
+      </section>
+
+      <TravelConcierge isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+      <GlobalFooter />
     </main>
   );
 }
