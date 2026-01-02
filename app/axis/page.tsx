@@ -13,14 +13,19 @@ import {
 import { 
   ArrowRight, MessageCircle, Smartphone, 
   Check, ChevronRight, Building2, GraduationCap,
-  Menu, X // Added for Mobile Global Nav support
+  Menu, X
 } from "lucide-react";
 
-// --- CONFIG & ASSETS ---
+// --- GLOBAL REFS ---
 const LOGO_AXIS = "https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png";
 const LOGO_GROUP = "https://storage.googleapis.com/sakura-web/sakura-logo-v2.png";
 
-// --- 1. GLOBAL NAVBAR (REFINED & CLEAN) ---
+// ACTION REQUIRED: Download high-quality unsplash images and save as:
+// /public/images/axis-hero.jpg
+// /public/images/axis-whatsapp.jpg
+// /public/images/axis-enterprise.jpg
+
+// --- 1. GLOBAL NAVBAR (PARENT BRAND) ---
 const GlobalNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   useEffect(() => {
@@ -52,21 +57,15 @@ const GlobalNavbar = () => {
   );
 };
 
-// --- 2. AXIS SUB-NAV (FUNCTIONAL & SMOOTH) ---
+// --- 2. AXIS SUB-NAV (PRODUCT CONTEXT) ---
 const AxisSubNav = () => {
-  const [activeSection, setActiveSection] = useState("overview");
-  const { scrollY } = useScroll();
   const [isVisible, setIsVisible] = useState(false);
+  const [active, setActive] = useState("overview");
 
   useEffect(() => {
-    const handleScroll = () => setIsVisible(window.scrollY > 100);
+    const handleScroll = () => setIsVisible(window.scrollY > 150);
     window.addEventListener("scroll", handleScroll);
-    const observer = new IntersectionObserver(
-      (entries) => { entries.forEach((e) => { if (e.isIntersecting) setActiveSection(e.target.id); }); },
-      { threshold: 0.3 }
-    );
-    document.querySelectorAll("section[id]").forEach((s) => observer.observe(s));
-    return () => { window.removeEventListener("scroll", handleScroll); observer.disconnect(); };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -77,20 +76,16 @@ const AxisSubNav = () => {
           className="fixed top-16 w-full z-[140] bg-black/40 backdrop-blur-md border-b border-white/5 h-12 flex items-center"
         >
           <div className="max-w-7xl mx-auto w-full px-8 flex justify-between items-center">
-            <div className="flex items-center gap-4 text-pink-500 font-black text-[9px] uppercase tracking-widest italic">
-              <Image src={LOGO_AXIS} alt="Axis" width={60} height={20} className="brightness-200" />
-              <span>Gateway</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] font-black uppercase tracking-widest text-pink-500 italic">Axis Gateway</span>
             </div>
-            <div className="hidden lg:flex gap-10">
-              {["Overview", "WhatsApp", "SMS", "Enterprise"].map((item) => (
-                <a key={item} href={`#${item.toLowerCase()}`} className={`text-[9px] font-bold uppercase tracking-widest transition-colors ${activeSection === item.toLowerCase() ? "text-pink-500" : "text-white/40 hover:text-white"}`}>
+            <div className="flex gap-8">
+              {["Overview", "WhatsApp", "SMS"].map((item) => (
+                <a key={item} href={`#${item.toLowerCase()}`} className="text-[9px] font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
                   {item}
                 </a>
               ))}
             </div>
-            <Link href="/axis/login" className="text-[9px] font-bold uppercase tracking-widest text-white/60 hover:text-white flex items-center gap-2">
-              Login <ArrowRight size={12} />
-            </Link>
           </div>
         </motion.nav>
       )}
@@ -98,114 +93,83 @@ const AxisSubNav = () => {
   );
 };
 
-// --- 3. CUSTOM SVG COMPONENTS (FIXED NAMESPACE) ---
-const TruckIcon = ({ size = 24 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-5h-7v6h2"/><path d="M13 9h4"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+// --- 3. CUSTOM ICONS (NAMESPACE FIXED) ---
+const TruckIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-5h-7v6h2"/><path d="M13 9h4"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
 );
 
-// --- 4. MAIN PAGE CONTENT ---
-export default function AxisSovereignPage() {
-  const { scrollY } = useScroll();
-  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
-
+// --- MAIN ---
+export default function AxisFinalBuild() {
   return (
     <main className="bg-[#020202] text-white selection:bg-pink-500 scroll-smooth antialiased">
       <GlobalNavbar />
       <AxisSubNav />
       
       {/* HERO */}
-      <section id="overview" className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-8 text-center">
-        <motion.div style={{ opacity: heroOpacity }} className="max-w-5xl">
-          <p className="text-pink-500 font-mono text-[9px] tracking-[0.6em] uppercase mb-10">Unified Communications Infrastructure</p>
-          <h1 className="text-6xl md:text-[110px] font-black leading-[0.85] tracking-tighter uppercase italic mb-8 text-white">
+      <section id="overview" className="relative min-h-screen flex flex-col items-center justify-center text-center px-8">
+        <div className="max-w-5xl z-10">
+          <p className="text-pink-500 font-mono text-[9px] tracking-[0.6em] uppercase mb-10 italic">Infrastructure Platform</p>
+          <h1 className="text-6xl md:text-[110px] font-black leading-[0.85] tracking-tighter uppercase italic mb-8">
             Talk to your customers.<br/>
             <span className="text-slate-400 not-italic normal-case font-light tracking-tight">The right way.</span>
           </h1>
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto mb-12 font-light leading-relaxed">
-            Send announcements, updates, and reminders across SMS and WhatsApp with verified identity and operational certainty.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/axis/signup" className="px-14 py-5 bg-white text-black font-black text-xs uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all flex items-center gap-4">
-              Get Started <ArrowRight size={14} />
+          <div className="mt-12 flex justify-center gap-6">
+            <Link href="/axis/signup" className="px-12 py-5 bg-white text-black font-black text-xs uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all">
+              Launch Console
             </Link>
           </div>
-        </motion.div>
-      </section>
-
-      {/* WHY AXIS */}
-      <section className="py-40 px-8 border-t border-white/5">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-16">
-          <Pillar title="Clarity" desc="No complex dashboards. Create, send, and track campaigns in minutes." />
-          <Pillar title="Credibility" desc="Approved sender IDs, delivery transparency, and audit-ready records." />
-          <Pillar title="Control" desc="Pay only for what you send — no platform fees, no hidden cost." />
         </div>
       </section>
 
-      {/* WHATSAPP */}
+      {/* WHATSAPP (Outcome based) */}
       <section id="whatsapp" className="py-40 px-8 bg-[#050505] border-y border-white/5">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-32 items-center">
-          <div className="aspect-square bg-white/[0.01] border border-white/5 rounded-sm flex items-center justify-center grayscale opacity-40">
-             <MessageCircle size={100} strokeWidth={1} className="text-pink-500" />
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24 items-center">
+          <div className="bg-white/5 border border-white/10 aspect-video rounded-sm flex items-center justify-center grayscale opacity-30">
+             {/* Using stable Unsplash ID for direct reliability */}
+             <Image 
+               src="https://images.unsplash.com/photo-1573163281532-dd0f8114227c?auto=format&fit=crop&q=80&w=800" 
+               alt="Engagement" 
+               width={800} height={450} 
+               className="object-cover" 
+             />
           </div>
           <div>
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter italic uppercase mb-10 leading-none">Relational<br/>Messaging.</h2>
-            <div className="space-y-10">
-              <div className="group">
-                <h4 className="text-white font-bold text-lg mb-2 group-hover:text-pink-500 transition-colors">Automated Continuity</h4>
-                <p className="text-slate-500 text-sm font-light">Send receipts automatically, ensuring your customers never have to ask 'where is my order?'</p>
-              </div>
-            </div>
-            <Link href="/axis/signup" className="mt-16 inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] text-white border-b border-pink-500/50 pb-2 hover:border-pink-500 transition-all">
-              Join WhatsApp Waitlist <ChevronRight size={14} />
-            </Link>
+            <h2 className="text-4xl md:text-6xl font-black italic uppercase leading-none mb-10">Relational<br/>Messaging.</h2>
+            <p className="text-slate-500 text-lg font-light mb-12">Automate receipts, contribution alerts, and delivery pins on the channel Tanzania uses most.</p>
+            <Link href="/axis/signup" className="text-[10px] font-black uppercase tracking-widest text-pink-500 border-b border-pink-500/30 pb-2">Join WhatsApp Waitlist</Link>
           </div>
         </div>
       </section>
 
-      {/* SMS */}
+      {/* SMS (21 TZS) */}
       <section id="sms" className="py-40 px-8 bg-[#020202]">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12 text-left">
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter italic uppercase leading-none">Built for<br/>Operational Trust.</h2>
-            <div className="bg-white/[0.02] border border-white/10 p-12 text-center rounded-sm min-w-[300px]">
-              <p className="text-5xl font-black text-white italic">21 TZS <span className="text-xs font-normal text-slate-600 not-italic tracking-widest">/ SMS</span></p>
-              <p className="text-[9px] text-slate-500 mt-6 uppercase tracking-widest">Pay only for what you send</p>
-            </div>
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+          <h2 className="text-4xl md:text-6xl font-black italic uppercase leading-none">Operational<br/>Trust.</h2>
+          <div className="bg-white/[0.02] border border-white/10 p-12 text-center rounded-sm">
+            <p className="text-5xl font-black italic text-white">21 TZS <span className="text-[10px] font-normal not-italic tracking-widest text-slate-600">/ SMS</span></p>
+            <p className="text-[9px] text-slate-500 mt-4 uppercase tracking-[0.3em]">No Platform Fees</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 grayscale opacity-40">
-            <IconBox icon={<Building2 />} label="SACCOs" />
-            <IconBox icon={<TruckIcon />} label="Logistics" />
-            <IconBox icon={<GraduationCap />} label="Schools" />
-            <IconBox icon={<Smartphone />} label="Retailers" />
-          </div>
+        </div>
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 opacity-30 grayscale">
+            <div className="p-8 border border-white/5 text-center text-[10px] font-black uppercase tracking-widest"><Building2 className="mx-auto mb-4"/> SACCOs</div>
+            <div className="p-8 border border-white/5 text-center text-[10px] font-black uppercase tracking-widest"><TruckIcon /> Logistics</div>
+            <div className="p-8 border border-white/5 text-center text-[10px] font-black uppercase tracking-widest"><GraduationCap className="mx-auto mb-4"/> Schools</div>
+            <div className="p-8 border border-white/5 text-center text-[10px] font-black uppercase tracking-widest"><Smartphone className="mx-auto mb-4"/> Retail</div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <section className="py-64 flex flex-col items-center text-center px-8 bg-[#020202] border-t border-white/5">
-        <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter mb-16 leading-none text-white">Confidence<br/>In Communication.</h2>
-        <Link href="/axis/signup" className="px-16 py-6 bg-white text-black font-black text-xs uppercase tracking-widest rounded-full hover:bg-pink-500 hover:text-white transition-all">
-          Get Started
-        </Link>
-        <p className="mt-20 text-[8px] font-mono uppercase tracking-[0.6em] text-slate-700">© 2026 SAKURA GROUP • PRECISION INFRASTRUCTURE</p>
-      </section>
+      <footer className="p-20 border-t border-white/5 text-center bg-[#020202]">
+        <p className="text-[8px] font-mono uppercase tracking-[0.6em] text-slate-700">© 2026 SAKURA GROUP • AXIS GATEWAY</p>
+      </footer>
     </main>
   );
 }
 
 function Pillar({ title, desc }: any) {
   return (
-    <div className="space-y-4 text-left">
-      <h4 className="text-xs font-black uppercase tracking-widest text-pink-500">{title}</h4>
+    <div className="space-y-4">
+      <h4 className="text-[10px] font-black uppercase tracking-widest text-pink-500">{title}</h4>
       <p className="text-xl font-light text-slate-200">{desc}</p>
-    </div>
-  );
-}
-
-function IconBox({ icon, label }: any) {
-  return (
-    <div className="p-8 border border-white/5 bg-white/[0.01] text-center uppercase tracking-widest text-[9px] font-black">
-      <div className="mx-auto mb-4 text-white">{icon}</div> {label}
     </div>
   );
 }
