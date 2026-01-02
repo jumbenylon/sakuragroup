@@ -1,9 +1,9 @@
-# 1. Base Image
-FROM node:18-alpine AS base
+# 1. Base Image - Using Debian Slim for native OpenSSL 3.0 support
+FROM node:18-slim AS base
+RUN apt-get update && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
 
 # 2. Dependencies
 FROM base AS deps
-RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY prisma ./prisma/
 COPY package.json package-lock.json* ./
@@ -24,17 +24,15 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Essential libraries for Prisma on Alpine
-RUN apk add --no-cache openssl
+# Ensure OpenSSL is present in the final image
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN groupadd --gid 1001 nodejs
+RUN useradd --uid 1001 --gid nodejs --shell /bin/bash --create-home nextjs
 
-# Copy Prisma files and generated client
+# Copy essential artifacts
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules ./node_modules
-
-# Copy Standalone Build
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
@@ -43,5 +41,6 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 
-# Using npx ensures we use the version of prisma installed in node_modules
-CMD ["/bin/sh", "-c", "npx prisma db push --accept-data-loss && node server.js"]
+# We prioritize server boot to pass health checks. 
+# Tables will be synced via a one-time push.
+CMD ["node", "server.js"]
