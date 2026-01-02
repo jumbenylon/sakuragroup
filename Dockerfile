@@ -31,18 +31,29 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Note: Ensure 'binaryTargets' in schema.prisma includes "linux-musl"
 RUN npm run build
 
-# 4. Runner
+# 4. Runner (Production)
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# CRITICAL: Install OpenSSL in the Runner stage (Prisma needs this to talk to Neon)
+RUN apk add --no-cache openssl
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# OPTIONAL: If you create a 'public' folder later (favicons, etc.), uncomment this:
-# COPY --from=builder /app/public ./public
+# --- AUTO-SYNC SETUP ---
+
+# 1. Copy the Schema (Required for 'prisma db push')
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+
+# 2. Install Prisma CLI globally so we can run migration commands
+#    (We do this before switching users to ensure permissions)
+RUN npm install -g prisma
+
+# -----------------------
 
 # Copy the standalone build artifacts
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
@@ -53,4 +64,6 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 
-CMD ["node", "server.js"]
+# CHANGED: The "Self-Healing" Start Command
+# Attempts to push the schema to Neon. If successful, starts the server.
+CMD ["/bin/sh", "-c", "prisma db push --accept-data-loss && node server.js"]
