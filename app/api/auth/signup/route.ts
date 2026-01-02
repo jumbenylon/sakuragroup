@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { hash } from "@node-rs/argon2";
 import prisma from "@/lib/prisma"; // Updated to use our Singleton
 import { Resend } from "resend";
 
