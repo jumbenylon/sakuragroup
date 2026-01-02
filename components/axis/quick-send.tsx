@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 
 export function QuickSendWidget() {
-  const [senderId, setSenderId] = useState("SAKURA"); 
+  const [senderId, setSenderId] = useState("sakurahost"); 
   const [recipients, setRecipients] = useState("");
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
