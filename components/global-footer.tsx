@@ -152,12 +152,17 @@ export function GlobalFooter() {
         </div>
       </div>
 
-      {/* MASSIVE BACKGROUND TEXT */}
-      <div className="absolute bottom-0 left-0 right-0 pointer-events-none select-none flex justify-center overflow-hidden opacity-[0.03]">
-        <h1 className="text-[15vw] font-black text-white leading-none tracking-tighter whitespace-nowrap translate-y-[20%]">
-            SAKURA GROUP
-        </h1>
-      </div>
+      {/* MASSIVE BACKGROUND TEXT - REFINED */}
+<div className="absolute bottom-0 left-0 right-0 pointer-events-none select-none flex justify-center overflow-hidden z-0">
+  <motion.h1 
+    initial={{ y: "40%" }}
+    whileInView={{ y: "30%" }}
+    transition={{ duration: 2, ease: "easeOut" }}
+    className="text-[22vw] font-black text-white leading-none tracking-tighter whitespace-nowrap opacity-[0.02] mix-blend-overlay select-none"
+  >
+    SAKURA
+  </motion.h1>
+</div>
     </footer>
   );
 }
