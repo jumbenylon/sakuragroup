@@ -1,9 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // This tells Next.js NOT to bundle argon2, keeping the binary intact
-  serverExternalPackages: ["@node-rs/argon2"],
+  // FOR NEXT.JS 14.1.0, THIS MUST BE INSIDE EXPERIMENTAL
+  experimental: {
+    serverExternalPackages: ["@node-rs/argon2"],
+  },
+  
   output: "standalone",
   reactStrictMode: true,
+  poweredByHeader: false,
+  
   images: {
     remotePatterns: [
       {
@@ -13,7 +18,6 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'storage.googleapis.com',
-        port: '',
         pathname: '/sakura-web/**',
       },
     ],
