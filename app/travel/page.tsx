@@ -99,7 +99,7 @@ const Hero = () => {
       {/* Background: Serengeti Sunrise (Parallax) */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <Image 
-            src="https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=2000&auto=format&fit=crop"
+            src="https://storage.googleapis.com/sakura-web/sakura-travels/jeremy-pelletier-MoPM7OM3D18-unsplash.jpg"
             alt="Serengeti Sunrise"
             fill
             className="object-cover"
@@ -141,10 +141,10 @@ const Hero = () => {
 
 const DestinationMosaics = () => {
   const destinations = [
-    { name: "The Serengeti", desc: "Where the Earth Still Roams Wild", img: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=1000" },
-    { name: "Zanzibar", desc: "Salt Wind, Old Stone, Infinite Blue", img: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=1000" },
-    { name: "Kilimanjaro", desc: "The Mountain That Waits For You", img: "https://images.unsplash.com/photo-1589553416260-f586c8f1514f?q=80&w=1000" },
-    { name: "Southern Circuit", desc: "Untouched, Uncrowded, Unrepeatable", img: "https://images.unsplash.com/photo-1534190239940-9ba8944ea261?q=80&w=1000" },
+    { name: "The Serengeti", desc: "Where the Earth Still Roams Wild", img: "https://storage.googleapis.com/sakura-web/sakura-travels/mark-attree-aJqtl7LLcLs-unsplash%20(1).jpg" },
+    { name: "Zanzibar", desc: "Salt Wind, Old Stone, Infinite Blue", img: "https://storage.googleapis.com/sakura-web/sakura-travels/moses-londo-vxo_PFcaVAw-unsplash%20(1).jpg" },
+    { name: "Kilimanjaro", desc: "The Mountain That Waits For You", img: "https://storage.googleapis.com/sakura-web/sakura-travels/gabriel-schumacher-U17K57Kwi0U-unsplash.jpg" },
+    { name: "Southern Circuit", desc: "Untouched, Uncrowded, Unrepeatable", img: "https://storage.googleapis.com/sakura-web/sakura-travels/colin-watts-DVKlFxioOnc-unsplash.jpg" },
   ];
 
   return (
@@ -185,7 +185,7 @@ const ImmersiveScroll = () => {
             <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
                 <motion.div style={{ opacity: bgOpacity }} className="absolute inset-0">
                     <Image 
-                        src="https://images.unsplash.com/photo-1534190239940-9ba8944ea261?q=80&w=2000"
+                        src="https://storage.googleapis.com/sakura-web/sakura-travels/mauro-lima-i5mXPKSaG5s-unsplash.jpg"
                         alt="Background Transition"
                         fill
                         className="object-cover grayscale opacity-20"
@@ -292,7 +292,7 @@ const PlanWithUs = () => (
 const FooterPoem = () => (
     <section className="py-40 px-6 bg-black text-center relative">
         <Image 
-            src="https://images.unsplash.com/photo-1502920514313-525810023759?q=80&w=2000"
+            src="https://storage.googleapis.com/sakura-web/sakura-travels/jack-balke-JvvfgHodZUc-unsplash.jpg"
             alt="Dusk Horizon"
             fill
             className="object-cover opacity-20"
