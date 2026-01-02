@@ -1,4 +1,4 @@
-// v2.5 — The Final Production Schema (Semantic Enums & Immutable Audit)
+// v2.6 — Sakura Axis Enterprise Engine (Final Production)
 
 generator client {
   provider      = "prisma-client-js"
@@ -9,6 +9,8 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// --- ENUMS (The Guardrails) ---
 
 enum Role {
   USER
@@ -37,12 +39,13 @@ enum MessageStatus {
   FAILED
 }
 
-// Dedicated Enum for Brand Approval
 enum SenderStatus {
   PENDING
   APPROVED
   REJECTED
 }
+
+// --- MODELS (The Engine) ---
 
 model User {
   id        String        @id @default(uuid())
@@ -50,7 +53,7 @@ model User {
   password  String
   role      Role          @default(USER)
   status    AccountStatus @default(ACTIVE)
-  balance   Int           @default(0)
+  balance   Int           @default(0) // TZS Minor Units (Cents)
   smsRate   Int           @default(25)
 
   senderIds SenderId[]
@@ -78,18 +81,18 @@ model ApiKey {
   id        String   @id @default(uuid())
   key       String   @unique 
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 
 model SenderId {
   id          String       @id @default(uuid())
   name        String
-  status      SenderStatus @default(PENDING) // Semantic Enum
+  status      SenderStatus @default(PENDING)
   userId      String
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Audit trail for Admin actions
+  // Administrative Audit Trail
   approvedBy  String?
   approvedAt  DateTime?
   rejectedBy  String?
@@ -108,17 +111,19 @@ model Campaign {
   userId           String
   user             User           @relation(fields: [userId], references: [id])
   
+  // Link remains, but snapshot is permanent
   senderId         String?
   sender           SenderId?      @relation(fields: [senderId], references: [id], onDelete: SetNull)
 
-  senderName       String         // Audit snapshot
+  // Immutable Snapshot (Auditing)
+  senderName       String         
   metaIp           String?
   metaUa           String?
 
   status           CampaignStatus @default(DRAFT)
   totalRecipients  Int
   totalSegments    Int
-  totalCost        Int            
+  totalCost        Int            // minor units
   
   messages         MessageLog[]
   createdAt        DateTime       @default(now())
@@ -135,7 +140,7 @@ model MessageLog {
   senderId         String?
   sender           SenderId?     @relation(fields: [senderId], references: [id], onDelete: SetNull)
   
-  senderName       String?
+  senderName       String?       // Immutable Snapshot
 
   recipient        String
   message          String
