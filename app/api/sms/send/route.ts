@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendBeemSMS } from "@/lib/beem";
-import { prisma } from "@/lib/prisma"; // IMPORT THE DB
+import prisma from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
