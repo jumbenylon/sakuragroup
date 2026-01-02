@@ -1,4 +1,4 @@
-// v1.3 - Final Unified Schema
+// v1.5 - Final Corrected Schema
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -17,24 +17,35 @@ model User {
   status        String       @default("PENDING")
   balance       Float        @default(0.0)
   smsRate       Int          @default(25)
-  
-  // Relationships
   contacts      Contact[]
   messages      MessageLog[]
-  apiKeys       ApiKey[]     // Added this missing link
-  
+  apiKeys       ApiKey[]
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 }
 
 model ApiKey {
   id        String   @id @default(uuid())
-  key       String   @unique // sk_live_...
-  name      String?  
+  key       String   @unique 
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  lastUsed  DateTime?
   createdAt DateTime @default(now())
+}
+
+model MessageLog {
+  id           String   @id @default(uuid())
+  userId       String?  
+  user         User?    @relation(fields: [userId], references: [id])
+  recipient    String
+  message      String
+  status       String   
+  costToAdmin  Int      @default(19)
+  costToTenant Int      @default(25)
+  segmentCount Int      @default(1)
+  providerId   String?  
+  errorCode    Int?
+  errorReason  String?
+  sentAt       DateTime @default(now())
 }
 
 model Contact {
@@ -48,17 +59,4 @@ model Contact {
   updatedAt DateTime @updatedAt
 
   @@unique([phone, userId])
-}
-
-model MessageLog {
-  id           String   @id @default(uuid())
-  userId       String?  
-  user         User?    @relation(fields: [userId], references: [id])
-  recipient    String
-  message      String
-  status       String   
-  costToAdmin  Int      @default(19)
-  costToTenant Int      @default(25)
-  providerId   String?  
-  sentAt       DateTime @default(now())
 }
