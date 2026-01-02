@@ -1,30 +1,22 @@
-// v1.7 - Production Ready
-generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+// v2.1 — Refined Enterprise Messaging Engine
 
 model User {
-  id            String       @id @default(uuid())
-  email         String       @unique
-  password      String       
-  role          String       @default("USER") 
-  status        String       @default("PENDING")
-  balance       Float        @default(0.0)
-  smsRate       Int          @default(25)
-  
-  sessions      Session[]
-  apiKeys       ApiKey[]
-  messages      MessageLog[]
-  contacts      Contact[]
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      String   @default("USER")
+  status    String   @default("ACTIVE")
+  balance   Int      @default(0) // Stored in TZS minor units
+  smsRate   Int      @default(25)
 
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  senderIds SenderId[]
+  campaigns Campaign[]
+  messages  MessageLog[]
+  apiKeys   ApiKey[]
+  sessions  Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Session {
@@ -46,29 +38,62 @@ model ApiKey {
   createdAt DateTime @default(now())
 }
 
-model MessageLog {
-  id           String   @id @default(uuid())
-  userId       String?  
-  user         User?    @relation(fields: [userId], references: [id])
-  recipient    String
-  message      String
-  status       String   
-  costToAdmin  Int      @default(19)
-  costToTenant Int      @default(25)
-  segmentCount Int      @default(1)
-  providerId   String?  
-  sentAt       DateTime @default(now())
+model SenderId {
+  id          String   @id @default(uuid())
+  name        String
+  status      String   @default("PENDING")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  approvedBy  String?
+  approvedAt  DateTime?
+  rejectedBy  String?
+  rejectedAt  DateTime?
+
+  campaigns   Campaign[]
+  messages    MessageLog[]
+
+  createdAt   DateTime @default(now())
+
+  @@unique([name, userId]) // Prevents duplicate requests from same user
 }
 
-model Contact {
-  id        String   @id @default(uuid())
-  phone     String
-  firstName String?
-  lastName  String?
-  userId    String?  
-  user      User?    @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Campaign {
+  id               String       @id @default(uuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id])
+  senderId         String
+  sender           SenderId     @relation(fields: [senderId], references: [id])
 
-  @@unique([phone, userId])
+  status           String       // DRAFT | QUEUED | PROCESSING | COMPLETE
+  totalRecipients  Int
+  totalSegments    Int
+  totalCost        Int          // minor units
+  
+  messages         MessageLog[]
+  createdAt        DateTime     @default(now())
+}
+
+model MessageLog {
+  id               String    @id @default(uuid())
+  campaignId       String?   // Optional for single API sends
+  campaign         Campaign? @relation(fields: [campaignId], references: [id])
+  userId           String
+  user             User      @relation(fields: [userId], references: [id])
+  senderId         String?
+  sender           SenderId? @relation(fields: [senderId], references: [id])
+
+  recipient        String
+  message          String
+  segmentCount     Int
+  costToTenant     Int       // What the reseller paid
+  costToAdmin      Int       @default(19) // What you paid (for margin tracking)
+  status           String    // PENDING | SENT | FAILED
+
+  providerMessageId String?
+  providerError      String?
+
+  scheduledAt      DateTime?
+  sentAt           DateTime?
+  createdAt        DateTime  @default(now())
 }
