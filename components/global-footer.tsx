@@ -3,11 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { 
   Instagram, Linkedin, Twitter, 
   MapPin, Phone, Mail, ArrowUp,
-  Send, Command, Globe, ShieldCheck
+  Send, Command, ShieldCheck
 } from "lucide-react";
 
 export function GlobalFooter() {
@@ -20,14 +19,14 @@ export function GlobalFooter() {
     { name: "Sakura Logistics", href: "/logistics" },
     { name: "Axis by Sakura", href: "/axis" },
     { name: "Xhule — Learn", href: "/learn" },
-    { name: "Industrial (RCS)", href: "/industrial" },
+    { name: "Roof Cleaning (RCS)", href: "/roofcleaning" },
   ];
 
   const secondaryLinks = [
     { name: "SakuraHost", href: "/hosting" },
     { name: "Sakura Agency", href: "/marketing" },
     { name: "Sakura Travels", href: "/travel" },
-    { name: "Think Loko", href: "/media" },
+    { name: "Think Loko", href: "/thinkloko" },
   ];
 
   const insights = [
@@ -43,18 +42,15 @@ export function GlobalFooter() {
 
   return (
     <footer className="bg-[#050912] text-white pt-24 pb-8 px-6 border-t border-white/5 relative overflow-hidden">
-      {/* BACKGROUND DECOR */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none opacity-20" />
-      
       <div className="max-w-7xl mx-auto relative z-10">
         
-        {/* 1. THE INTEL BAR (NEWSLETTER) - FULL WIDTH */}
+        {/* NEWSLETTER INTEL BAR */}
         <div className="bg-[#0B1120] rounded-3xl p-8 md:p-12 mb-24 flex flex-col lg:flex-row justify-between items-center gap-10 border border-white/5 shadow-2xl backdrop-blur-md">
             <div className="max-w-xl text-center lg:text-left">
                 <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-4">
                     Signup for latest news and insights from Sakura Group
                 </h2>
-                <p className="text-slate-500 text-sm font-light">Join 2,000+ professionals receiving weekly ecosystem intelligence.</p>
+                <p className="text-slate-500 text-sm font-light">Join the intelligence feed for updates across the ecosystem.</p>
             </div>
             <div className="flex w-full lg:w-auto gap-3 items-center">
                 <div className="relative flex-grow lg:w-96">
@@ -65,16 +61,13 @@ export function GlobalFooter() {
                         className="w-full bg-[#050912] border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-sm focus:border-emerald-500 outline-none transition-all placeholder:text-slate-700"
                     />
                 </div>
-                <button className="px-10 py-5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl transition-all hover:scale-105 shadow-xl shadow-emerald-600/20">
+                <button className="px-10 py-5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-emerald-600/20">
                     Subscribe
                 </button>
             </div>
         </div>
 
-        {/* 2. MAIN NAV GRID - SPREAD ACROSS 12 COLUMNS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 mb-24">
-          
-          {/* BRAND COLUMN (SPAN 3) */}
           <div className="lg:col-span-3 space-y-8">
             <Link href="/" className="inline-block relative w-44 h-12">
               <Image 
@@ -86,41 +79,30 @@ export function GlobalFooter() {
             </Link>
             <p className="text-slate-400 text-sm font-light leading-relaxed">
               We create digital and physical experiences for brands and companies using technology. 
-              Engineering the rails of African commerce with functional purity.
+              Engineering the rails of African commerce.
             </p>
             <div className="flex gap-5">
                 {[
-                    { icon: Instagram, url: "https://instagram.com/sakuragroup.tz", label: "Instagram" },
-                    { icon: Linkedin, url: "#", label: "LinkedIn" },
-                    { icon: Twitter, url: "#", label: "Twitter" }
+                    { icon: Instagram, url: "https://instagram.com/sakuragroup.tz" },
+                    { icon: Linkedin, url: "#" },
+                    { icon: Twitter, url: "#" }
                 ].map((social, i) => (
-                    <a 
-                        key={i} 
-                        href={social.url} 
-                        aria-label={social.label}
-                        className="p-3 rounded-xl bg-white/5 border border-white/5 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/30 transition-all"
-                    >
+                    <a key={i} href={social.url} className="p-3 rounded-xl bg-white/5 border border-white/5 text-slate-400 hover:text-emerald-400 transition-all">
                         <social.icon size={20} />
                     </a>
                 ))}
             </div>
           </div>
 
-          {/* INSIGHTS COLUMN (SPAN 3) */}
           <div className="lg:col-span-3 space-y-10">
             <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 flex items-center gap-2">
                 <Command size={12} className="text-emerald-500" /> Latest Insights
             </h4>
             <div className="space-y-8">
                 {insights.map((item, i) => (
-                    <Link key={i} href="/media" className="flex gap-5 group">
+                    <Link key={i} href="/thinkloko" className="flex gap-5 group">
                         <div className="relative w-20 h-20 shrink-0 rounded-2xl overflow-hidden border border-white/10">
-                            <Image 
-                                src={item.img} 
-                                alt={item.title} 
-                                fill 
-                                className="object-cover transition-transform group-hover:scale-110 duration-700" 
-                            />
+                            <Image src={item.img} alt={item.title} fill className="object-cover transition-transform group-hover:scale-110 duration-700" />
                         </div>
                         <p className="text-sm font-bold text-slate-300 group-hover:text-emerald-400 transition-colors leading-tight self-center">
                             {item.title}
@@ -130,7 +112,6 @@ export function GlobalFooter() {
             </div>
           </div>
 
-          {/* ECOSYSTEM COLUMN (SPAN 4) - TWO COLUMNS INSIDE */}
           <div className="lg:col-span-3">
             <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-10">Ecosystem</h4>
             <div className="grid grid-cols-2 gap-8">
@@ -156,7 +137,6 @@ export function GlobalFooter() {
             </div>
           </div>
 
-          {/* CONTACT COLUMN (SPAN 2) */}
           <div className="lg:col-span-3">
             <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-10">Global HQ</h4>
             <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] space-y-8">
@@ -183,27 +163,15 @@ export function GlobalFooter() {
           </div>
         </div>
 
-        {/* 3. BOTTOM UTILITY BAR */}
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-6 text-[10px] font-mono tracking-widest text-slate-600 uppercase">
              <span>© {new Date().getFullYear()} Sakura Group</span>
              <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
-             <div className="flex items-center gap-2">
-                <ShieldCheck size={12} className="text-emerald-500/50" />
-                <span>Security Verified</span>
-             </div>
+             <span>Ecosystem Active</span>
           </div>
-
-          <div className="flex items-center gap-8 text-[10px] font-mono tracking-widest text-slate-600 uppercase">
-             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-             <button 
-                onClick={scrollToTop}
-                className="group flex items-center gap-3 text-white font-black bg-white/5 py-3 px-6 rounded-full border border-white/10 hover:border-emerald-500/50 transition-all"
-             >
-                Return to Summit <ArrowUp size={14} className="group-hover:-translate-y-1 transition-transform" />
-             </button>
-          </div>
+          <button onClick={scrollToTop} className="group flex items-center gap-3 text-white font-black bg-white/5 py-3 px-6 rounded-full border border-white/10 hover:border-emerald-500/50 transition-all text-[10px] uppercase tracking-widest">
+            Return to Summit <ArrowUp size={14} className="group-hover:-translate-y-1 transition-transform" />
+          </button>
         </div>
       </div>
     </footer>
