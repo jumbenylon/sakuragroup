@@ -1,25 +1,39 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { crypto } from "crypto";
+import { randomBytes } from "crypto"; // Specific import for better tree-shaking
 
 export async function POST(req: Request) {
-  // Logic to get session/userId goes here (e.g., via NextAuth)
-  const userId = "extract-from-session"; 
+  try {
+    // Note: In a real multi-tenant app, you'd get this from your Auth session
+    // For now, we are assuming the body contains the requester info or it's a placeholder
+    const { userId } = await req.json(); 
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (user?.status !== "ACTIVE") {
-    return NextResponse.json({ error: "Account not active" }, { status: 403 });
+    if (!userId) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    
+    if (!user || user.status !== "ACTIVE") {
+      return NextResponse.json({ 
+        error: "Access Denied. Account must be ACTIVE to generate keys." 
+      }, { status: 403 });
+    }
+
+    // Generate a secure, high-entropy key
+    const rawKey = `sk_live_${randomBytes(24).toString("hex")}`;
+    
+    await prisma.apiKey.create({
+      data: {
+        key: rawKey, 
+        userId: userId,
+        name: "Default API Key",
+      },
+    });
+
+    return NextResponse.json({ key: rawKey });
+  } catch (error: any) {
+    console.error("Key Generation Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
-
-  const rawKey = `sk_live_${crypto.randomBytes(24).toString("hex")}`;
-  
-  await prisma.apiKey.create({
-    data: {
-      key: rawKey, // In production, consider hashing this before storage
-      userId: userId,
-      name: "Default API Key",
-    },
-  });
-
-  return NextResponse.json({ key: rawKey });
 }
