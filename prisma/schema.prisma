@@ -1,4 +1,4 @@
-// v2.4 — Enterprise Hardened (Enums & Referential Integrity)
+// v2.5 — The Final Production Schema (Semantic Enums & Immutable Audit)
 
 generator client {
   provider      = "prisma-client-js"
@@ -37,13 +37,20 @@ enum MessageStatus {
   FAILED
 }
 
+// Dedicated Enum for Brand Approval
+enum SenderStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id        String        @id @default(uuid())
   email     String        @unique
   password  String
   role      Role          @default(USER)
   status    AccountStatus @default(ACTIVE)
-  balance   Int           @default(0) // TZS Minor Units
+  balance   Int           @default(0)
   smsRate   Int           @default(25)
 
   senderIds SenderId[]
@@ -76,12 +83,13 @@ model ApiKey {
 }
 
 model SenderId {
-  id          String        @id @default(uuid())
+  id          String       @id @default(uuid())
   name        String
-  status      MessageStatus @default(PENDING) // Reusing PENDING/SENT/FAILED as proxy for Approval
+  status      SenderStatus @default(PENDING) // Semantic Enum
   userId      String
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Audit trail for Admin actions
   approvedBy  String?
   approvedAt  DateTime?
   rejectedBy  String?
@@ -103,14 +111,14 @@ model Campaign {
   senderId         String?
   sender           SenderId?      @relation(fields: [senderId], references: [id], onDelete: SetNull)
 
-  senderName       String
+  senderName       String         // Audit snapshot
   metaIp           String?
   metaUa           String?
 
   status           CampaignStatus @default(DRAFT)
   totalRecipients  Int
   totalSegments    Int
-  totalCost        Int            // minor units
+  totalCost        Int            
   
   messages         MessageLog[]
   createdAt        DateTime       @default(now())
