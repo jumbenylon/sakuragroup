@@ -3,189 +3,125 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Menu, X, ChevronDown, Server, Zap, 
-  CreditCard, Truck, Briefcase, Mic, 
-  Plane, ShieldCheck, ArrowRight 
-} from "lucide-react";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { Menu, X, ChevronRight, Globe } from "lucide-react";
 
-export function GlobalNavbar() {
+const LOGO_URL = "https://storage.googleapis.com/sakura-web/sakura-logo-v2.png"; // Ensure this is the clean group logo
+
+export const GlobalNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hoveredPath, setHoveredPath] = useState<string | null>(null);
+
+  const navLinks = [
+    { name: "Axis", path: "/axis" },
+    { name: "Logistics", path: "/logistics" },
+    { name: "Industrial", path: "/industrial" },
+    { name: "Hosting", path: "/hosting" },
+  ];
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    handleScroll();
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navItems = [
-    {
-      label: "Software",
-      links: [
-        { name: "SakuraHost", href: "/hosting", icon: Server, d: "Cloud & Domains" },
-        { name: "Axis", href: "/axis", icon: Zap, d: "Unified Comm API" },
-      ]
-    },
-    { label: "Pay", href: "/sakurapay" },
-    { label: "Logistics", href: "/logistics" },
-    {
-      label: "Grow",
-      links: [
-        { name: "Sakura Agency", href: "/marketing", icon: Briefcase, d: "Creative Engine" },
-        { name: "Think Loko", href: "/thinkloko", icon: Mic, d: "Media & Culture" },
-        { name: "Sakura Travels", href: "/travel", icon: Plane, d: "Cinematic Travel" },
-        { name: "Roof Cleaning", href: "/roofcleaning", icon: ShieldCheck, d: "Industrial RCS" },
-      ]
-    },
-    { label: "Learn", href: "/learn" },
-  ];
-
   return (
-    <>
-      <nav 
-        className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-300 px-4 md:px-8 font-sans ${
-          isScrolled 
-            ? "py-4 bg-[#050912]/95 backdrop-blur-md border-b border-white/10 shadow-2xl" 
-            : "py-6 bg-gradient-to-b from-black/90 via-black/40 to-transparent"
-        }`}
-      >
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
-          
-          {/* LOGO */}
-          <Link href="/" className="relative z-[10000] block w-40 md:w-48 h-10 md:h-12 shrink-0">
-            <Image 
-              src="https://storage.googleapis.com/sakura-web/sakuragroup-logo-white.png" 
-              alt="Sakura Group" 
-              fill
-              className="object-contain object-left"
-              priority
-              sizes="(max-width: 768px) 160px, 192px"
-            />
-          </Link>
+    <nav 
+      className={`fixed top-0 w-full z-[150] transition-all duration-700 ease-in-out ${
+        isScrolled 
+          ? "h-16 bg-white/70 dark:bg-black/70 backdrop-blur-2xl border-b border-black/5 dark:border-white/5" 
+          : "h-24 bg-transparent"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto h-full px-8 flex justify-between items-center">
+        
+        {/* BRAND IDENTITY */}
+        <Link href="/" className="relative z-10 flex items-center gap-3 group">
+          <Image 
+            src={LOGO_URL} 
+            alt="Sakura Group" 
+            width={100} 
+            height={32} 
+            className={`transition-all duration-500 ${isScrolled ? "scale-90" : "scale-100"} dark:brightness-200`}
+          />
+        </Link>
 
-          {/* DESKTOP NAV */}
-          <div className="hidden lg:flex items-center gap-8 xl:gap-10">
-            <Link href="/" className="text-[11px] font-bold uppercase tracking-[0.15em] text-white hover:text-emerald-400 transition-colors">Home</Link>
-            
-            {navItems.map((item) => (
-              <div 
-                key={item.label} 
-                className="relative group h-full py-2"
-                onMouseEnter={() => item.links && setActiveMenu(item.label)}
-                onMouseLeave={() => setActiveMenu(null)}
+        {/* NAVIGATION LINKS - PRECISION LAYOUT */}
+        <div className="hidden lg:flex items-center gap-10">
+          <LayoutGroup id="global-nav">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                href={link.path}
+                onMouseEnter={() => setHoveredPath(link.path)}
+                onMouseLeave={() => setHoveredPath(null)}
+                className="relative text-[10px] font-black uppercase tracking-[0.25em] text-slate-500 hover:text-pink-600 dark:text-white/40 dark:hover:text-white transition-colors py-2"
               >
-                {item.links ? (
-                  <button className={`flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors ${activeMenu === item.label ? "text-emerald-400" : "text-white/80 hover:text-white"}`}>
-                    {item.label} <ChevronDown size={12} className={`transition-transform duration-200 ${activeMenu === item.label ? "rotate-180" : ""}`} />
-                  </button>
-                ) : (
-                  <Link href={item.href || "#"} className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/80 hover:text-white transition-colors">
-                    {item.label}
-                  </Link>
+                {link.name}
+                {hoveredPath === link.path && (
+                  <motion.div
+                    layoutId="nav-hover-bg"
+                    className="absolute -bottom-1 left-0 w-full h-px bg-pink-600"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
                 )}
-
-                {/* DROPDOWN */}
-                <AnimatePresence>
-                  {activeMenu === item.label && item.links && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-72"
-                    >
-                      <div className="bg-[#0B1120] border border-white/10 rounded-xl p-3 shadow-2xl ring-1 ring-black/5">
-                        {item.links.map((link) => (
-                          <Link key={link.name} href={link.href} className="flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item">
-                            <div className="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover/item:bg-emerald-500 group-hover/item:text-black transition-colors">
-                              <link.icon size={16} />
-                            </div>
-                            <div>
-                              <div className="text-xs font-bold text-white mb-0.5">{link.name}</div>
-                              <div className="text-[9px] text-slate-500 font-medium uppercase tracking-wider">{link.d}</div>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              </Link>
             ))}
-          </div>
-
-          {/* ACTIONS */}
-          <div className="flex items-center gap-4">
-            <Link 
-              href="/#contact" 
-              className="hidden md:flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-            >
-              Start Project <ArrowRight size={14} />
-            </Link>
-            
-            <button 
-              onClick={() => setMobileOpen(true)} 
-              className="lg:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
-            >
-              <Menu size={28} />
-            </button>
-          </div>
+          </LayoutGroup>
         </div>
-      </nav>
 
-      {/* MOBILE MENU */}
+        {/* CTAs - FUNCTIONAL PURITY */}
+        <div className="hidden md:flex items-center gap-6">
+          <Link 
+            href="/axis/login" 
+            className="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
+            Console
+          </Link>
+          <Link 
+            href="/axis/signup" 
+            className="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-black text-[9px] font-black uppercase tracking-widest rounded-sm hover:bg-pink-600 hover:text-white transition-all shadow-xl shadow-black/5"
+          >
+            Get Started
+          </Link>
+        </div>
+
+        {/* MOBILE TRIGGER */}
+        <button 
+          className="lg:hidden text-slate-900 dark:text-white"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {/* MOBILE OVERLAY - MINIMALIST FULLSCREEN */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[10000] bg-[#050912] overflow-y-auto font-sans"
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 top-0 bg-white dark:bg-[#020202] z-[140] flex flex-col justify-center px-12 gap-8"
           >
-            <div className="p-6 md:p-8 min-h-screen flex flex-col">
-              <div className="flex justify-between items-center mb-12">
-                <div className="relative w-40 h-10">
-                    <Image src="https://storage.googleapis.com/sakura-web/sakuragroup-logo-white.png" alt="Logo" fill className="object-contain object-left" />
-                </div>
-                <button onClick={() => setMobileOpen(false)} className="text-white p-2 bg-white/5 rounded-full"><X size={24} /></button>
-              </div>
-              
-              <div className="flex-1 space-y-8">
-                {navItems.map((item) => (
-                  <div key={item.label} className="border-b border-white/5 pb-6 last:border-0">
-                    {item.links ? (
-                      <div className="space-y-4">
-                        <h4 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-4">{item.label}</h4>
-                        <div className="grid gap-3">
-                            {item.links.map(l => (
-                            <Link key={l.name} href={l.href} onClick={() => setMobileOpen(false)} className="text-xl font-bold text-white hover:text-emerald-400 transition-colors block pl-4 border-l-2 border-white/10 hover:border-emerald-500">
-                                {l.name}
-                            </Link>
-                            ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <Link href={item.href || "#"} onClick={() => setMobileOpen(false)} className="block text-3xl font-bold text-white hover:text-emerald-500 transition-colors">
-                        {item.label}
-                      </Link>
-                    )}
-                  </div>
-                ))}
-              </div>
-              
-              <div className="pt-8 mt-8 border-t border-white/10">
-                <Link href="/#contact" onClick={() => setMobileOpen(false)} className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-600 text-white font-bold uppercase tracking-widest rounded-lg">
-                    Start Project Now <ArrowRight size={16} />
-                </Link>
-              </div>
-            </div>
+            {navLinks.map((link) => (
+              <Link 
+                key={link.path} 
+                href={link.path} 
+                onClick={() => setMobileOpen(false)}
+                className="text-4xl font-black italic uppercase tracking-tighter hover:text-pink-600 transition-colors"
+              >
+                {link.name}
+              </Link>
+            ))}
+            <div className="h-px w-full bg-black/5 dark:bg-white/5 my-4" />
+            <Link href="/axis/signup" className="text-sm font-black uppercase tracking-widest text-pink-600">
+              Start Project
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </nav>
   );
-}
+};
