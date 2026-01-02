@@ -133,18 +133,18 @@ const TiltCard = ({ children, className }: { children: React.ReactNode, classNam
 
 // --- DATA ---
 const services = [
-  // ROW 1: INFRASTRUCTURE
+  // ROW 1: INFRASTRUCTURE (Unified Naming)
   { title: "SakuraHost", desc: "Enterprise Cloud & Domains", icon: Server, href: "/hosting", color: "text-blue-400" },
   { title: "Axis by Sakura", desc: "Unified Comm API", icon: Zap, href: "/axis", color: "text-amber-400" },
   { title: "Sakura Pay", desc: "Fintech Gateway", icon: CreditCard, href: "/sakurapay", color: "text-emerald-400" },
   // ROW 2: OPERATIONS
   { title: "Sakura Logistics", desc: "Supply Chain & Haulage", icon: Truck, href: "/logistics", color: "text-rose-400" },
-  { title: "Roof Cleaning Solutions", desc: "RCS & Industrial Epoxy", icon: ShieldCheck, href: "/industrial", color: "text-cyan-400" },
-  { title: "Sakura Travels", desc: "Travel Agency", icon: Plane, href: "/travel", color: "text-indigo-400" },
+  { title: "Roof Cleaning (RCS)", desc: "Industrial Restoration", icon: ShieldCheck, href: "/roofcleaning", color: "text-cyan-400" },
+  { title: "Sakura Travels", desc: "Cinematic Adventures", icon: Plane, href: "/travel", color: "text-indigo-400" },
   // ROW 3: GROWTH
   { title: "Sakura Agency", desc: "Strategy & Branding", icon: Briefcase, href: "/marketing", color: "text-orange-400" },
-  { title: "Xhule", desc: "LMS & Certification", icon: Terminal, href: "/learn", color: "text-yellow-400" },
-  { title: "Think Loko", desc: "Media & Podcast", icon: Mic, href: "/media", color: "text-red-500" },
+  { title: "Xhule — Learn", desc: "Skills for Real World", icon: Terminal, href: "/learn", color: "text-yellow-400" },
+  { title: "Think Loko", desc: "Culture & Media", icon: Mic, href: "/thinkloko", color: "text-red-500" },
 ];
 
 // --- SECTIONS ---
