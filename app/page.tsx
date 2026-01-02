@@ -17,23 +17,27 @@ import {
   Users, Building2, GraduationCap, Truck
 } from "lucide-react";
 
+// --- IMPORT GLOBAL WRAPPERS ---
+import { GlobalNavbar } from "@/components/global-navbar";
+import { GlobalFooter } from "@/components/global-footer";
+
 // --- CONFIG & ASSETS ---
-const LOGO_URL = "https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png";
+const LOGO_AXIS = "https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png";
 const IMAGES = {
-  hero: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=2070", // Team in a modern office
-  whatsapp: "https://images.unsplash.com/photo-1573163281532-dd0f8114227c?auto=format&fit=crop&q=80&w=2070", // Close up of professional using phone
-  enterprise: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070", // Architecture/Skyscraper
+  hero: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=2070",
+  whatsapp: "https://images.unsplash.com/photo-1573163281532-dd0f8114227c?auto=format&fit=crop&q=80&w=2070",
+  enterprise: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070",
 };
 
-// --- COMPONENTS ---
-
-const Nav = () => {
+// --- SUPPORTING IN-PAGE NAVIGATION ---
+const AxisSubNav = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const { scrollY } = useScroll();
   const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setIsSticky(window.scrollY > 100);
+    // Stickiness starts after GlobalNavbar height (approx 80px)
+    const handleScroll = () => setIsSticky(window.scrollY > 80);
     window.addEventListener("scroll", handleScroll);
     
     const observer = new IntersectionObserver(
@@ -55,27 +59,31 @@ const Nav = () => {
       {isSticky && (
         <motion.nav 
           initial={{ y: -100 }} animate={{ y: 0 }} exit={{ y: -100 }}
-          className="fixed top-0 w-full z-[100] bg-black/80 backdrop-blur-2xl border-b border-white/5 h-16 flex items-center"
+          className="fixed top-16 w-full z-[90] bg-black/60 backdrop-blur-xl border-b border-white/5 h-12 flex items-center"
         >
           <div className="max-w-7xl mx-auto w-full px-8 flex justify-between items-center">
-            <Image src={LOGO_URL} alt="Sakura Axis" width={80} height={30} className="brightness-200" />
-            <div className="hidden lg:flex gap-12 relative">
+            <div className="flex items-center gap-4">
+               <Image src={LOGO_AXIS} alt="Axis" width={60} height={20} className="brightness-200" />
+               <div className="w-px h-4 bg-white/10 mx-2" />
+               <span className="text-[9px] font-black uppercase tracking-[0.3em] text-pink-500">Console</span>
+            </div>
+            <div className="hidden lg:flex gap-10 relative">
               <LayoutGroup>
                 {["Overview", "WhatsApp", "SMS", "Enterprise", "Developers"].map((item) => {
                   const id = item.toLowerCase();
                   return (
-                    <a key={item} href={`#${id}`} className="relative text-[10px] font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors py-2">
+                    <a key={item} href={`#${id}`} className="relative text-[9px] font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors py-1">
                       {item}
                       {activeSection === id && (
-                        <motion.div layoutId="nav-underline" className="absolute bottom-0 left-0 w-full h-px bg-pink-500" />
+                        <motion.div layoutId="subnav-underline" className="absolute bottom-0 left-0 w-full h-0.5 bg-pink-500" />
                       )}
                     </a>
                   );
                 })}
               </LayoutGroup>
             </div>
-            <Link href="/contact" className="text-[10px] font-bold uppercase tracking-widest text-white border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-all">
-              Request Demo
+            <Link href="/axis/login" className="text-[9px] font-black uppercase tracking-widest text-pink-500 flex items-center gap-2">
+              Login <ArrowRight size={12} />
             </Link>
           </div>
         </motion.nav>
@@ -84,13 +92,13 @@ const Nav = () => {
   );
 };
 
-// --- SECTIONS ---
+// --- SECTIONS (RETAINED FROM SOVEREIGN BUILD) ---
 
 const Hero = () => (
-  <section id="overview" className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-8 bg-[#020202]">
+  <section id="overview" className="relative min-h-screen flex flex-col items-center justify-center pt-32 px-8 bg-[#020202]">
     <div className="max-w-5xl mx-auto text-center z-10">
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-pink-500 font-mono text-[9px] tracking-[0.6em] uppercase mb-10">
-        Unified Communications Infrastructure
+        Precision Communication Engine
       </motion.p>
       <h1 className="text-6xl md:text-[110px] font-black leading-[0.85] tracking-tighter text-white uppercase italic mb-8">
         Talk to your customers.<br/>
@@ -101,8 +109,8 @@ const Hero = () => (
       </p>
       <div className="flex flex-col items-center gap-8">
         <div className="flex flex-col sm:flex-row gap-6">
-          <Link href="/sales" className="px-14 py-5 bg-white text-black font-black text-xs uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all">
-            Speak to Sales
+          <Link href="/axis/signup" className="px-14 py-5 bg-white text-black font-black text-xs uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all">
+            Get Started with Axis
           </Link>
           <Link href="/demo" className="px-14 py-5 border border-white/10 text-white font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all">
             Request a Demo
@@ -119,7 +127,7 @@ const Hero = () => (
 const WhatsAppSection = () => (
   <section id="whatsapp" className="py-48 px-8 bg-[#050505] border-y border-white/5">
     <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-32 items-center">
-      <div className="relative aspect-square overflow-hidden rounded-sm grayscale">
+      <div className="relative aspect-square overflow-hidden rounded-sm grayscale shadow-2xl">
         <Image src={IMAGES.whatsapp} alt="WhatsApp Engagement" fill className="object-cover" />
         <div className="absolute inset-0 bg-pink-500/10 mix-blend-overlay" />
       </div>
@@ -133,8 +141,8 @@ const WhatsAppSection = () => (
           <WorkflowItem title="Community Governance" desc="Manage SACCO alerts and contribution payout notices with 100% read-receipt transparency." />
           <WorkflowItem title="Operational Coordination" desc="Direct location pins and delivery updates for logistics fleets—coordinated without manual intervention." />
         </div>
-        <Link href="/whatsapp-waitlist" className="mt-16 inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] text-white border-b border-pink-500/50 pb-2 hover:border-pink-500 transition-all">
-          Join WhatsApp Rollout Waitlist <ChevronRight size={14} />
+        <Link href="/axis/signup" className="mt-16 inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] text-white border-b border-pink-500/50 pb-2 hover:border-pink-500 transition-all">
+          Connect WhatsApp Channel <ChevronRight size={14} />
         </Link>
       </div>
     </div>
@@ -177,7 +185,7 @@ const EnterpriseSection = () => (
         <div className="bg-white p-16">
           <h3 className="text-xs font-black uppercase tracking-[0.3em] mb-10 text-slate-400">SME Operations</h3>
           <ul className="space-y-6 text-base font-light opacity-80">
-            <li className="flex gap-4"><Check size={16} className="text-pink-600"/> Rapid onboarding via product specialist</li>
+            <li className="flex gap-4"><Check size={16} className="text-pink-600"/> Rapid onboarding via digital signup</li>
             <li className="flex gap-4"><Check size={16} className="text-pink-600"/> Pre-calculated costs before sending</li>
             <li className="flex gap-4"><Check size={16} className="text-pink-600"/> Simple brand-identity (Sender ID) setup</li>
           </ul>
@@ -211,18 +219,23 @@ const UseCase = ({ icon, title }: any) => (
   </div>
 );
 
-// --- MAIN ---
+// --- MAIN WRAPPER ---
 
-export default function AxisSovereignFinal() {
+export default function AxisSovereignStacked() {
   return (
     <main className="bg-[#020202] text-white selection:bg-pink-500 scroll-smooth antialiased">
-      <Nav />
+      {/* PRIMARY GLOBAL HEADER */}
+      <GlobalNavbar />
+
+      {/* SECONDARY AXIS SUB-NAV (Triggers on scroll) */}
+      <AxisSubNav />
+
       <Hero />
       
       {/* Social Context Bar */}
       <section className="py-20 border-t border-white/5 bg-[#020202]">
-        <div className="max-w-7xl mx-auto px-8">
-           <p className="text-center text-[9px] font-black uppercase tracking-[0.5em] text-slate-600 mb-12">
+        <div className="max-w-7xl mx-auto px-8 text-center">
+           <p className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-600 mb-12">
              Providing essential infrastructure for
            </p>
            <div className="flex flex-wrap justify-center gap-16 opacity-30">
@@ -245,7 +258,7 @@ export default function AxisSovereignFinal() {
           <p className="text-slate-500 text-lg mb-12 font-light">
             A clean, well-documented API designed for long-term operational reliability. REST triggers, webhooks, and exhaustive delivery audit logs.
           </p>
-          <Link href="/docs" className="text-[10px] font-black uppercase tracking-[0.3em] text-white border-b border-white/20 pb-2 hover:border-white">
+          <Link href="/axis/signup" className="text-[10px] font-black uppercase tracking-[0.3em] text-white border-b border-white/20 pb-2 hover:border-white">
             View API Overview
           </Link>
         </div>
@@ -256,19 +269,16 @@ export default function AxisSovereignFinal() {
         <div className="absolute top-0 w-full h-px bg-gradient-to-r from-transparent via-pink-500/50 to-transparent" />
         <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter mb-16 leading-none">Confidence<br/>In Communication.</h2>
         <div className="flex flex-col sm:flex-row gap-8">
-          <Link href="/demo" className="px-16 py-6 bg-white text-black font-black text-xs uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all">
-            Book a Demo
+          <Link href="/axis/signup" className="px-16 py-6 bg-white text-black font-black text-xs uppercase tracking-widest rounded-full hover:bg-pink-500 hover:text-white transition-all">
+            Get Started
           </Link>
-          <Link href="/contact" className="px-16 py-6 border border-white/20 text-white font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all">
-            Contact Specialist
+          <Link href="/contact" className="px-16 py-6 border border-white/20 text-white font-black text-xs uppercase tracking-widest rounded-full hover:bg-white/5 transition-all">
+            Speak to a Specialist
           </Link>
         </div>
       </section>
 
-      <footer className="p-20 border-t border-white/5 text-center bg-[#020202]">
-        <Image src={LOGO_URL} alt="Sakura" width={40} height={40} className="mx-auto mb-8 opacity-20" />
-        <p className="text-[8px] font-mono uppercase tracking-[0.6em] text-slate-700">© 2026 SAKURA GROUP • DAR ES SALAAM • PRECISION INFRASTRUCTURE</p>
-      </footer>
+      <GlobalFooter />
     </main>
   );
 }
