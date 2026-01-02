@@ -3,8 +3,6 @@ const nextConfig = {
   experimental: {
     // We use the older key name required by some 14.1.0 environments
     serverComponentsExternalPackages: ["@node-rs/argon2"],
-    // We keep the newer one just in case
-    serverExternalPackages: ["@node-rs/argon2"],
   },
   
   output: "standalone",
