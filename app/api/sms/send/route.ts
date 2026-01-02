@@ -59,7 +59,9 @@ export async function POST(req: Request) {
         costToAdmin: 19 * segments,
         costToTenant: result.totalCost,
         segmentCount: segments,
-        providerId: providerData.request_id ? String(providerData.request_id) : null,
+        providerMessageId: providerData.request_id
+  ? String(providerData.request_id)
+  : null,
       },
     });
 
