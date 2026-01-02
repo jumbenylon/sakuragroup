@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image"; // Added Image component
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, PenTool, Users, History, 
@@ -28,9 +28,9 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       {/* SIDEBAR (Desktop) */}
       <aside className="hidden md:flex flex-col w-64 border-r border-white/10 bg-[#050505] fixed h-full z-20">
         
-        {/* BRAND LOGO RESTORED */}
-        <div className="h-20 flex items-center px-6 border-b border-white/10">
-           <div className="relative w-32 h-10">
+        {/* BRAND LOGO - RESIZED & CENTERED */}
+        <div className="h-24 flex items-center px-6 border-b border-white/10">
+           <div className="relative w-48 h-14"> 
               <Image 
                 src="https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png" 
                 alt="Sakura Axis" 
@@ -93,8 +93,10 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
             <div className="flex items-center gap-6">
                 <div className="flex flex-col text-right">
-                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Credits</span>
-                    <span className="text-sm font-mono font-bold text-white">24,500 <span className="text-slate-600">TZS</span></span>
+                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Gateway Status</span>
+                    <span className="text-xs font-mono font-bold text-emerald-500 flex items-center justify-end gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"/> CONNECTED
+                    </span>
                 </div>
                 <div className="h-8 w-[1px] bg-white/10"></div>
                 <button className="relative">
@@ -114,7 +116,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 bg-black/95 flex flex-col p-8 md:hidden">
             <div className="flex justify-between items-center mb-8">
-                <div className="relative w-32 h-10">
+                <div className="relative w-40 h-12">
                     <Image 
                         src="https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png" 
                         alt="Sakura Axis" 
