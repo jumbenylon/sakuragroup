@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; // Updated to use our Singleton
+// CRITICAL: You were missing this import line below
+import { hash } from "@node-rs/argon2"; 
+import prisma from "@/lib/prisma"; 
 import { Resend } from "resend";
 
-// Initialize Resend with error safety
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
@@ -13,7 +14,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing email or password" }, { status: 400 });
     }
 
-    // 1. Check if user exists using the singleton instance
+    // 1. Check if user exists
     const existingUser = await prisma.user.findUnique({ 
       where: { email } 
     });
@@ -22,7 +23,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User already exists" }, { status: 400 });
     }
 
-    // 2. Argon2 Hashing - Premium security configuration
+    // 2. Argon2 Hashing
+    // This is the function that requires the native binary
     const hashedPassword = await hash(password, {
       memoryCost: 65536,
       timeCost: 3,
@@ -30,20 +32,20 @@ export async function POST(req: Request) {
     });
 
     // 3. Create Pending User
-    // Default values from schema (Status: PENDING, Balance: 0) are handled by Neon
     await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         status: "PENDING",
-        role: "USER", // Default role
+        role: "USER",
+        balance: 0,
+        smsRate: 25, // Defaulting to your specified reseller rate
       },
     });
 
     // 4. Admin Notifications
     
-    // A. Send SMS to Admin via Beem
-    // We wrap this in a try/catch or ensure it doesn't block the response
+    // A. SMS Notification
     try {
       const beemAuth = Buffer.from(`${process.env.BEEM_API_KEY}:${process.env.BEEM_SECRET}`).toString("base64");
       
@@ -60,27 +62,26 @@ export async function POST(req: Request) {
         }),
       });
     } catch (smsError) {
-      console.error("Critical: Admin SMS notification failed", smsError);
-      // We don't fail the whole request if SMS fails, but we log it.
+      console.error("Admin SMS failed", smsError);
     }
 
-    // B. Send Email to Admin via Resend
+    // B. Email Notification
     try {
       await resend.emails.send({
         from: "Sakura System <onboarding@sakuragroup.co.tz>",
         to: "admin@sakuragroup.co.tz",
         subject: "Action Required: New Reseller Pending Approval",
         html: `
-          <div style="font-family: sans-serif; padding: 20px; color: #333;">
+          <div style="font-family: sans-serif; padding: 20px; color: #333; background-color: #f9f9f9; border-radius: 8px;">
             <h2 style="color: #db2777;">New Sign-up Alert</h2>
             <p>A new reseller has registered on the Sakura platform:</p>
-            <p><strong>Email:</strong> ${email}</p>
+            <p style="background: #fff; padding: 10px; border: 1px solid #eee;"><strong>Email:</strong> ${email}</p>
             <p>Please log in to the admin panel to review and activate this account.</p>
           </div>
         `,
       });
     } catch (emailError) {
-      console.error("Critical: Admin Email notification failed", emailError);
+      console.error("Admin Email failed", emailError);
     }
 
     return NextResponse.json({ 
