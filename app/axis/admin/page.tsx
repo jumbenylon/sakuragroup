@@ -1,64 +1,86 @@
 import prisma from "@/lib/prisma";
-import { ShieldAlert, UserCheck, Settings } from "lucide-react";
-import { approveUser } from "./actions";
+import { UserCheck, Wallet, ShieldAlert, TrendingUp } from "lucide-react";
+import { activateUser } from "./_actions/approve";
+import { addCredits } from "./_actions/wallet";
 
-export default async function AdminDashboard() {
-  const pendingUsers = await prisma.user.findMany({
-    where: { status: "PENDING" },
+export default async function AdminConsole() {
+  // Fetch all users to give you the "Master View"
+  const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
   });
 
   return (
-    <div className="min-h-screen bg-[#050505] p-8 text-white">
-      <div className="max-w-6xl mx-auto space-y-12">
+    <div className="min-h-screen bg-[#050505] text-white p-8 font-sans">
+      <div className="max-w-7xl mx-auto space-y-10">
         
-        <header className="flex justify-between items-end border-b border-white/10 pb-8">
+        {/* HEADER SECTION */}
+        <header className="flex justify-between items-center border-b border-white/10 pb-10">
           <div>
-            <h1 className="text-3xl font-black uppercase tracking-tighter">Master Control</h1>
-            <p className="text-slate-500 font-mono text-xs">Sakura Group Gateway Admin</p>
+            <h1 className="text-4xl font-black tracking-tighter uppercase italic">Control Panel</h1>
+            <p className="text-slate-500 text-xs font-mono mt-2 tracking-[0.3em]">SAKURA GROUP • ADMIN ENGINE</p>
           </div>
           <div className="flex gap-4">
-             <div className="px-4 py-2 bg-pink-500/10 border border-pink-500/20 text-pink-500 text-[10px] font-bold rounded-sm uppercase tracking-widest flex items-center gap-2">
-               <ShieldAlert size={14} /> System Secure
-             </div>
+            <div className="h-12 w-12 rounded-full border border-white/10 flex items-center justify-center bg-green-500/10 text-green-500 shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+              <ShieldAlert size={20} />
+            </div>
           </div>
         </header>
 
-        <section>
-          <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Pending Approvals ({pendingUsers.length})</h2>
-          
-          <div className="grid gap-4">
-            {pendingUsers.length === 0 ? (
-              <div className="p-12 text-center border border-dashed border-white/10 text-slate-600 rounded-sm italic">
-                No users awaiting approval.
-              </div>
-            ) : (
-              pendingUsers.map((user) => (
-                <div key={user.id} className="p-6 bg-[#0a0a0a] border border-white/10 rounded-sm flex justify-between items-center group hover:border-white/20 transition-all">
-                  <div>
-                    <p className="text-lg font-bold font-mono">{user.email}</p>
-                    <p className="text-[10px] text-slate-500 uppercase tracking-widest">Joined: {user.createdAt.toLocaleDateString()}</p>
-                  </div>
-                  
-                  <div className="flex items-center gap-6">
-                    {/* Simplified Form for logic demo */}
-                    <div className="flex flex-col items-end gap-2">
-                       <span className="text-[9px] text-slate-500 font-bold uppercase">Default Rate: 25 TZS</span>
-                       <form action={async () => {
-                         "use server";
-                         await approveUser(user.id, 25, 0);
-                       }}>
-                         <button className="px-6 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all rounded-sm flex items-center gap-2">
-                           <UserCheck size={14} /> Approve & Activate
-                         </button>
-                       </form>
+        {/* USER MANAGEMENT TABLE */}
+        <div className="overflow-hidden border border-white/10 rounded-sm bg-[#0a0a0a]">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-white/10 bg-white/5">
+                <th className="p-4 text-[10px] uppercase tracking-widest text-slate-500">Reseller Identity</th>
+                <th className="p-4 text-[10px] uppercase tracking-widest text-slate-500">Status</th>
+                <th className="p-4 text-[10px] uppercase tracking-widest text-slate-500">Wallet Balance</th>
+                <th className="p-4 text-[10px] uppercase tracking-widest text-slate-500 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                  <td className="p-4">
+                    <div className="font-bold text-sm">{user.email}</div>
+                    <div className="text-[10px] text-slate-500 font-mono">Rate: {user.smsRate} TZS/SMS</div>
+                  </td>
+                  <td className="p-4">
+                    <span className={`px-2 py-1 text-[9px] font-bold rounded-sm uppercase tracking-tighter ${
+                      user.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-pink-500/20 text-pink-400 animate-pulse'
+                    }`}>
+                      {user.status}
+                    </span>
+                  </td>
+                  <td className="p-4 font-mono text-sm">
+                    {user.balance.toLocaleString()} <span className="text-[10px] text-slate-500">TZS</span>
+                  </td>
+                  <td className="p-4 text-right">
+                    <div className="flex justify-end gap-2">
+                      {user.status === "PENDING" && (
+                        <form action={async () => {
+                          "use server";
+                          await activateUser(user.id, 25);
+                        }}>
+                          <button className="flex items-center gap-2 px-3 py-2 bg-white text-black text-[10px] font-black uppercase hover:bg-pink-500 hover:text-white transition-all">
+                            <UserCheck size={14} /> Activate
+                          </button>
+                        </form>
+                      )}
+                      <form action={async () => {
+                        "use server";
+                        await addCredits(user.id, 50000);
+                      }}>
+                        <button className="flex items-center gap-2 px-3 py-2 border border-white/10 hover:border-white/30 text-white text-[10px] font-black uppercase transition-all">
+                          <Wallet size={14} /> +50k Credits
+                        </button>
+                      </form>
                     </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </section>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
