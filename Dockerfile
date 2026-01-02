@@ -3,9 +3,7 @@ FROM node:18-alpine AS base
 
 # 2. Dependencies
 FROM base AS deps
-# Adding compat libraries for Prisma
 RUN apk add --no-cache libc6-compat openssl
-
 WORKDIR /app
 COPY prisma ./prisma/
 COPY package.json package-lock.json* ./
@@ -26,15 +24,15 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install OpenSSL 3.0 and the legacy compat if needed
-RUN apk add --no-cache openssl libstdc++
+# Essential libraries for Prisma on Alpine
+RUN apk add --no-cache openssl
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy the Schema and Prisma CLI
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-RUN npm install -g prisma
+# Copy Prisma files and generated client
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy Standalone Build
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
@@ -45,5 +43,5 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 
-# We use a slight delay to ensure DB is reachable, then push and start
-CMD ["/bin/sh", "-c", "prisma db push --accept-data-loss && node server.js"]
+# Using npx ensures we use the version of prisma installed in node_modules
+CMD ["/bin/sh", "-c", "npx prisma db push --accept-data-loss && node server.js"]
