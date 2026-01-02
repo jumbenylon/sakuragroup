@@ -6,7 +6,6 @@ export async function POST(req: Request) {
     const { userId, cleanList, message, senderIdName } = await req.json();
 
     const campaign = await prisma.$transaction(async (tx) => {
-      // 1. Fetch User & Sender (Locking the state for the transaction)
       const user = await tx.user.findUnique({ where: { id: userId } });
       if (!user) throw new Error("USER_NOT_FOUND");
 
@@ -15,41 +14,34 @@ export async function POST(req: Request) {
       });
       if (!sender) throw new Error("SENDER_ID_REVOKED");
 
-      // 2. Re-calculate Financials (Server-Side Authority)
       const segments = Math.max(1, Math.ceil(message.length / 160));
-      const ratePerSegment = user.smsRate;
-      const adminRatePerSegment = 19; // Your cost
-      
-      const messageCost = segments * ratePerSegment;
+      const messageCost = segments * user.smsRate;
       const totalCost = cleanList.length * messageCost;
 
-      // 3. Balance Check
       if (user.balance < totalCost) throw new Error("INSUFFICIENT_FUNDS");
 
-      // 4. Execute Balance Deduction
       await tx.user.update({
         where: { id: userId },
         data: { balance: { decrement: totalCost } }
       });
 
-      // 5. Create Campaign & Message Logs (The Atomic Commit)
       const newCampaign = await tx.campaign.create({
         data: {
           userId,
           senderId: sender.id,
-          status: "QUEUED", // Initial state for worker pickup
+          status: "QUEUED",
           totalRecipients: cleanList.length,
           totalSegments: segments,
           totalCost,
           messages: {
             createMany: {
-              data: cleanList.map((recipient: string) => ({
+              data: cleanList.map((recipient) => ({
                 userId,
-                recipient,
+                recipient: String(recipient),
                 message,
                 segmentCount: segments,
-                costToTenant: messageCost, // Total for this message
-                costToAdmin: segments * adminRatePerSegment, // Tracking your margin
+                costToTenant: messageCost,
+                costToAdmin: segments * 19,
                 status: "PENDING",
                 senderId: sender.id
               }))
@@ -61,17 +53,14 @@ export async function POST(req: Request) {
       return newCampaign;
     });
 
-    // Success Response
     return NextResponse.json({ 
       success: true, 
-      campaignId: campaign.id,
-      deducted: campaign.totalCost 
+      campaignId: campaign.id 
     });
 
-  } catch (err: any) {
-    console.error("TRANSACTION_FAILED:", err.message);
+  } catch (err) {
     return NextResponse.json(
-      { error: err.message ?? "CONFIRMATION_ENGINE_FAILURE" }, 
+      { error: err instanceof Error ? err.message : "CONFIRMATION_FAILED" }, 
       { status: 400 }
     );
   }
