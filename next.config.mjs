@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // FOR NEXT.JS 14.1.0, THIS MUST BE INSIDE EXPERIMENTAL
   experimental: {
+    // We use the older key name required by some 14.1.0 environments
+    serverComponentsExternalPackages: ["@node-rs/argon2"],
+    // We keep the newer one just in case
     serverExternalPackages: ["@node-rs/argon2"],
   },
   
