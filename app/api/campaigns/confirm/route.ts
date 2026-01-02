@@ -2,68 +2,86 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 /**
- * PHASE 2: ATOMIC CAMPAIGN COMMIT
- * - Re-validates financials on-server
- * - Deducts balance in a transaction
- * - Creates Campaign master and MessageLog batch
+ * PHASE 2: ATOMIC CAMPAIGN COMMIT (Production Gold Standard)
+ * - Sanitizes recipients & filters junk
+ * - Prevents empty message billing
+ * - Executes immutable ledger transaction
  */
 export async function POST(req: Request) {
   try {
     const { userId, validList, message, senderIdName } = await req.json();
 
-    // 1. Explicitly Type the cleanList to satisfy Strict Mode
-    const cleanList: string[] = Array.isArray(validList)
-      ? validList.map((v: any) => String(v).trim())
-      : [];
-
-    if (cleanList.length === 0) {
-      return NextResponse.json({ error: "EMPTY_RECIPIENT_LIST" }, { status: 400 });
+    // 1. Content Guard: Prevent empty billing
+    if (!message || !message.trim()) {
+      return NextResponse.json({ error: "EMPTY_MESSAGE_NOT_ALLOWED" }, { status: 400 });
     }
 
+    // 2. Recipient Normalization: Only pay for what can be sent
+    const rawList: any[] = Array.isArray(validList) ? validList : [];
+    const normalized = rawList
+      .map(r => String(r).replace(/\D/g, "").trim())
+      .filter(r => r.length >= 10 && r.length <= 15);
+
+    if (normalized.length === 0) {
+      return NextResponse.json({ error: "NO_VALID_RECIPIENTS_FOUND" }, { status: 400 });
+    }
+
+    // Defensive infrastructure ceiling
+    if (normalized.length > 50000) {
+      return NextResponse.json({ error: "LIMIT_EXCEEDED: MAX_50K" }, { status: 400 });
+    }
+
+    // 3. Metadata for Audit
+    const ip = req.headers.get("x-forwarded-for")?.split(',')[0] ?? "127.0.0.1";
+    const ua = req.headers.get("user-agent") ?? "unknown";
+
     const campaign = await prisma.$transaction(async (tx) => {
-      // 2. Fetch User & Sender (Locking state)
+      // 4. Verification
       const user = await tx.user.findUnique({ where: { id: userId } });
       if (!user) throw new Error("USER_NOT_FOUND");
 
       const sender = await tx.senderId.findFirst({
         where: { name: senderIdName, userId, status: "APPROVED" }
       });
-      if (!sender) throw new Error("SENDER_ID_REVOKED");
+      if (!sender) throw new Error("SENDER_ID_INVALID_OR_REVOKED");
 
-      // 3. Re-calculate Financials (Server-Side Authority)
+      // 5. Financial Computation based on CLEAN data
       const segments = Math.max(1, Math.ceil(message.length / 160));
       const messageCost = segments * user.smsRate;
-      const totalCost = cleanList.length * messageCost;
+      const totalCost = normalized.length * messageCost;
 
-      // 4. Balance Guard
       if (user.balance < totalCost) throw new Error("INSUFFICIENT_FUNDS");
 
-      // 5. Execute Balance Deduction
+      // 6. Execute Balance Deduction
       await tx.user.update({
         where: { id: userId },
         data: { balance: { decrement: totalCost } }
       });
 
-      // 6. Create Campaign and Batch Message Logs
+      // 7. Create Immutable Campaign Ledger
       const newCampaign = await tx.campaign.create({
         data: {
           userId,
           senderId: sender.id,
-          status: "QUEUED",
-          totalRecipients: cleanList.length,
+          senderName: sender.name, 
+          status: "COMMITTED",
+          totalRecipients: normalized.length,
           totalSegments: segments,
           totalCost,
+          metaIp: ip,
+          metaUa: ua,
           messages: {
             createMany: {
-              data: cleanList.map((recipient: string) => ({
+              data: normalized.map((recipient: string) => ({
                 userId,
                 recipient,
-                message,
+                message: message.trim(),
                 segmentCount: segments,
                 costToTenant: messageCost,
                 costToAdmin: segments * 19,
                 status: "PENDING",
-                senderId: sender.id
+                senderId: sender.id,
+                senderName: sender.name 
               }))
             }
           }
@@ -76,11 +94,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ 
       success: true, 
       campaignId: campaign.id,
-      deducted: campaign.totalCost 
+      finalCost: campaign.totalCost,
+      count: normalized.length
     });
 
   } catch (err) {
-    const message = err instanceof Error ? err.message : "CONFIRMATION_ENGINE_FAILURE";
-    return NextResponse.json({ error: message }, { status: 400 });
+    const msg = err instanceof Error ? err.message : "TRANSACTION_FAILURE";
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
 }
