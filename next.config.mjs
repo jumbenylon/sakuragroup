@@ -16,6 +16,10 @@ const nextConfig = {
         hostname: "images.unsplash.com",
       },
       {
+        protocol: "https",
+        hostname: "grainy-gradients.vercel.app",
+      },
+      {
         protocol: 'https',
         hostname: 'storage.googleapis.com',
         pathname: '/sakura-web/**',
