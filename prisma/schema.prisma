@@ -1,4 +1,4 @@
-// v1.2 - Added User model for Multi-tenancy
+// v1.3 - Final Unified Schema
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -13,14 +13,28 @@ model User {
   id            String       @id @default(uuid())
   email         String       @unique
   password      String       
-  role          String       @default("USER") // ADMIN, USER, RESELLER
+  role          String       @default("USER") 
   status        String       @default("PENDING")
   balance       Float        @default(0.0)
   smsRate       Int          @default(25)
+  
+  // Relationships
   contacts      Contact[]
   messages      MessageLog[]
+  apiKeys       ApiKey[]     // Added this missing link
+  
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+}
+
+model ApiKey {
+  id        String   @id @default(uuid())
+  key       String   @unique // sk_live_...
+  name      String?  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  lastUsed  DateTime?
+  createdAt DateTime @default(now())
 }
 
 model Contact {
@@ -28,7 +42,7 @@ model Contact {
   phone     String
   firstName String?
   lastName  String?
-  userId    String?  // Linked to User
+  userId    String?  
   user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -38,7 +52,7 @@ model Contact {
 
 model MessageLog {
   id           String   @id @default(uuid())
-  userId       String?  // Linked to User
+  userId       String?  
   user         User?    @relation(fields: [userId], references: [id])
   recipient    String
   message      String
