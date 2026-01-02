@@ -13,9 +13,9 @@ interface BeemResponse {
 }
 
 interface SendParams {
-  recipients: string[]; // ["255753...", "255682..."]
+  recipients: string[]; 
   message: string;
-  sourceId?: string;    // Defaults to env value
+  sourceId?: string;
 }
 
 // CONFIG
@@ -31,23 +31,22 @@ export async function sendBeemSMS({ recipients, message, sourceId }: SendParams)
   const defaultSource = process.env.BEEM_SOURCE_ID;
 
   if (!apiKey || !secretKey) {
-    throw new Error("CRITICAL: Beem API keys are missing from environment variables.");
+    console.error("CRITICAL: Beem API keys are missing from environment variables.");
+    return { success: false, error: "Server Config Error: Missing API Keys" };
   }
 
-  // Beem requires Basic Auth with API Key + Secret
-  // We use btoa (Base64) to encode them
+  // Auth Header
   const auth = Buffer.from(`${apiKey}:${secretKey}`).toString("base64");
 
-  // Format recipients for Beem (Array of objects)
-  // { recipient_id: 1, dest_addr: "2557..." }
+  // Format recipients
   const formattedRecipients = recipients.map((phone, index) => ({
     recipient_id: index + 1,
-    dest_addr: phone.replace("+", ""), // Ensure no plus sign
+    dest_addr: phone.replace("+", ""),
   }));
 
   const payload = {
-    source_addr: sourceId || defaultSource,
-    schedule_time: "", // Empty = Send Immediately
+    source_addr: sourceId || defaultSource || "INFO", // Fallback if env missing
+    schedule_time: "",
     encoding: 0,
     message: message,
     recipients: formattedRecipients,
@@ -59,20 +58,37 @@ export async function sendBeemSMS({ recipients, message, sourceId }: SendParams)
         "Content-Type": "application/json",
         Authorization: `Basic ${auth}`,
       },
-      // SSL Agent bypass is sometimes needed for legacy servers, 
-      // but usually not required on modern Cloud Run. kept for safety.
+      // Keep SSL bypass for robustness on some servers
       httpsAgent: new https.Agent({ rejectUnauthorized: false }),
     });
+
+    // --- THE FIX: INSPECT THE INTERNAL CODE ---
+    // Beem Codes:
+    // 100: Sent Successfully
+    // 101: Scheduled Successfully
+    // 102: Queued Successfully
+    // Any other code (e.g., 105, 106) is a FAILURE, even if HTTP is 200.
+    const validCodes = [100, 101, 102];
+
+    if (!validCodes.includes(data.code)) {
+      console.error("BEEM LOGICAL ERROR:", data);
+      return {
+        success: false,
+        error: `Gateway Error (${data.code}): ${data.message}`,
+        data: data // Pass data back so you can see details in debug console
+      };
+    }
 
     return {
       success: true,
       data: data,
     };
+
   } catch (error: any) {
-    console.error("BEEM GATEWAY ERROR:", error.response?.data || error.message);
+    console.error("BEEM NETWORK ERROR:", error.response?.data || error.message);
     return {
       success: false,
-      error: error.response?.data || "Network Error connecting to Beem",
+      error: error.response?.data?.message || error.message || "Network Error connecting to Beem",
     };
   }
 }
