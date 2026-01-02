@@ -16,7 +16,6 @@ export function GlobalNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    // Force check on mount to prevent "flash" of wrong style
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     handleScroll();
     window.addEventListener("scroll", handleScroll);
@@ -48,7 +47,7 @@ export function GlobalNavbar() {
   return (
     <>
       <nav 
-        className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-300 px-4 md:px-8 ${
+        className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-300 px-4 md:px-8 font-sans ${
           isScrolled 
             ? "py-4 bg-[#050912]/95 backdrop-blur-md border-b border-white/10 shadow-2xl" 
             : "py-6 bg-gradient-to-b from-black/90 via-black/40 to-transparent"
@@ -56,7 +55,7 @@ export function GlobalNavbar() {
       >
         <div className="max-w-[1400px] mx-auto flex items-center justify-between">
           
-          {/* LOGO - Hardcoded dimensions to prevent layout shift */}
+          {/* LOGO */}
           <Link href="/" className="relative z-[10000] block w-40 md:w-48 h-10 md:h-12 shrink-0">
             <Image 
               src="https://storage.googleapis.com/sakura-web/sakuragroup-logo-white.png" 
@@ -123,7 +122,7 @@ export function GlobalNavbar() {
           <div className="flex items-center gap-4">
             <Link 
               href="/#contact" 
-              className="hidden md:flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+              className="hidden md:flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
             >
               Start Project <ArrowRight size={14} />
             </Link>
@@ -138,14 +137,14 @@ export function GlobalNavbar() {
         </div>
       </nav>
 
-      {/* MOBILE MENU - Full Screen Overlay */}
+      {/* MOBILE MENU */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[10000] bg-[#050912] overflow-y-auto"
+            className="fixed inset-0 z-[10000] bg-[#050912] overflow-y-auto font-sans"
           >
             <div className="p-6 md:p-8 min-h-screen flex flex-col">
               <div className="flex justify-between items-center mb-12">
@@ -160,7 +159,7 @@ export function GlobalNavbar() {
                   <div key={item.label} className="border-b border-white/5 pb-6 last:border-0">
                     {item.links ? (
                       <div className="space-y-4">
-                        <h4 className="text-xs font-black text-emerald-500 uppercase tracking-widest mb-4">{item.label}</h4>
+                        <h4 className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-4">{item.label}</h4>
                         <div className="grid gap-3">
                             {item.links.map(l => (
                             <Link key={l.name} href={l.href} onClick={() => setMobileOpen(false)} className="text-xl font-bold text-white hover:text-emerald-400 transition-colors block pl-4 border-l-2 border-white/10 hover:border-emerald-500">
