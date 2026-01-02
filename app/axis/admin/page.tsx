@@ -3,7 +3,8 @@ export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { TrendingUp, Users, MessageSquare, Landmark } from "lucide-react";
+// FIXED: Added Clock and Landmark to the import list
+import { TrendingUp, Users, MessageSquare, Landmark, Clock, ShieldCheck } from "lucide-react";
 
 export default async function AdminMasterDashboard() {
   const sessionToken = cookies().get("axis_session")?.value;
@@ -12,9 +13,10 @@ export default async function AdminMasterDashboard() {
     include: { user: true }
   });
 
+  // Security Guard
   if (!session || session.user.role !== "ADMIN") redirect("/login");
 
-  // Aggregate System-Wide Intelligence
+  // System Intelligence Gathering
   const stats = await prisma.$transaction([
     prisma.user.count({ where: { role: "USER" } }),
     prisma.messageLog.aggregate({
@@ -52,23 +54,22 @@ export default async function AdminMasterDashboard() {
           <MetricCard title="Net Profit (Minor)" value={netProfit.toLocaleString()} icon={<TrendingUp size={20}/>} color="text-green-400" />
         </div>
 
-        {/* RECENT ACTIVITY / QUICK ACTIONS */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <section className="space-y-6">
-                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">System Controls</h3>
-                <div className="grid grid-cols-2 gap-4">
-                    <ActionButton label="Approve Senders" href="/axis/admin/sender-ids" count={pendingSenders} />
-                    <ActionButton label="Manage Resellers" href="/axis/admin/users" />
-                    <ActionButton label="System Logs" href="/axis/admin/logs" />
-                    <ActionButton label="Rate Config" href="/axis/admin/rates" />
-                </div>
-            </section>
-        </div>
+        {/* SYSTEM CONTROLS */}
+        <section className="space-y-6">
+            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">System Controls</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <ActionButton label="Approve Senders" href="/axis/admin/sender-ids" count={pendingSenders} />
+                <ActionButton label="Manage Resellers" href="/axis/admin/users" />
+                <ActionButton label="System Logs" href="/axis/admin/logs" />
+                <ActionButton label="Rate Config" href="/axis/admin/rates" />
+            </div>
+        </section>
       </div>
     </div>
   );
 }
 
+// Internal Components for Functional Purity
 function MetricCard({ title, value, icon, color, pulse }: any) {
     return (
         <div className="bg-[#050505] border border-white/10 p-6 rounded-sm relative overflow-hidden group">
@@ -76,7 +77,7 @@ function MetricCard({ title, value, icon, color, pulse }: any) {
                 {icon}
             </div>
             <p className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-2">{title}</p>
-            <h2 className={`text-3xl font-black italic tracking-tight ${color} ${pulse ? 'animate-pulse' : ''}`}>
+            <h2 className={`text-3xl font-black italic tracking-tight ${color} ${pulse ? 'animate-pulse text-orange-400 shadow-[0_0_20px_rgba(251,146,60,0.2)]' : ''}`}>
                 {value}
             </h2>
         </div>
@@ -87,7 +88,7 @@ function ActionButton({ label, href, count }: any) {
     return (
         <a href={href} className="flex items-center justify-between bg-white/[0.03] border border-white/5 p-4 hover:border-pink-600/50 hover:bg-white/5 transition-all group">
             <span className="text-[10px] font-bold uppercase tracking-widest group-hover:text-pink-500">{label}</span>
-            {count > 0 && <span className="bg-pink-600 text-[9px] px-2 py-0.5 font-black">{count}</span>}
+            {count > 0 && <span className="bg-pink-600 text-[9px] px-2 py-0.5 font-black text-white">{count}</span>}
         </a>
     );
 }
