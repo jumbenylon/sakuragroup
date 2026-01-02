@@ -2,85 +2,90 @@
 
 import React from "react";
 import { QuickSendWidget } from "@/components/axis/quick-send";
-import { Activity, Users, ArrowUpRight } from "lucide-react";
+import { Activity, Database, Server, ArrowUpRight } from "lucide-react";
 
 export default function AxisPortalPage() {
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
+    <div className="space-y-8">
       
-      {/* Welcome Block */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-white/5 pb-8">
+      {/* HEADER ACTIONS */}
+      <div className="flex justify-between items-end border-b border-white/10 pb-6">
         <div>
-           <h1 className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tight">Command Center</h1>
-           <p className="text-slate-400 text-sm">Manage your communication streams and monitor throughput.</p>
+           <h1 className="text-2xl font-bold text-white uppercase tracking-tight">System Overview</h1>
+           <p className="text-slate-500 text-xs font-mono mt-1">NODE: DAR-ES-SALAAM-01 • STATUS: OPTIMAL</p>
         </div>
-        <div className="flex gap-3">
-            <button className="px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-widest rounded-lg transition-colors border border-white/10">
-                Manage Keys
+        <div className="flex gap-4">
+            <button className="px-5 py-2.5 bg-white text-black font-bold text-xs uppercase tracking-widest hover:bg-slate-200 transition-colors">
+                New Campaign
             </button>
-            <button className="px-6 py-3 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 font-bold text-xs uppercase tracking-widest rounded-lg transition-colors border border-emerald-500/20">
-                Top Up Balance
+            <button className="px-5 py-2.5 border border-white/20 text-white font-bold text-xs uppercase tracking-widest hover:bg-white/5 transition-colors">
+                Add Credits
             </button>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-         {/* LEFT: THE WIDGET (Takes 2 columns) */}
-         <div className="lg:col-span-2 space-y-8">
-             <QuickSendWidget />
-             
-             {/* Mini Stats Grid */}
-             <div className="grid grid-cols-2 gap-4">
-                <div className="p-6 rounded-2xl bg-[#0B1120] border border-white/5">
-                    <div className="flex items-center gap-3 mb-4 text-slate-500">
-                        <Activity size={18} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Success Rate</span>
+      <div className="grid lg:grid-cols-12 gap-8">
+         
+         {/* LEFT COLUMN: CONSOLE (8 Cols) */}
+         <div className="lg:col-span-8 space-y-8">
+             {/* WIDGET WRAPPER */}
+             <div className="bg-[#050505] border border-white/10">
+                 <div className="px-6 py-3 border-b border-white/10 bg-[#0a0a0a] flex justify-between items-center">
+                    <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Direct Dispatch Protocol</span>
+                    <div className="flex gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span className="text-[10px] font-mono text-emerald-500">GSM GATEWAY ACTIVE</span>
                     </div>
-                    <div className="text-3xl font-mono font-bold text-white">99.8%</div>
-                </div>
-                <div className="p-6 rounded-2xl bg-[#0B1120] border border-white/5">
-                    <div className="flex items-center gap-3 mb-4 text-slate-500">
-                        <Users size={18} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Active Contacts</span>
+                 </div>
+                 <div className="p-0">
+                    {/* Reuse existing widget logic but the container handles the style */}
+                    <QuickSendWidget /> 
+                 </div>
+             </div>
+
+             {/* METRIC PLATES */}
+             <div className="grid grid-cols-3 gap-4">
+                {[
+                    { l: "Success Rate", v: "99.9%", i: Activity },
+                    { l: "Throughput", v: "450/sec", i: Server },
+                    { l: "Database", v: "14.2k", i: Database },
+                ].map((m, i) => (
+                    <div key={i} className="bg-[#050505] border border-white/10 p-6 flex items-start justify-between group hover:border-white/20 transition-colors">
+                        <div>
+                            <span className="text-[10px] font-black uppercase text-slate-600 tracking-widest block mb-2">{m.l}</span>
+                            <span className="text-2xl font-mono text-white">{m.v}</span>
+                        </div>
+                        <m.i className="text-slate-700 group-hover:text-pink-600 transition-colors" size={20} />
                     </div>
-                    <div className="text-3xl font-mono font-bold text-white">14,205</div>
-                </div>
+                ))}
              </div>
          </div>
 
-         {/* RIGHT: LIVE FEED */}
-         <div className="space-y-6">
-            <div className="p-6 rounded-3xl bg-[#0B1120] border border-white/5 h-full">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Live Traffic</h3>
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"/>
+         {/* RIGHT COLUMN: LOGS (4 Cols) */}
+         <div className="lg:col-span-4">
+            <div className="bg-[#050505] border border-white/10 h-full flex flex-col">
+                <div className="px-6 py-4 border-b border-white/10 bg-[#0a0a0a]">
+                    <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Traffic Logs</h3>
                 </div>
                 
-                <div className="space-y-0 relative">
-                    {/* Timeline Line */}
-                    <div className="absolute left-[7px] top-2 bottom-2 w-[1px] bg-white/5" />
-                    
-                    {[1,2,3,4,5].map((i) => (
-                        <div key={i} className="flex gap-4 items-start py-3 group">
-                            <div className="w-3.5 h-3.5 rounded-full bg-[#050912] border border-white/10 group-hover:border-emerald-500 transition-colors z-10 shrink-0 mt-1" />
-                            <div className="flex-1">
-                                <div className="flex justify-between items-start">
-                                    <span className="text-xs text-white font-bold group-hover:text-emerald-400 transition-colors">Campaign #{2024 + i}</span>
-                                    <span className="text-[10px] font-mono text-slate-600">10:4{i} AM</span>
-                                </div>
-                                <div className="text-[10px] text-slate-500 mt-1">
-                                    Delivered to <span className="text-slate-300">Vodacom</span> • 150 Recipients
-                                </div>
-                            </div>
+                <div className="flex-1 p-0 font-mono text-xs">
+                    {[...Array(8)].map((_, i) => (
+                        <div key={i} className="flex gap-3 px-6 py-3 border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                            <span className="text-slate-600">10:42:{10+i}</span>
+                            <span className="text-pink-500">OUT</span>
+                            <span className="text-slate-400 truncate">CID-8829{i} :: Delivered to Vodacom</span>
                         </div>
                     ))}
                 </div>
 
-                <button className="w-full mt-8 py-3 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-colors flex items-center justify-center gap-2">
-                    View Full Logs <ArrowUpRight size={14} />
-                </button>
+                <div className="p-4 border-t border-white/10">
+                    <button className="w-full py-3 border border-white/10 text-slate-400 hover:text-white hover:border-white/30 text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                        System Audit <ArrowUpRight size={12} />
+                    </button>
+                </div>
             </div>
          </div>
+
       </div>
     </div>
   );
