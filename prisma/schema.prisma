@@ -1,4 +1,4 @@
-// v1.1
+// v1.2 - Added User model for Multi-tenancy
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -9,25 +9,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  password      String       
+  role          String       @default("USER") // ADMIN, USER, RESELLER
+  status        String       @default("PENDING")
+  balance       Float        @default(0.0)
+  smsRate       Int          @default(25)
+  contacts      Contact[]
+  messages      MessageLog[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
 model Contact {
   id        String   @id @default(uuid())
-  phone     String   @unique
+  phone     String
   firstName String?
   lastName  String?
-  tags      String[]
+  userId    String?  // Linked to User
+  user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([phone, userId])
 }
 
 model MessageLog {
-  id          String   @id @default(uuid())
-  recipient   String
-  message     String
-  status      String   
-  cost        Int      
-  segmentCount Int     
-  providerId  String?  
-  errorCode   Int?     
-  errorReason String?  
-  sentAt      DateTime @default(now())
+  id           String   @id @default(uuid())
+  userId       String?  // Linked to User
+  user         User?    @relation(fields: [userId], references: [id])
+  recipient    String
+  message      String
+  status       String   
+  costToAdmin  Int      @default(19)
+  costToTenant Int      @default(25)
+  providerId   String?  
+  sentAt       DateTime @default(now())
 }
