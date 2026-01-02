@@ -1,4 +1,4 @@
-// v2.3 — Production Gold Standard (Immutable Ledger & Security Audit)
+// v2.4 — Enterprise Hardened (Enums & Referential Integrity)
 
 generator client {
   provider      = "prisma-client-js"
@@ -10,14 +10,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AccountStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum CampaignStatus {
+  DRAFT
+  COMMITTED
+  QUEUED
+  PROCESSING
+  COMPLETE
+  PARTIAL
+}
+
+enum MessageStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+}
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String        @id @default(uuid())
+  email     String        @unique
   password  String
-  role      String   @default("USER") // USER | ADMIN
-  status    String   @default("ACTIVE")
-  balance   Int      @default(0) // Stored in TZS minor units (cents)
-  smsRate   Int      @default(25)
+  role      Role          @default(USER)
+  status    AccountStatus @default(ACTIVE)
+  balance   Int           @default(0) // TZS Minor Units
+  smsRate   Int           @default(25)
 
   senderIds SenderId[]
   campaigns Campaign[]
@@ -49,11 +76,11 @@ model ApiKey {
 }
 
 model SenderId {
-  id          String   @id @default(uuid())
+  id          String        @id @default(uuid())
   name        String
-  status      String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  status      MessageStatus @default(PENDING) // Reusing PENDING/SENT/FAILED as proxy for Approval
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   approvedBy  String?
   approvedAt  DateTime?
@@ -69,53 +96,50 @@ model SenderId {
 }
 
 model Campaign {
-  id               String       @id @default(uuid())
+  id               String         @id @default(uuid())
   userId           String
-  user             User         @relation(fields: [userId], references: [id])
+  user             User           @relation(fields: [userId], references: [id])
   
-  // Referential Link
   senderId         String?
-  sender           SenderId?    @relation(fields: [senderId], references: [id], onDelete: SetNull)
+  sender           SenderId?      @relation(fields: [senderId], references: [id], onDelete: SetNull)
 
-  // Immutable Audit Snapshot
   senderName       String
   metaIp           String?
   metaUa           String?
 
-  status           String       // DRAFT | COMMITTED | QUEUED | PROCESSING | COMPLETE | PARTIAL
+  status           CampaignStatus @default(DRAFT)
   totalRecipients  Int
   totalSegments    Int
-  totalCost        Int          // minor units
+  totalCost        Int            // minor units
   
   messages         MessageLog[]
-  createdAt        DateTime     @default(now())
+  createdAt        DateTime       @default(now())
 }
 
 model MessageLog {
-  id               String    @id @default(uuid())
+  id               String        @id @default(uuid())
   campaignId       String?   
-  campaign         Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  campaign         Campaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   
   userId           String
-  user             User      @relation(fields: [userId], references: [id])
+  user             User          @relation(fields: [userId], references: [id])
   
   senderId         String?
-  sender           SenderId? @relation(fields: [senderId], references: [id], onDelete: SetNull)
+  sender           SenderId?     @relation(fields: [senderId], references: [id], onDelete: SetNull)
   
-  // Immutable Audit Snapshot
   senderName       String?
 
   recipient        String
   message          String
   segmentCount     Int
   costToTenant     Int       
-  costToAdmin      Int       @default(19) 
-  status           String    // PENDING | PROCESSING | SENT | FAILED
+  costToAdmin      Int           @default(19) 
+  status           MessageStatus @default(PENDING)
 
   providerMessageId String?
   providerError      String?
 
   scheduledAt      DateTime?
   sentAt           DateTime?
-  createdAt        DateTime  @default(now())
+  createdAt        DateTime      @default(now())
 }
