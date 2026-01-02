@@ -7,23 +7,31 @@ import {
   motion, 
   useScroll, 
   useTransform, 
-  useSpring, 
   useMotionValue, 
   useMotionTemplate,
   AnimatePresence 
 } from "framer-motion";
 import { 
-  ArrowRight, Truck, Package, ShieldCheck, 
-  MapPin, Clock, FileCheck, Building2, 
-  Navigation, Lock, FileText, CheckCircle2,
-  Globe, Shield, BarChart3, Zap
+  ArrowRight, Truck, Lock, Globe, Zap, Navigation, 
+  Clock, Users // Added Users to prevent import errors
 } from "lucide-react";
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
-// --- 1. KINETIC UTILITIES ---
+// --- 1. KINETIC UTILITIES (FIXED TYPES) ---
 
-const ScrollReveal = ({ children, delay = 0, direction = "up" }: { children: React.ReactNode, delay?: number, direction?: "up" | "left" | "right" }) => {
+// Corrected: Added className to the type definition and component props
+const ScrollReveal = ({ 
+  children, 
+  delay = 0, 
+  direction = "up",
+  className = "" 
+}: { 
+  children: React.ReactNode, 
+  delay?: number, 
+  direction?: "up" | "left" | "right",
+  className?: string 
+}) => {
   const xOffset = direction === "left" ? -50 : direction === "right" ? 50 : 0;
   const yOffset = direction === "up" ? 50 : 0;
 
@@ -33,6 +41,7 @@ const ScrollReveal = ({ children, delay = 0, direction = "up" }: { children: Rea
       whileInView={{ opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
     >
       {children}
     </motion.div>
@@ -89,8 +98,6 @@ const Hero = () => {
             priority
          />
          <div className="absolute inset-0 bg-gradient-to-r from-[#050912] via-[#050912]/80 to-transparent" />
-         {/* Kinetic Overlay */}
-         <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,rgba(234,179,8,0.03)_60deg,transparent_60deg)] animate-[spin_10s_linear_infinite] opacity-50 w-[200vw] h-[200vw] -left-[50vw] -top-[50vw]" />
       </motion.div>
 
       <div className="relative z-10 max-w-7xl mx-auto w-full">
@@ -117,9 +124,6 @@ const Hero = () => {
                     <Link href="/#contact" className="px-14 py-6 bg-yellow-500 text-black font-black text-xs uppercase tracking-widest rounded-full hover:scale-105 transition-transform flex items-center justify-center gap-3 shadow-2xl shadow-yellow-500/20">
                         Dispatch Now <ArrowRight size={18} />
                     </Link>
-                    <button className="px-14 py-6 border border-white/10 text-white font-black text-xs uppercase tracking-widest rounded-full hover:bg-white/5 transition-all">
-                        Operational Desk
-                    </button>
                 </div>
             </div>
         </ScrollReveal>
@@ -167,7 +171,6 @@ const ServiceMosaic = () => {
 
 const NetworkSection = () => (
     <section className="py-40 px-6 bg-[#0f172a] relative border-y border-white/5 overflow-hidden">
-        {/* Animated Grid Lines */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:60px_60px]" />
         
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row gap-20 items-center">
