@@ -1,122 +1,135 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
-  LayoutDashboard, MessageSquare, Users, CreditCard, 
-  Settings, LogOut, Bell, Menu, X, ChevronRight 
+  LayoutDashboard, PenTool, Users, History, 
+  Settings, LogOut, CreditCard, Bell, Menu, X 
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
-export default function AxisPortalLayout({ children }: { children: React.ReactNode }) {
+export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [mobileMenu, setMobileMenu] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navLinks = [
-    { name: "Overview", href: "/axis/portal", icon: LayoutDashboard },
-    { name: "Campaigns", href: "/axis/portal/campaigns", icon: MessageSquare },
-    { name: "Audience", href: "/axis/portal/contacts", icon: Users },
-    { name: "Billing", href: "/axis/portal/billing", icon: CreditCard },
-    { name: "Settings", href: "/axis/portal/settings", icon: Settings },
+  const menu = [
+    { name: "Overview", icon: LayoutDashboard, path: "/axis/portal" },
+    { name: "Compose", icon: PenTool, path: "/axis/portal/compose" },
+    { name: "Audience", icon: Users, path: "/axis/portal/contacts" },
+    { name: "Campaigns", icon: History, path: "/axis/portal/campaigns" },
+    { name: "Billing", icon: CreditCard, path: "/axis/portal/billing" },
+    { name: "System", icon: Settings, path: "/axis/portal/settings" },
   ];
 
   return (
-    <div className="min-h-screen bg-[#020202] text-white font-sans selection:bg-pink-600/30 overflow-x-hidden flex">
+    <div className="min-h-screen bg-[#020202] text-white font-sans selection:bg-pink-500/30 flex">
       
-      {/* ENTERPRISE SIDEBAR */}
-      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 border-r border-white/10 bg-[#050505] flex-col z-50">
-        
-        {/* BRANDING AREA */}
-        <div className="h-32 flex items-center justify-center border-b border-white/5 bg-black">
-             <div className="relative w-40 h-20">
-                <Image 
-                    src="https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png" 
-                    alt="Axis" 
-                    fill
-                    className="object-contain"
-                    priority
-                />
-             </div>
+      {/* SIDEBAR (Desktop) */}
+      <aside className="hidden md:flex flex-col w-64 border-r border-white/10 bg-[#050505] fixed h-full z-20">
+        {/* Brand */}
+        <div className="h-20 flex items-center px-8 border-b border-white/10">
+           <div className="font-black text-xl tracking-tighter">
+              AXIS<span className="text-pink-500">.</span>
+           </div>
         </div>
 
-        {/* NAVIGATION */}
-        <div className="flex-1 py-6 space-y-1">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link 
-                key={link.name} 
-                href={link.href}
-                className={`flex items-center gap-3 px-6 py-3 text-xs font-bold uppercase tracking-widest transition-all border-l-2 ${
-                  isActive 
-                    ? "bg-white/5 text-white border-pink-600" 
-                    : "text-slate-500 border-transparent hover:text-white hover:bg-white/[0.02]"
-                }`}
-              >
-                <link.icon size={16} className={isActive ? "text-pink-500" : "text-slate-600"} />
-                {link.name}
-              </Link>
-            );
-          })}
-        </div>
+        {/* Navigation */}
+        <nav className="flex-1 py-8 px-4 space-y-2">
+           <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest px-4 mb-4">
+              Main Menu
+           </div>
+           {menu.map((item) => {
+             const isActive = pathname === item.path;
+             return (
+               <Link 
+                 key={item.name} 
+                 href={item.path}
+                 className={`flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-wide rounded-sm transition-all group ${
+                    isActive 
+                    ? "bg-pink-600 text-white shadow-[0_0_20px_rgba(236,72,153,0.3)]" 
+                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                 }`}
+               >
+                 <item.icon size={16} className={isActive ? "text-white" : "text-slate-500 group-hover:text-white"} />
+                 {item.name}
+               </Link>
+             );
+           })}
+        </nav>
 
-        {/* FOOTER ACTIONS */}
-        <div className="p-6 border-t border-white/10 bg-[#020202]">
-            <button className="flex items-center gap-3 text-slate-600 hover:text-white transition-colors">
-                <LogOut size={16} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Sign Out</span>
-            </button>
+        {/* User Footer */}
+        <div className="p-4 border-t border-white/10">
+            <div className="bg-[#0a0a0a] p-3 rounded-sm border border-white/5 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center text-[10px] font-bold">
+                    SG
+                </div>
+                <div className="flex-1">
+                    <div className="text-xs font-bold text-white">Sakura Admin</div>
+                    <div className="text-[9px] text-emerald-500">● Online</div>
+                </div>
+                <button className="text-slate-500 hover:text-white"><LogOut size={14}/></button>
+            </div>
         </div>
       </aside>
 
-      {/* MOBILE TOP BAR */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-black border-b border-white/10 z-50 flex items-center justify-between px-6">
-         <div className="relative w-24 h-8">
-            <Image 
-                src="https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png" 
-                alt="Axis" 
-                fill
-                className="object-contain object-left"
-            />
-         </div>
-         <button onClick={() => setMobileMenu(!mobileMenu)} className="text-white">
-            {mobileMenu ? <X /> : <Menu />}
-         </button>
-      </div>
-
-      {/* MAIN CONTENT WRAPPER */}
-      <main className="flex-1 lg:pl-64 pt-16 lg:pt-0">
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
         
-        {/* UTILITY HEADER */}
-        <header className="h-16 border-b border-white/10 flex items-center justify-between px-8 bg-[#050505] sticky top-0 z-40">
-           {/* Breadcrumbs / Context */}
-           <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
-              <span>SAKURA GROUP</span>
-              <ChevronRight size={12} />
-              <span className="text-white">AXIS GATEWAY</span>
-           </div>
+        {/* TOP BAR */}
+        <header className="h-20 bg-[#020202]/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-10 flex items-center justify-between px-8">
+            {/* Mobile Toggle */}
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-white">
+                <Menu />
+            </button>
 
-           {/* Metrics & Profile */}
-           <div className="flex items-center gap-6">
-              <div className="text-right">
-                 <span className="block text-[9px] font-black uppercase text-slate-600 tracking-widest">Balance (TZS)</span>
-                 <span className="font-mono text-lg text-white">24,500.00</span>
-              </div>
-              <div className="h-8 w-[1px] bg-white/10" />
-              <button className="text-slate-400 hover:text-white transition-colors">
-                 <Bell size={18} />
-              </button>
-           </div>
+            {/* Breadcrumb / Title */}
+            <div className="hidden md:block">
+                <div className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">
+                    Sakura Group / Axis Portal / <span className="text-white">Active Session</span>
+                </div>
+            </div>
+
+            {/* Status Indicators */}
+            <div className="flex items-center gap-6">
+                <div className="flex flex-col text-right">
+                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Credits</span>
+                    <span className="text-sm font-mono font-bold text-white">24,500 <span className="text-slate-600">TZS</span></span>
+                </div>
+                <div className="h-8 w-[1px] bg-white/10"></div>
+                <button className="relative">
+                    <Bell size={18} className="text-slate-400 hover:text-white" />
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full animate-pulse"></span>
+                </button>
+            </div>
         </header>
 
-        {/* PAGE CONTENT */}
-        <div className="p-8 max-w-[1600px] mx-auto">
-           {children}
+        {/* DYNAMIC PAGE CONTENT */}
+        <div className="flex-1 p-8 bg-[#020202]">
+            {children}
         </div>
       </main>
 
+      {/* MOBILE MENU OVERLAY */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 bg-black/95 flex flex-col p-8 md:hidden">
+            <div className="flex justify-between items-center mb-8">
+                <span className="font-black text-xl">AXIS.</span>
+                <button onClick={() => setMobileMenuOpen(false)}><X /></button>
+            </div>
+            <nav className="space-y-4">
+                {menu.map((item) => (
+                    <Link 
+                        key={item.name} 
+                        href={item.path} 
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block text-lg font-bold text-slate-300 hover:text-pink-500"
+                    >
+                        {item.name}
+                    </Link>
+                ))}
+            </nav>
+        </div>
+      )}
     </div>
   );
 }
