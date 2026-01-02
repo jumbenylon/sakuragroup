@@ -15,12 +15,14 @@ import {
 import { 
   ArrowRight, MessageCircle, Smartphone, Users, 
   Send, CheckCircle2, Shield, Heart, 
-  Sparkles, Globe, Hash, Server, Zap, Lock
+  Sparkles, Globe, Hash, Server, Zap, Lock, Landmark, TrendingUp
 } from "lucide-react";
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
-// --- 1. SHARED COMPONENTS ---
+// --- CORE ASSETS ---
+const LOGO_URL = "https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png";
+const HERO_IMAGE = "http://googleusercontent.com/image_generation_content/0"; // Your generated market image
+
+// --- SHARED MOTION COMPONENTS ---
 
 const CustomCursor = () => {
   const cursorX = useMotionValue(-100);
@@ -52,41 +54,37 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => (
     <motion.div
         initial={{ opacity: 1 }}
         animate={{ opacity: 0 }}
-        transition={{ duration: 0.5, delay: 2.0 }}
+        transition={{ duration: 0.8, delay: 2.5 }}
         onAnimationComplete={onComplete}
         className="fixed inset-0 z-[100] bg-[#020202] flex items-center justify-center"
     >
         <div className="text-center">
-            <div className="flex gap-2 justify-center mb-6 bg-white/5 px-6 py-4 rounded-full">
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="mb-8"
+            >
+              <Image src={LOGO_URL} alt="Sakura Axis" width={80} height={80} className="mx-auto" />
+            </motion.div>
+            <div className="flex gap-2 justify-center mb-6">
                 {[1,2,3].map((i) => (
                     <motion.div 
                         key={i}
                         animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
                         transition={{ duration: 1, repeat: Infinity, delay: i * 0.1 }}
-                        className="w-2 h-2 bg-pink-500 rounded-full"
+                        className="w-1.5 h-1.5 bg-pink-500 rounded-full"
                     />
                 ))}
             </div>
             <motion.p 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="font-mono text-[10px] text-pink-500 uppercase tracking-widest"
+                className="font-mono text-[9px] text-pink-500/60 uppercase tracking-[0.5em]"
             >
-                Initializing Axis Gateway...
+                Authenticating Axis Core 2026...
             </motion.p>
         </div>
     </motion.div>
-);
-
-const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-50px" }}
-    transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
-  >
-    {children}
-  </motion.div>
 );
 
 const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
@@ -101,371 +99,243 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
 
   return (
     <div
-      className={`relative border border-white/10 bg-[#0a0a0a] overflow-hidden group ${className}`}
+      className={`relative border border-white/5 bg-white/[0.02] overflow-hidden group rounded-sm ${className}`}
       onMouseMove={handleMouseMove}
     >
       <motion.div
-        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-500 group-hover:opacity-100"
         style={{
           background: useMotionTemplate`
             radial-gradient(
-              650px circle at ${mouseX}px ${mouseY}px,
-              rgba(236, 72, 153, 0.10),
+              400px circle at ${mouseX}px ${mouseY}px,
+              rgba(236, 72, 153, 0.15),
               transparent 80%
             )
           `,
         }}
       />
-      <div className="relative h-full">{children}</div>
+      <div className="relative h-full z-10">{children}</div>
     </div>
   );
 };
 
-// --- 2. SECTIONS ---
+// --- SECTIONS ---
 
 const Hero = () => {
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 400]);
+  const y = useTransform(scrollY, [0, 500], [0, 200]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#020202]">
-      {/* Background: Subtle Data Streams */}
-      <motion.div style={{ y }} className="absolute inset-0 z-0">
-         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(236,72,153,0.08),transparent_60%)]" />
-         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#020202] px-6">
+      {/* Background Cinematic Image */}
+      <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
+        <Image 
+          src={HERO_IMAGE} 
+          alt="African Enterprise" 
+          fill 
+          className="object-cover opacity-30 grayscale hover:grayscale-0 transition-all duration-1000" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020202]/80 via-[#020202]/40 to-[#020202]" />
       </motion.div>
 
-      <div className="relative z-10 max-w-7xl mx-auto w-full text-center">
-        <ScrollReveal>
-            <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8 backdrop-blur-md">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-                    System Operational • TCRA Compliant
-                </span>
-            </div>
-            
-            <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter mb-8 leading-[0.9]">
-                Talk to Everyone.<br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-rose-500">
-                    Instantly.
-                </span>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed mb-12 font-light">
-                The enterprise gateway for mass communication. 
-                Orchestrate SMS, WhatsApp, and USSD from a single, military-grade command center.
-            </p>
+      <div className="relative z-10 max-w-5xl mx-auto text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-pink-500/10 border border-pink-500/20 rounded-full mb-8">
+            <Sparkles size={12} className="text-pink-500" />
+            <span className="text-[10px] font-black text-pink-500 uppercase tracking-widest">The 2026 Communication Standard</span>
+          </div>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                <Link 
-                    href="/axis/login" 
-                    target="_blank"
-                    className="px-10 py-5 bg-white text-black font-bold rounded-full transition-all hover:scale-105 flex items-center gap-2 group"
-                >
-                    Open Console <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <button className="px-10 py-5 border border-white/20 hover:bg-white/5 text-white font-medium rounded-full transition-all text-sm uppercase tracking-widest">
-                    Documentation
-                </button>
-            </div>
-        </ScrollReveal>
+          <h1 className="text-6xl md:text-9xl font-black text-white tracking-tighter mb-8 leading-[0.85] uppercase italic">
+            Sakura<br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20">Axis.</span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed mb-12 font-light">
+            Orchestrate mass-market engagement. A unified gateway for <span className="text-white border-b border-pink-500/50">SMS, WhatsApp, and USSD</span>, built on an immutable financial ledger for the modern African enterprise.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <Link 
+              href="/axis/login" 
+              className="px-12 py-5 bg-white text-black font-bold rounded-sm transition-all hover:bg-pink-500 hover:text-white flex items-center gap-4 group"
+            >
+              LAUNCH CONSOLE <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <button className="text-xs font-black uppercase tracking-[0.3em] text-white/40 hover:text-white transition-colors">
+              View API Documentation
+            </button>
+          </div>
+        </motion.div>
       </div>
+      
+      {/* Decorative Bottom Gradient */}
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#020202] to-transparent z-20" />
     </section>
   );
 };
 
-const TrustedInfrastructure = () => (
-    <section className="py-12 border-y border-white/5 bg-[#050505]">
-        <div className="max-w-7xl mx-auto px-6">
-            <p className="text-center text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-10">
-                Direct Interconnects Established With
-            </p>
-            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
-                {[
-                    "https://storage.googleapis.com/sakura-web/partners/m-pesa-logo.png",
-                    "https://storage.googleapis.com/sakura-web/partners/airtel-logo.png",
-                    "https://storage.googleapis.com/sakura-web/partners/crdb-logo.png",
-                    "https://storage.googleapis.com/sakura-web/partners/selcom-logo.png",
-                    "https://storage.googleapis.com/sakura-web/partners/yas-logo.png"
-                ].map((logo, i) => (
-                    <div key={i} className="relative h-8 w-24 md:h-12 md:w-32 hover:scale-110 transition-transform cursor-help">
-                        <Image 
-                            src={logo} 
-                            alt="Partner" 
-                            fill 
-                            className="object-contain"
-                        />
-                    </div>
-                ))}
+const ChannelMatrix = () => (
+  <section className="py-32 px-6 bg-[#020202] relative border-y border-white/5">
+    <div className="max-w-7xl mx-auto">
+      <div className="grid lg:grid-cols-2 gap-24 items-center">
+        <div>
+          <p className="text-pink-500 font-mono text-[10px] tracking-[0.5em] uppercase mb-4">Channel Orchestration</p>
+          <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-8 italic uppercase">Unified<br/>Messaging.</h2>
+          <div className="space-y-8">
+            <ChannelItem 
+              icon={<MessageCircle className="text-green-500" />} 
+              title="WhatsApp Business" 
+              desc="Rich media delivery with interactive buttons. High-trust communication for 2026."
+            />
+            <ChannelItem 
+              icon={<Smartphone className="text-blue-500" />} 
+              title="Flash SMS & USSD" 
+              desc="Zero-latency transactional alerts and offline interactive menus for deep market penetration."
+            />
+            <ChannelItem 
+              icon={<Send className="text-pink-500" />} 
+              title="Reliable Bulk SMS" 
+              desc="99.9% delivery rate across all major African networks. Fast, cheap, and effective."
+            />
+          </div>
+        </div>
+
+        {/* The Animated Hub Visualization */}
+        <div className="relative aspect-square bg-gradient-to-br from-white/[0.03] to-transparent rounded-full border border-white/5 p-12 flex items-center justify-center">
+            <div className="relative w-32 h-32 bg-white flex items-center justify-center rounded-2xl shadow-[0_0_60px_rgba(255,255,255,0.1)]">
+               <Image src={LOGO_URL} alt="Core" width={60} height={60} />
             </div>
+            {/* Orbiting Elements would go here using absolute positioning and CSS animation */}
+            <div className="absolute inset-0 border border-white/5 rounded-full animate-[spin_20s_linear_infinite]" />
+            <div className="absolute inset-10 border border-white/5 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 );
 
-const WhyAxis = () => (
-    <section className="py-32 px-6 bg-[#020202]">
-        <div className="max-w-4xl mx-auto text-center">
-            <ScrollReveal>
-                <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 tracking-tight">
-                    Fragmentation is the enemy of <br/>
-                    <span className="text-pink-500">Effective Communication.</span>
-                </h2>
-                <div className="space-y-6 text-slate-400 text-lg leading-relaxed font-light">
-                    <p>
-                        Your customers are scattered. Some live on WhatsApp. Others rely on SMS. 
-                        Trying to manage these channels separately is operational suicide.
-                    </p>
-                    <p className="text-white font-medium">
-                        Axis unifies the chaos.
-                    </p>
-                    <p>
-                        One API to reach them all. One dashboard to visualize the data. 
-                        Zero compromise on delivery speed or reliability.
-                    </p>
-                </div>
-            </ScrollReveal>
-        </div>
-    </section>
+function ChannelItem({ icon, title, desc }: any) {
+  return (
+    <div className="flex gap-6 group">
+      <div className="mt-1">{icon}</div>
+      <div>
+        <h4 className="text-white font-bold text-lg mb-1 group-hover:text-pink-500 transition-colors">{title}</h4>
+        <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+const Metrics = () => (
+  <section className="py-24 bg-[#050505] border-b border-white/5">
+    <div className="max-w-7xl mx-auto px-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+        <MetricCard label="Global Throughput" value="500/sec" />
+        <MetricCard label="Average Latency" value="<180ms" />
+        <MetricCard label="Active Connections" value="14 Carriers" />
+        <MetricCard label="Success Rate" value="99.98%" />
+      </div>
+    </div>
+  </section>
 );
 
-const ChannelOrchestration = () => (
-    <section className="py-32 px-6 bg-[#050505] overflow-hidden border-t border-white/5">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-            <ScrollReveal>
-                <div className="inline-block px-3 py-1 border border-pink-500/30 rounded-full text-pink-400 text-[10px] font-bold uppercase tracking-widest mb-6 bg-pink-500/5">
-                    Orchestration Engine
-                </div>
-                <h2 className="text-4xl font-bold text-white mb-6">
-                    Multi-Channel.<br/>Single Logic.
-                </h2>
-                <p className="text-slate-400 text-lg mb-8 leading-relaxed">
-                    Define your message once. Let Axis determine the optimal path to delivery based on user preference and network availability.
-                </p>
-                <ul className="space-y-4">
-                    {[
-                        "WhatsApp: For rich media, PDFs, and high engagement.",
-                        "SMS: For critical alerts and universal reach (99% Open Rate).",
-                        "USSD: For interactive menus and secure banking.",
-                        "Failover Logic: Auto-retry via SMS if WhatsApp fails."
-                    ].map((item, i) => (
-                        <li key={i} className="flex items-start gap-3 text-slate-300 text-sm">
-                            <div className="mt-1 w-4 h-4 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-500">
-                                <CheckCircle2 size={10} />
-                            </div>
-                            {item}
-                        </li>
-                    ))}
-                </ul>
-            </ScrollReveal>
+function MetricCard({ label, value }: any) {
+  return (
+    <div className="text-center md:text-left">
+      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">{label}</p>
+      <p className="text-3xl font-black text-white italic tracking-tighter uppercase">{value}</p>
+    </div>
+  );
+}
 
-            {/* Visual: The Hub */}
-            <ScrollReveal delay={0.2}>
-                <div className="relative h-[450px] bg-[#020202] rounded-3xl border border-white/10 p-8 flex flex-col justify-center items-center shadow-2xl">
-                    {/* Center Core */}
-                    <div className="relative z-20 bg-white text-black w-24 h-24 rounded-2xl flex items-center justify-center font-black text-xl shadow-[0_0_50px_rgba(255,255,255,0.2)]">
-                        AXIS
-                    </div>
-                    
-                    {/* Orbiting Satellites */}
-                    <div className="absolute inset-0">
-                         {/* Ring 1 */}
-                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] border border-white/5 rounded-full animate-[spin_10s_linear_infinite]" />
-                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full animate-[spin_10s_linear_infinite]">
-                             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-3 bg-[#0a0a0a] border border-pink-500/50 p-2 rounded-lg text-pink-500"><MessageCircle size={16}/></div>
-                         </div>
-
-                         {/* Ring 2 */}
-                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-white/5 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
-                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full animate-[spin_15s_linear_infinite_reverse]">
-                             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-3 bg-[#0a0a0a] border border-blue-500/50 p-2 rounded-lg text-blue-500"><Smartphone size={16}/></div>
-                         </div>
-                    </div>
-
-                    <div className="absolute bottom-8 text-[10px] text-slate-500 font-mono">
-                        ROUTING_ALGORITHM :: ACTIVE
-                    </div>
-                </div>
-            </ScrollReveal>
-        </div>
-    </section>
-);
-
-const UseCases = () => (
-    <section className="py-32 px-6 bg-[#020202]">
-        <div className="max-w-7xl mx-auto">
-            <ScrollReveal>
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-                    <div>
-                        <h2 className="text-3xl font-bold text-white mb-2">Built for Scale</h2>
-                        <p className="text-slate-500">From startups to SACCOs, Axis adapts.</p>
-                    </div>
-                    <Link href="/axis/login" className="text-pink-500 font-bold flex items-center gap-2 hover:gap-4 transition-all">
-                        Deploy Now <ArrowRight size={18} />
-                    </Link>
-                </div>
-            </ScrollReveal>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[
-                    { 
-                        title: "Financial Institutions", 
-                        desc: "Send OTPs, transaction alerts, and loan reminders with banking-grade security.",
-                        icon: Lock 
-                    },
-                    { 
-                        title: "Logistics & Delivery", 
-                        desc: "Automated delivery updates via WhatsApp with location maps and driver details.",
-                        icon: Globe 
-                    },
-                    { 
-                        title: "Retail & Marketing", 
-                        desc: "Mass broadcast promotional offers. Segment users by behavior and spend.",
-                        icon: Sparkles 
-                    },
-                    { 
-                        title: "Education", 
-                        desc: "Exam results and fee balances sent directly to parent phones via SMS.",
-                        icon: Users 
-                    },
-                    { 
-                        title: "Community & Govt", 
-                        desc: "Public service announcements and emergency alerts to millions in seconds.",
-                        icon: Server 
-                    },
-                    { 
-                        title: "Developers", 
-                        desc: "Clean REST APIs. Webhooks for delivery reports. SDKs for Node and Python.",
-                        icon: Hash 
-                    }
-                ].map((u, i) => (
-                    <ScrollReveal key={i} delay={i * 0.1}>
-                        <SpotlightCard className="p-8 rounded-sm h-full hover:border-pink-500/30 transition-colors">
-                            <u.icon className="text-white mb-6" size={24} />
-                            <h3 className="text-lg font-bold text-white mb-3">{u.title}</h3>
-                            <p className="text-slate-400 text-sm leading-relaxed">{u.desc}</p>
-                        </SpotlightCard>
-                    </ScrollReveal>
-                ))}
-            </div>
-        </div>
-    </section>
-);
-
-const TechnicalSpecs = () => (
-    <section className="py-24 px-6 bg-[#050505] border-y border-white/5">
-        <div className="max-w-7xl mx-auto">
-            <div className="grid md:grid-cols-4 gap-8 divide-y md:divide-y-0 md:divide-x divide-white/10">
-                {[
-                    { l: "Uptime SLA", v: "99.95%" },
-                    { l: "Throughput", v: "500 SMS/s" },
-                    { l: "Global Reach", v: "190+ Countries" },
-                    { l: "Latency", v: "< 200ms" },
-                ].map((s, i) => (
-                    <div key={i} className="text-center py-8 md:py-0">
-                        <div className="text-4xl font-black text-white mb-2 font-mono">{s.v}</div>
-                        <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">{s.l}</div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    </section>
-);
-
-const Pricing = () => (
-    <section className="py-32 px-6 bg-[#020202]">
-        <div className="max-w-5xl mx-auto text-center">
-            <ScrollReveal>
-                <h2 className="text-4xl font-bold text-white mb-6">Transparent Utility Pricing</h2>
-                <p className="text-slate-400 mb-16 max-w-2xl mx-auto">
-                    No setup fees. No monthly contracts. You pay for what you consume.
-                </p>
-
-                <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-                    {/* STANDARD */}
-                    <div className="p-10 rounded-sm bg-[#0a0a0a] border border-white/10 flex flex-col items-center hover:border-white/20 transition-colors">
-                        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Transactional SMS</div>
-                        <div className="text-6xl font-black text-white mb-2 tracking-tighter">25 <span className="text-lg font-normal text-slate-500">TZS</span></div>
-                        <div className="text-slate-500 text-sm mb-8">Per Message Segment</div>
-                        <ul className="space-y-4 text-left w-full mb-10 border-t border-white/5 pt-8">
-                            <li className="flex items-center gap-3 text-slate-300 text-sm"><CheckCircle2 size={16} className="text-emerald-500"/> Instant Delivery</li>
-                            <li className="flex items-center gap-3 text-slate-300 text-sm"><CheckCircle2 size={16} className="text-emerald-500"/> Sender ID Included</li>
-                            <li className="flex items-center gap-3 text-slate-300 text-sm"><CheckCircle2 size={16} className="text-emerald-500"/> API Access</li>
-                        </ul>
-                        <Link href="/axis/login" className="w-full py-4 bg-white/5 text-white font-bold rounded-sm hover:bg-white/10 transition-colors text-sm uppercase tracking-widest">
-                            Create Account
-                        </Link>
-                    </div>
-
-                    {/* ENTERPRISE */}
-                    <div className="p-10 rounded-sm bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a] border border-pink-500/30 flex flex-col items-center relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-pink-500/20 blur-[50px] group-hover:bg-pink-500/30 transition-colors" />
-                        
-                        <div className="text-xs font-bold text-pink-400 uppercase tracking-widest mb-4">Volume / Enterprise</div>
-                        <div className="text-5xl font-black text-white mb-2 tracking-tighter">Custom</div>
-                        <div className="text-slate-500 text-sm mb-8">Tailored Rate Cards</div>
-                        <ul className="space-y-4 text-left w-full mb-10 border-t border-white/5 pt-8">
-                            <li className="flex items-center gap-3 text-white text-sm"><CheckCircle2 size={16} className="text-pink-500"/> Dedicated Account Manager</li>
-                            <li className="flex items-center gap-3 text-white text-sm"><CheckCircle2 size={16} className="text-pink-500"/> Post-paid Billing</li>
-                            <li className="flex items-center gap-3 text-white text-sm"><CheckCircle2 size={16} className="text-pink-500"/> SLA Guarantees</li>
-                        </ul>
-                        <button className="w-full py-4 bg-pink-600 text-white font-bold rounded-sm hover:bg-pink-500 transition-colors text-sm uppercase tracking-widest shadow-[0_0_20px_rgba(236,72,153,0.3)]">
-                            Contact Sales
-                        </button>
-                    </div>
-                </div>
-            </ScrollReveal>
-        </div>
-    </section>
-);
-
-const CTA = () => (
-    <section className="py-32 px-6 bg-[#020202]">
-        <div className="max-w-4xl mx-auto bg-[#0a0a0a] border border-white/10 p-12 md:p-24 rounded-sm text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500" />
-            <ScrollReveal>
-                <h2 className="text-4xl md:text-6xl font-black text-white mb-8 tracking-tighter">
-                    Ready to Broadcast?
-                </h2>
-                <p className="text-xl text-slate-400 mb-12 max-w-lg mx-auto">
-                    Join the leading businesses in Tanzania using Axis to connect with their audience.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                    <Link href="/axis/login" className="px-12 py-5 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform flex items-center justify-center gap-2">
-                        Get Started <ArrowRight size={20} />
-                    </Link>
-                </div>
-                <p className="mt-8 text-[10px] text-slate-600 font-mono uppercase tracking-widest">
-                    Secure • Scalable • Simple
-                </p>
-            </ScrollReveal>
-        </div>
-    </section>
-);
+// --- MAIN PAGE ---
 
 export default function AxisPage() {
   const [loading, setLoading] = useState(true);
 
   return (
-    <main className="min-h-screen bg-[#020202] text-white selection:bg-pink-500 selection:text-white cursor-default">
+    <main className="bg-[#020202] text-white selection:bg-pink-500 cursor-default">
       <CustomCursor />
       <AnimatePresence>
         {loading && <Preloader onComplete={() => setLoading(false)} />}
       </AnimatePresence>
-      
+
       {!loading && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            <GlobalNavbar />
-            <Hero />
-            <TrustedInfrastructure />
-            <WhyAxis />
-            <ChannelOrchestration />
-            <UseCases />
-            <TechnicalSpecs />
-            <Pricing />
-            <CTA />
-            <GlobalFooter />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.5 }}>
+          <nav className="fixed top-0 left-0 w-full z-[90] p-8 flex justify-between items-center mix-blend-difference">
+             <Image src={LOGO_URL} alt="Sakura" width={40} height={40} />
+             <Link href="/axis/login" className="text-[10px] font-black uppercase tracking-widest text-white border-b border-white/20 pb-1">Enter Console</Link>
+          </nav>
+
+          <Hero />
+          
+          <section className="py-12 bg-white text-black flex overflow-hidden">
+             <div className="flex animate-[marquee_30s_linear_infinite] whitespace-nowrap gap-16 text-xs font-black uppercase tracking-[0.4em]">
+                {[1,2,3,4,5].map(i => (
+                  <span key={i}>SAKURA AXIS • ENTERPRISE GATEWAY • 2026 EDITION • SMS • WHATSAPP • USSD</span>
+                ))}
+             </div>
+          </section>
+
+          <ChannelMatrix />
+
+          {/* Use Cases Grid */}
+          <section className="py-32 px-6">
+            <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-4">
+              <SpotlightCard className="p-12 aspect-square flex flex-col justify-end">
+                <Landmark className="mb-6 text-blue-500" size={32} />
+                <h3 className="text-2xl font-black uppercase italic mb-4">Banking</h3>
+                <p className="text-slate-500 text-sm">Secure OTP delivery and transaction alerts for SACCOs and Microfinance.</p>
+              </SpotlightCard>
+              <SpotlightCard className="p-12 aspect-square flex flex-col justify-end">
+                <TrendingUp className="mb-6 text-green-500" size={32} />
+                <h3 className="text-2xl font-black uppercase italic mb-4">Marketing</h3>
+                <p className="text-slate-500 text-sm">Mass-scale promotional broadcasts with real-time conversion tracking.</p>
+              </SpotlightCard>
+              <SpotlightCard className="p-12 aspect-square flex flex-col justify-end">
+                <ShieldCheck className="mb-6 text-pink-500" size={32} />
+                <h3 className="text-2xl font-black uppercase italic mb-4">Security</h3>
+                <p className="text-slate-500 text-sm">Military-grade encryption for critical infrastructure communications.</p>
+              </SpotlightCard>
+            </div>
+          </section>
+
+          <Metrics />
+
+          {/* Final Call to Action */}
+          <section className="py-64 flex flex-col items-center text-center px-6">
+             <motion.div 
+               whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
+               className="space-y-12"
+             >
+                <h2 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter">Ready to<br/>Connect?</h2>
+                <Link href="/axis/login" className="inline-block px-16 py-6 bg-white text-black font-black text-sm uppercase tracking-widest rounded-full hover:bg-pink-500 hover:text-white transition-all shadow-2xl">
+                   Start Your Campaign
+                </Link>
+             </motion.div>
+          </section>
+
+          <footer className="p-12 border-t border-white/5 text-center">
+             <Image src={LOGO_URL} alt="Sakura" width={30} height={30} className="mx-auto mb-6 opacity-30" />
+             <p className="text-[9px] text-slate-600 uppercase tracking-widest font-mono">© 2026 Sakura Group • Precision Engineering for Africa</p>
+          </footer>
         </motion.div>
       )}
     </main>
   );
 }
+
+// Simple keyframe for marquee
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+`;
+if (typeof document !== 'undefined') document.head.appendChild(style);
