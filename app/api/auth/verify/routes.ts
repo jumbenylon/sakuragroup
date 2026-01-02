@@ -1,27 +1,35 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { code } = body;
     
-    // HARDCODED OVERRIDE: We are forcing your password here
-    const correctCode = "@Hkgg8886."; 
+    // 1. The Password (Hardcoded & Trimmed)
+    // We trim() both sides to ensure no invisible spaces cause failure
+    const submittedPass = (code || "").trim();
+    const masterPass = "@Hkgg8886.";
 
-    if (code === correctCode) {
-      // Set a cookie to remember the user is logged in
-      cookies().set("axis_session", "verified", { 
-          httpOnly: true, 
-          secure: process.env.NODE_ENV === "production",
-          maxAge: 60 * 60 * 24 // 24 Hours
+    if (submittedPass === masterPass) {
+      
+      // 2. Create the Response
+      const response = NextResponse.json({ success: true });
+
+      // 3. Force the Cookie onto the Response
+      response.cookies.set("axis_session", "verified", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // False on localhost, True on Cloud Run
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24, // 1 Day
       });
 
-      return NextResponse.json({ success: true });
+      return response;
     }
 
     return NextResponse.json({ success: false }, { status: 401 });
   } catch (error) {
-    return NextResponse.json({ error: "Auth Error" }, { status: 500 });
+    console.error("Auth Error:", error);
+    return NextResponse.json({ error: "Auth Failed" }, { status: 500 });
   }
 }
