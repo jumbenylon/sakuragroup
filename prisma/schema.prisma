@@ -1,4 +1,4 @@
-// v2.2 — Final Production Schema (Referential Integrity Update)
+// v2.3 — Production Gold Standard (Immutable Ledger & Security Audit)
 
 generator client {
   provider      = "prisma-client-js"
@@ -14,9 +14,9 @@ model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
-  role      String   @default("USER")
+  role      String   @default("USER") // USER | ADMIN
   status    String   @default("ACTIVE")
-  balance   Int      @default(0)
+  balance   Int      @default(0) // Stored in TZS minor units (cents)
   smsRate   Int      @default(25)
 
   senderIds SenderId[]
@@ -51,7 +51,7 @@ model ApiKey {
 model SenderId {
   id          String   @id @default(uuid())
   name        String
-  status      String   @default("PENDING")
+  status      String   @default("PENDING") // PENDING | APPROVED | REJECTED
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -73,14 +73,19 @@ model Campaign {
   userId           String
   user             User         @relation(fields: [userId], references: [id])
   
-  // SetNull on SenderId deletion ensures campaign history remains
+  // Referential Link
   senderId         String?
   sender           SenderId?    @relation(fields: [senderId], references: [id], onDelete: SetNull)
 
-  status           String       
+  // Immutable Audit Snapshot
+  senderName       String
+  metaIp           String?
+  metaUa           String?
+
+  status           String       // DRAFT | COMMITTED | QUEUED | PROCESSING | COMPLETE | PARTIAL
   totalRecipients  Int
   totalSegments    Int
-  totalCost        Int          
+  totalCost        Int          // minor units
   
   messages         MessageLog[]
   createdAt        DateTime     @default(now())
@@ -94,16 +99,18 @@ model MessageLog {
   userId           String
   user             User      @relation(fields: [userId], references: [id])
   
-  // SetNull ensures financial records exist even if the Brand ID is removed
   senderId         String?
   sender           SenderId? @relation(fields: [senderId], references: [id], onDelete: SetNull)
+  
+  // Immutable Audit Snapshot
+  senderName       String?
 
   recipient        String
   message          String
   segmentCount     Int
   costToTenant     Int       
   costToAdmin      Int       @default(19) 
-  status           String    
+  status           String    // PENDING | PROCESSING | SENT | FAILED
 
   providerMessageId String?
   providerError      String?
