@@ -1,4 +1,4 @@
-// v2.6 — Sakura Axis Enterprise Engine (Final Production)
+// v2.6 — SAKURA AXIS PRODUCTION ENGINE
 
 generator client {
   provider      = "prisma-client-js"
@@ -9,8 +9,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// --- ENUMS (The Guardrails) ---
 
 enum Role {
   USER
@@ -45,15 +43,13 @@ enum SenderStatus {
   REJECTED
 }
 
-// --- MODELS (The Engine) ---
-
 model User {
   id        String        @id @default(uuid())
   email     String        @unique
   password  String
   role      Role          @default(USER)
   status    AccountStatus @default(ACTIVE)
-  balance   Int           @default(0) // TZS Minor Units (Cents)
+  balance   Int           @default(0) 
   smsRate   Int           @default(25)
 
   senderIds SenderId[]
@@ -81,7 +77,7 @@ model ApiKey {
   id        String   @id @default(uuid())
   key       String   @unique 
   userId    String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 
@@ -92,7 +88,6 @@ model SenderId {
   userId      String
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Administrative Audit Trail
   approvedBy  String?
   approvedAt  DateTime?
   rejectedBy  String?
@@ -110,20 +105,17 @@ model Campaign {
   id               String         @id @default(uuid())
   userId           String
   user             User           @relation(fields: [userId], references: [id])
-  
-  // Link remains, but snapshot is permanent
   senderId         String?
   sender           SenderId?      @relation(fields: [senderId], references: [id], onDelete: SetNull)
 
-  // Immutable Snapshot (Auditing)
-  senderName       String         
+  senderName       String
   metaIp           String?
   metaUa           String?
 
   status           CampaignStatus @default(DRAFT)
   totalRecipients  Int
   totalSegments    Int
-  totalCost        Int            // minor units
+  totalCost        Int            
   
   messages         MessageLog[]
   createdAt        DateTime       @default(now())
@@ -133,14 +125,11 @@ model MessageLog {
   id               String        @id @default(uuid())
   campaignId       String?   
   campaign         Campaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
-  
   userId           String
   user             User          @relation(fields: [userId], references: [id])
-  
   senderId         String?
   sender           SenderId?     @relation(fields: [senderId], references: [id], onDelete: SetNull)
-  
-  senderName       String?       // Immutable Snapshot
+  senderName       String?
 
   recipient        String
   message          String
