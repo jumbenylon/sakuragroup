@@ -42,7 +42,7 @@ export async function POST(request: Request) {
           status: result.success ? "DELIVERED" : "FAILED",
           cost: result.success ? (segments * costPerSms) : 0,
           segmentCount: segments,
-          providerId: result.success ? String(result.data.request_id) : null,
+          providerId: (result.success && result.data?.request_id) ? String(result.data.request_id) : null,
           errorCode: result.success ? null : (result.data?.code || 999),
           errorReason: result.success ? null : (result.error || "Unknown Error"),
         }
