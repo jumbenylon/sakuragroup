@@ -6,7 +6,7 @@ import Image from "next/image";
 import { 
   Instagram, Linkedin, Twitter, 
   MapPin, Phone, Mail, ArrowUp,
-  ShieldCheck, Globe
+  ShieldCheck
 } from "lucide-react";
 
 export function GlobalFooter() {
@@ -15,13 +15,13 @@ export function GlobalFooter() {
   };
 
   return (
-    <footer className="bg-[#050912] text-white pt-24 pb-12 px-6 border-t border-white/5 relative overflow-hidden">
+    <footer className="bg-[#050912] text-white pt-24 pb-12 px-6 border-t border-white/5 relative overflow-hidden font-sans">
       <div className="max-w-[1400px] mx-auto relative z-10">
         
         {/* 1. NEWSLETTER BAR */}
         <div className="bg-[#0B1120] rounded-3xl p-8 md:p-12 mb-20 border border-white/5 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl">
             <div className="text-center lg:text-left">
-                <h2 className="text-2xl md:text-3xl font-black tracking-tight mb-2">Join the Ecosystem Intelligence</h2>
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">Join the Ecosystem Intelligence</h2>
                 <p className="text-slate-400 text-sm">Insights on African tech, logistics, and finance.</p>
             </div>
             <div className="flex w-full lg:w-auto gap-3">
@@ -63,7 +63,7 @@ export function GlobalFooter() {
 
           {/* ECOSYSTEM */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-emerald-500 mb-8">Ecosystem</h4>
+            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-500 mb-8">Ecosystem</h4>
             <ul className="space-y-4">
                 {[
                     { n: "SakuraPay", l: "/sakurapay" },
@@ -83,7 +83,7 @@ export function GlobalFooter() {
 
           {/* GROW & SUPPORT */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-emerald-500 mb-8">Grow & Support</h4>
+            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-500 mb-8">Grow & Support</h4>
             <ul className="space-y-4">
                 {[
                     { n: "SakuraHost", l: "/hosting" },
@@ -103,7 +103,7 @@ export function GlobalFooter() {
 
           {/* CONTACT */}
           <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-emerald-500 mb-8">Global HQ</h4>
+            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-500 mb-8">Global HQ</h4>
             <div className="bg-white/5 border border-white/5 rounded-2xl p-6 space-y-6">
                 <div className="flex gap-4">
                     <Mail size={18} className="text-emerald-500 shrink-0 mt-0.5" />
