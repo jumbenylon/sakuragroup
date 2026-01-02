@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image"; // Added Image component
 import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, PenTool, Users, History, 
-  Settings, LogOut, CreditCard, Bell, Menu, X 
+  Settings, LogOut, Bell, Menu, X, CreditCard 
 } from "lucide-react";
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
@@ -26,10 +27,17 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       
       {/* SIDEBAR (Desktop) */}
       <aside className="hidden md:flex flex-col w-64 border-r border-white/10 bg-[#050505] fixed h-full z-20">
-        {/* Brand */}
-        <div className="h-20 flex items-center px-8 border-b border-white/10">
-           <div className="font-black text-xl tracking-tighter">
-              AXIS<span className="text-pink-500">.</span>
+        
+        {/* BRAND LOGO RESTORED */}
+        <div className="h-20 flex items-center px-6 border-b border-white/10">
+           <div className="relative w-32 h-10">
+              <Image 
+                src="https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png" 
+                alt="Sakura Axis" 
+                fill
+                className="object-contain object-left"
+                priority
+              />
            </div>
         </div>
 
@@ -60,9 +68,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         {/* User Footer */}
         <div className="p-4 border-t border-white/10">
             <div className="bg-[#0a0a0a] p-3 rounded-sm border border-white/5 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center text-[10px] font-bold">
-                    SG
-                </div>
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center text-[10px] font-bold">SG</div>
                 <div className="flex-1">
                     <div className="text-xs font-bold text-white">Sakura Admin</div>
                     <div className="text-[9px] text-emerald-500">● Online</div>
@@ -77,19 +83,14 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         
         {/* TOP BAR */}
         <header className="h-20 bg-[#020202]/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-10 flex items-center justify-between px-8">
-            {/* Mobile Toggle */}
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-white">
-                <Menu />
-            </button>
-
-            {/* Breadcrumb / Title */}
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-white"><Menu /></button>
+            
             <div className="hidden md:block">
                 <div className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">
                     Sakura Group / Axis Portal / <span className="text-white">Active Session</span>
                 </div>
             </div>
 
-            {/* Status Indicators */}
             <div className="flex items-center gap-6">
                 <div className="flex flex-col text-right">
                     <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Credits</span>
@@ -108,22 +109,24 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
             {children}
         </div>
       </main>
-
-      {/* MOBILE MENU OVERLAY */}
+      
+      {/* MOBILE MENU */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 bg-black/95 flex flex-col p-8 md:hidden">
             <div className="flex justify-between items-center mb-8">
-                <span className="font-black text-xl">AXIS.</span>
+                <div className="relative w-32 h-10">
+                    <Image 
+                        src="https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png" 
+                        alt="Sakura Axis" 
+                        fill
+                        className="object-contain object-left"
+                    />
+                </div>
                 <button onClick={() => setMobileMenuOpen(false)}><X /></button>
             </div>
             <nav className="space-y-4">
                 {menu.map((item) => (
-                    <Link 
-                        key={item.name} 
-                        href={item.path} 
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="block text-lg font-bold text-slate-300 hover:text-pink-500"
-                    >
+                    <Link key={item.name} href={item.path} onClick={() => setMobileMenuOpen(false)} className="block text-lg font-bold text-slate-300 hover:text-pink-500">
                         {item.name}
                     </Link>
                 ))}
