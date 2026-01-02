@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Contact {
+  id        String   @id @default(uuid())
+  phone     String   @unique
+  firstName String?
+  lastName  String?
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MessageLog {
+  id          String   @id @default(uuid())
+  recipient   String
+  message     String
+  status      String   
+  cost        Int      
+  segmentCount Int     
+  providerId  String?  
+  errorCode   Int?     
+  errorReason String?  
+  sentAt      DateTime @default(now())
+}
