@@ -16,12 +16,12 @@ import {
   ArrowRight, Truck, Package, ShieldCheck, 
   MapPin, Clock, FileCheck, Building2, 
   Navigation, Lock, FileText, CheckCircle2,
-  Globe // Added this import
+  Globe, Shield, BarChart3
 } from "lucide-react";
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
-// --- 1. SHARED UNBOUND COMPONENTS ---
+// --- 1. SHARED COMPONENTS ---
 
 const CustomCursor = () => {
   const cursorX = useMotionValue(-100);
@@ -49,42 +49,9 @@ const CustomCursor = () => {
   );
 };
 
-const Preloader = ({ onComplete }: { onComplete: () => void }) => (
-    <motion.div
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 0 }}
-        transition={{ duration: 0.5, delay: 2.5 }}
-        onAnimationComplete={onComplete}
-        className="fixed inset-0 z-[100] bg-[#111827] flex items-center justify-center"
-    >
-        <div className="text-center w-64">
-            <div className="flex justify-between text-xs font-mono text-yellow-500 uppercase tracking-widest mb-2">
-                <span>Origin</span>
-                <span>In Transit</span>
-                <span>Dest</span>
-            </div>
-            <div className="relative h-1 bg-gray-800 rounded-full overflow-hidden">
-                <motion.div 
-                    className="absolute top-0 left-0 h-full bg-yellow-500"
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 2, ease: "easeInOut" }}
-                />
-            </div>
-            <motion.div 
-                className="mt-4 font-mono text-xs text-slate-500"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-            >
-                Optimizing Routes...
-            </motion.div>
-        </div>
-    </motion.div>
-);
-
 const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
-    initial={{ opacity: 0, y: 50 }}
+    initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-100px" }}
     transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
@@ -133,45 +100,43 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#111827]">
-      {/* Background: City Skyline / Traffic */}
       <motion.div style={{ y }} className="absolute inset-0 z-0">
          <Image 
-            src="https://images.unsplash.com/photo-1596728080277-c93d8437d04e?q=80&w=2000&auto=format&fit=crop"
-            alt="Dar es Salaam Logistics"
+            src="https://images.unsplash.com/photo-1591768793355-74d7c869619a?q=80&w=2000&auto=format&fit=crop"
+            alt="African professional courier in Dar es Salaam"
             fill
-            className="object-cover opacity-30 grayscale"
+            className="object-cover opacity-30 grayscale contrast-125"
+            priority
          />
-         <div className="absolute inset-0 bg-gradient-to-r from-[#111827] via-[#111827]/80 to-transparent" />
-         
+         <div className="absolute inset-0 bg-gradient-to-r from-[#111827] via-[#111827]/90 to-transparent" />
          {/* Animated Radar Sweep */}
-         <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,rgba(234,179,8,0.05)_60deg,transparent_60deg)] animate-[spin_4s_linear_infinite] opacity-50 w-[200vw] h-[200vw] -left-[50vw] -top-[50vw]" />
+         <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,rgba(234,179,8,0.05)_60deg,transparent_60deg)] animate-[spin_8s_linear_infinite] opacity-50 w-[200vw] h-[200vw] -left-[50vw] -top-[50vw]" />
       </motion.div>
 
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         <ScrollReveal>
-            {/* Location Badges */}
             <div className="flex flex-wrap gap-2 mb-8">
                 {["Dar es Salaam", "Arusha", "Mwanza", "Dodoma", "Mbeya", "Kilimanjaro"].map((city) => (
-                    <span key={city} className="px-3 py-1 bg-white/5 border border-white/10 rounded text-[10px] font-mono uppercase tracking-widest text-slate-400">
+                    <span key={city} className="px-3 py-1 bg-white/5 border border-white/10 rounded-sm text-[10px] font-mono uppercase tracking-widest text-slate-400">
                         {city}
                     </span>
                 ))}
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-8 leading-[1.1] max-w-4xl">
+            <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 leading-[0.9] max-w-5xl">
                 Trusted City-Courier & <br/>
                 <span className="text-yellow-500">Document Delivery.</span>
             </h1>
             
-            <p className="text-xl text-slate-300 max-w-2xl leading-relaxed mb-12 border-l-4 border-yellow-500 pl-6">
-                Same-day urban delivery, confidential document movement, and clearing & forwarding support — operated by a verified, professional logistics team.
+            <p className="text-xl text-slate-300 max-w-2xl leading-relaxed mb-12 border-l-4 border-yellow-500 pl-6 font-light">
+                Same-day urban delivery, confidential document movement, and clearing & forwarding support — operated by a verified, professional logistics team across Tanzania.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 items-start">
-                <Link href="/#contact" className="px-10 py-5 bg-yellow-500 hover:bg-yellow-400 text-[#111827] font-bold rounded-sm transition-all hover:scale-105 flex items-center gap-2 clip-path-slant">
+                <Link href="/#contact" className="px-12 py-6 bg-yellow-500 hover:bg-yellow-400 text-[#111827] font-black rounded-sm transition-all hover:scale-105 flex items-center gap-2">
                     Request a Pickup <Truck size={20} />
                 </Link>
-                <button className="px-10 py-5 border border-white/20 hover:bg-white/5 text-white font-medium rounded-sm transition-all">
+                <button className="px-12 py-6 border border-white/20 hover:bg-white/5 text-white font-bold rounded-sm transition-all">
                     Talk to Operations
                 </button>
             </div>
@@ -182,8 +147,11 @@ const Hero = () => {
 };
 
 const TrustCards = () => (
-    <section className="py-24 px-6 bg-[#111827] border-y border-white/5">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <section className="py-32 px-6 bg-[#111827] border-y border-white/5 relative overflow-hidden">
+        {/* Abstract Grid Line Decor */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
             {[
                 { title: "Reliable by Design", desc: "Time-window delivery & dispatch control.", icon: Clock },
                 { title: "Confidential", desc: "Sealed transfers & identity-verified staff.", icon: Lock },
@@ -191,10 +159,10 @@ const TrustCards = () => (
                 { title: "Critical Movement", desc: "We move business material, not casual errands.", icon: ShieldCheck },
             ].map((c, i) => (
                 <ScrollReveal key={i} delay={i * 0.1}>
-                    <SpotlightCard className="p-8 h-full bg-[#1f2937] border-l-2 border-l-yellow-500/0 hover:border-l-yellow-500 transition-all rounded-r-xl">
-                        <c.icon className="text-yellow-500 mb-6" size={32} />
-                        <h3 className="text-xl font-bold text-white mb-3">{c.title}</h3>
-                        <p className="text-slate-400 text-sm leading-relaxed">{c.desc}</p>
+                    <SpotlightCard className="p-10 h-full bg-[#0f172a] border-t-2 border-t-yellow-500/10 hover:border-t-yellow-500 transition-all">
+                        <c.icon className="text-yellow-500 mb-8" size={32} />
+                        <h3 className="text-2xl font-bold text-white mb-4">{c.title}</h3>
+                        <p className="text-slate-500 text-sm leading-relaxed">{c.desc}</p>
                     </SpotlightCard>
                 </ScrollReveal>
             ))}
@@ -202,166 +170,130 @@ const TrustCards = () => (
     </section>
 );
 
-const Services = () => (
-    <section className="py-32 px-6 bg-[#18212f]">
+const Capabilities = () => (
+    <section className="py-32 px-6 bg-[#0f172a]">
         <div className="max-w-7xl mx-auto">
             <ScrollReveal>
-                <h2 className="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-16 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"/>
-                    Operational Capabilities
-                </h2>
-            </ScrollReveal>
-
-            <div className="space-y-4">
-                {[
-                    { 
-                        title: "Urban Courier Delivery", 
-                        for: "Offices, Agencies, Banks",
-                        desc: "Fast when needed. Precise always.",
-                        action: "Book Delivery",
-                        icon: Navigation
-                    },
-                    { 
-                        title: "Confidential Documents", 
-                        for: "Sensitive Transfers",
-                        desc: "Sealed-package policy with chain-of-custody logs.",
-                        action: "Request Secure Transfer",
-                        icon: FileText
-                    },
-                    { 
-                        title: "Clearing & Forwarding", 
-                        for: "Import / Export Support",
-                        desc: "Document coordination across terminals & offices.",
-                        action: "Speak to Desk",
-                        icon: Globe
-                    }
-                ].map((s, i) => (
-                    <ScrollReveal key={i} delay={i * 0.1}>
-                        <div className="group relative bg-[#111827] border border-white/5 p-8 md:p-12 hover:border-yellow-500/50 transition-all">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-                                <div className="flex items-start gap-6">
-                                    <div className="w-16 h-16 bg-[#1f2937] flex items-center justify-center text-slate-400 group-hover:text-yellow-500 transition-colors shrink-0">
-                                        <s.icon size={32} />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{s.title}</h3>
-                                        <div className="flex items-center gap-2 text-yellow-500/80 font-mono text-xs uppercase tracking-widest mb-4">
-                                            <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full" />
-                                            {s.for}
-                                        </div>
-                                        <p className="text-slate-400 max-w-xl">{s.desc}</p>
-                                    </div>
-                                </div>
-                                <button className="px-8 py-4 border border-white/10 text-white font-bold hover:bg-yellow-500 hover:text-[#111827] hover:border-yellow-500 transition-all whitespace-nowrap">
-                                    {s.action}
-                                </button>
-                            </div>
-                        </div>
-                    </ScrollReveal>
-                ))}
-            </div>
-        </div>
-    </section>
-);
-
-const Process = () => (
-    <section className="py-32 px-6 bg-[#111827]">
-        <div className="max-w-5xl mx-auto">
-            <ScrollReveal>
-                <div className="text-center mb-16">
-                    <h2 className="text-4xl font-bold text-white mb-4">Simple Operational Flow</h2>
-                    <p className="text-slate-400">Every movement is recorded. Every hand-off is confirmed.</p>
+                <div className="mb-20">
+                    <h2 className="text-sm font-black text-yellow-500 uppercase tracking-[0.4em] mb-4 flex items-center gap-3">
+                        <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full" />
+                        Operational Scope
+                    </h2>
+                    <h3 className="text-4xl md:text-6xl font-black text-white">Advanced Supply Logistics.</h3>
                 </div>
             </ScrollReveal>
 
-            <div className="relative">
-                {/* Connecting Line */}
-                <div className="absolute left-[19px] top-0 bottom-0 w-0.5 bg-white/10 md:left-1/2 md:-ml-px" />
+            <div className="grid lg:grid-cols-12 gap-10">
+                {/* Visual Card */}
+                <div className="lg:col-span-5 relative min-h-[500px] rounded-3xl overflow-hidden border border-white/5 grayscale hover:grayscale-0 transition-all duration-1000">
+                    <Image 
+                        src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad21?q=80&w=1000&auto=format&fit=crop"
+                        alt="African logistics hub operations"
+                        fill
+                        className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent" />
+                    <div className="absolute bottom-8 left-8 right-8">
+                        <p className="text-white font-bold text-lg mb-2">Verified Chain of Custody</p>
+                        <p className="text-slate-400 text-sm">Real-time status tracking for every document and parcel in transit.</p>
+                    </div>
+                </div>
 
-                {[
-                    "Submit pickup request",
-                    "Courier assigned & verified",
-                    "Secure pickup + Custody Seal",
-                    "Routed delivery with logs",
-                    "Proof-of-delivery issued"
-                ].map((step, i) => (
-                    <ScrollReveal key={i} delay={i * 0.1}>
-                        <div className={`relative flex items-center gap-8 mb-12 ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
-                            {/* Dot */}
-                            <div className="absolute left-0 md:left-1/2 -ml-[5px] w-[10px] h-[10px] bg-yellow-500 rounded-full shadow-[0_0_10px_rgba(234,179,8,0.5)] z-10" />
-                            
-                            <div className={`flex-1 pl-12 md:pl-0 ${i % 2 === 0 ? 'md:text-right md:pr-12' : 'md:text-left md:pl-12'}`}>
-                                <div className="inline-block px-4 py-2 bg-[#1f2937] border border-white/10 rounded text-slate-200 font-bold hover:border-yellow-500/50 transition-colors cursor-default">
-                                    <span className="text-yellow-500 mr-3 font-mono">0{i + 1}</span>
-                                    {step}
+                {/* Service List */}
+                <div className="lg:col-span-7 space-y-4">
+                    {[
+                        { 
+                            title: "Urban Courier Delivery", 
+                            for: "Corporate & Private Sectors",
+                            desc: "Same-day movements across city centers with time-stamped delivery logs.",
+                            icon: Navigation
+                        },
+                        { 
+                            title: "Confidential Movements", 
+                            for: "Legal & Banking Institutions",
+                            desc: "Strict sealed-package policies and identity-verified courier assignment.",
+                            icon: FileText
+                        },
+                        { 
+                            title: "Clearing & Forwarding", 
+                            for: "Import / Export Support",
+                            desc: "Document coordination and logistical support at East African ports and terminals.",
+                            icon: Globe
+                        }
+                    ].map((s, i) => (
+                        <ScrollReveal key={i} delay={i * 0.1}>
+                            <div className="group bg-[#111827] border border-white/5 p-10 hover:border-yellow-500/50 transition-all flex flex-col md:flex-row md:items-center justify-between gap-8">
+                                <div className="flex items-start gap-8">
+                                    <div className="w-12 h-12 bg-yellow-500/5 border border-yellow-500/20 flex items-center justify-center text-yellow-500 group-hover:scale-110 transition-transform">
+                                        <s.icon size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-2xl font-bold text-white mb-2">{s.title}</h4>
+                                        <p className="text-yellow-500/60 font-mono text-[10px] uppercase tracking-widest mb-4">{s.for}</p>
+                                        <p className="text-slate-500 text-sm leading-relaxed max-w-md">{s.desc}</p>
+                                    </div>
                                 </div>
+                                <ArrowRight className="text-white/20 group-hover:text-yellow-500 group-hover:translate-x-2 transition-all" />
                             </div>
-                            <div className="flex-1 hidden md:block" />
-                        </div>
-                    </ScrollReveal>
-                ))}
+                        </ScrollReveal>
+                    ))}
+                </div>
             </div>
         </div>
     </section>
 );
 
 const Industries = () => (
-    <section className="py-24 px-6 bg-[#18212f] border-t border-white/5">
-        <div className="max-w-6xl mx-auto text-center">
+    <section className="py-32 px-6 bg-[#111827]">
+        <div className="max-w-7xl mx-auto">
             <ScrollReveal>
-                <h2 className="text-3xl font-bold text-white mb-12">Industries We Serve</h2>
-                <div className="flex flex-wrap justify-center gap-4">
+                <div className="text-center mb-20">
+                    <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Industries We Serve</h2>
+                    <p className="text-slate-500 max-w-2xl mx-auto italic font-light">"If your work depends on trust — your deliveries should too."</p>
+                </div>
+                <div className="flex flex-wrap justify-center gap-3">
                     {[
-                        "Finance & Banking", "Legal Offices", "Government Agencies",
-                        "Healthcare & Labs", "Tech Startups", "Engineering", "Importers"
+                        { n: "Finance & Banking", i: BarChart3 },
+                        { n: "Legal & Corporate", i: FileCheck },
+                        { n: "Government Agencies", i: Building2 },
+                        { n: "Healthcare & Labs", i: Shield },
+                        { n: "Tech & Startups", i: Zap },
+                        { n: "Engineering", i: Package },
+                        { n: "Importers & Exporters", i: Globe }
                     ].map((tag) => (
-                        <span key={tag} className="px-6 py-3 bg-[#111827] border border-white/5 text-slate-300 hover:text-yellow-500 hover:border-yellow-500/50 transition-all cursor-default">
-                            {tag}
-                        </span>
+                        <div key={tag.n} className="px-8 py-5 bg-[#0f172a] border border-white/5 text-slate-300 hover:text-yellow-500 hover:border-yellow-500/30 transition-all flex items-center gap-4 cursor-default group">
+                            <tag.i size={16} className="text-slate-600 group-hover:text-yellow-500" />
+                            <span className="text-sm font-bold uppercase tracking-widest">{tag.n}</span>
+                        </div>
                     ))}
                 </div>
-                <p className="mt-10 text-slate-500 font-mono text-sm uppercase tracking-widest">
-                    If your work depends on trust — your deliveries should too.
-                </p>
             </ScrollReveal>
         </div>
     </section>
 );
 
-const TrustSignals = () => (
-    <section className="py-20 px-6 bg-[#111827]">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-                "Trained Riders", "Service Guarantees", "Insurance Aware", "Code of Conduct"
-            ].map((sig, i) => (
-                <ScrollReveal key={i}>
-                    <div className="p-4 border border-white/5 bg-white/5">
-                        <CheckCircle2 className="text-yellow-500 mx-auto mb-3" size={20} />
-                        <span className="text-white font-bold text-sm uppercase tracking-wider">{sig}</span>
-                    </div>
-                </ScrollReveal>
-            ))}
+const FinalCTA = () => (
+    <section className="py-40 px-6 bg-yellow-500 text-[#111827] relative overflow-hidden">
+        {/* Decorative Vector */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[40vw] font-black opacity-5 pointer-events-none select-none tracking-tighter">
+            LOGISTICS
         </div>
-    </section>
-);
 
-const CTA = () => (
-    <section className="py-32 px-6 bg-yellow-500 text-[#111827]">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
             <ScrollReveal>
-                <h2 className="text-4xl md:text-6xl font-black mb-8">
-                    MOVE WITH CONFIDENCE.
+                <h2 className="text-5xl md:text-8xl font-black mb-10 tracking-tighter">
+                    MOVE WITH <br/>CONFIDENCE.
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                    <button className="px-12 py-5 bg-[#111827] text-white font-bold text-lg hover:scale-105 transition-transform shadow-2xl">
+                    <button className="px-14 py-6 bg-[#111827] text-white font-black text-xl hover:scale-110 transition-transform shadow-2xl">
                         Request Pickup
                     </button>
-                    <button className="px-12 py-5 border-2 border-[#111827] text-[#111827] font-bold text-lg hover:bg-[#111827]/10 transition-colors">
-                        Contact Operations
+                    <button className="px-14 py-6 border-2 border-[#111827] text-[#111827] font-black text-xl hover:bg-[#111827]/10 transition-colors">
+                        Speak to Dispatch
                     </button>
                 </div>
-                <p className="mt-8 text-[#111827]/60 font-mono uppercase tracking-widest text-sm font-bold">
-                    Built for businesses that cannot afford uncertainty.
+                <p className="mt-12 text-[#111827]/60 font-mono uppercase tracking-[0.4em] text-xs font-black">
+                    Built for Tanzanian businesses that cannot afford uncertainty.
                 </p>
             </ScrollReveal>
         </div>
@@ -371,8 +303,13 @@ const CTA = () => (
 export default function LogisticsPage() {
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <main className="min-h-screen bg-[#111827] text-white selection:bg-yellow-500 selection:text-black cursor-none">
+    <main className="min-h-screen bg-[#111827] text-white selection:bg-yellow-500 selection:text-black">
       <CustomCursor />
       <AnimatePresence>
         {loading && <Preloader onComplete={() => setLoading(false)} />}
@@ -383,14 +320,45 @@ export default function LogisticsPage() {
             <GlobalNavbar />
             <Hero />
             <TrustCards />
-            <Services />
-            <Process />
+            <Capabilities />
             <Industries />
-            <TrustSignals />
-            <CTA />
+            <FinalCTA />
             <GlobalFooter />
         </motion.div>
       )}
     </main>
   );
 }
+
+const Preloader = ({ onComplete }: { onComplete: () => void }) => (
+    <motion.div
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 0.5, delay: 2.5 }}
+        onAnimationComplete={onComplete}
+        className="fixed inset-0 z-[100] bg-[#111827] flex items-center justify-center"
+    >
+        <div className="text-center w-64">
+            <div className="flex justify-between text-[10px] font-mono text-yellow-500 uppercase tracking-[0.3em] mb-4">
+                <span>Origin</span>
+                <span className="animate-pulse text-white">Transit</span>
+                <span>Dest</span>
+            </div>
+            <div className="relative h-[2px] bg-white/10 rounded-full overflow-hidden">
+                <motion.div 
+                    className="absolute top-0 left-0 h-full bg-yellow-500"
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: 2, ease: "easeInOut" }}
+                />
+            </div>
+            <motion.p 
+                className="mt-6 font-mono text-[10px] text-slate-600 uppercase tracking-widest"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+            >
+                Optimizing Route Matrix...
+            </motion.p>
+        </div>
+    </motion.div>
+);
