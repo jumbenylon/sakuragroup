@@ -18,6 +18,7 @@ export default function DashboardHome() {
       const res = await fetch("/api/sms/balance");
       const data = await res.json();
       if (data.success) {
+        // Formats number with commas (e.g. 5,000)
         setBalance(Math.floor(Number(data.balance)).toLocaleString());
       } else {
         setBalance("Error");
@@ -61,7 +62,8 @@ export default function DashboardHome() {
                     </button>
                 </div>
                 <div className="text-3xl font-mono font-bold text-white mb-1">
-                    {balance === null ? "..." : balance} <span className="text-sm font-sans font-normal text-slate-500">TZS</span>
+                    {/* UPDATED: Changed TZS to SMS */}
+                    {balance === null ? "..." : balance} <span className="text-sm font-sans font-normal text-slate-500">SMS</span>
                 </div>
                 <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Available Credit</div>
             </div>
