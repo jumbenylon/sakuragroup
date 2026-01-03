@@ -1,6 +1,6 @@
-import { NextResponse } from "next-auth/middleware"; // Use the built-in NextAuth helper
-import { getToken } from "next-auth/jwt";
+import { NextResponse } from "next/server"; // Corrected: Always from next/server
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
   const token = await getToken({ 
@@ -9,12 +9,13 @@ export async function middleware(request: NextRequest) {
   });
   const { pathname } = request.nextUrl;
 
-  // 1. PUBLIC ROUTES (Allow these always)
+  // 1. PUBLIC ROUTES & ASSETS
   if (
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/axis/login") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/_next") ||
+    pathname.startsWith("/static") ||
     pathname.includes(".")
   ) {
     return NextResponse.next();
@@ -31,7 +32,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // 3. ADMIN ROLE CHECK
+  // 3. ADMIN ROLE PROTECTION
   if ((pathname.startsWith("/admin") || pathname.startsWith("/axis/admin")) && token?.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/axis/portal", request.url));
   }
@@ -40,5 +41,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/axis/:path*", "/admin/:path*"],
+  // Use a cleaner matcher to avoid middleware running on every single image/favicon request
+  matcher: [
+    "/axis/:path*", 
+    "/admin/:path*",
+    "/((?!api/auth|_next/static|_next/image|favicon.ico).*)"
+  ],
 };
