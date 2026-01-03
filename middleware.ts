@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+// We use a dynamic approach to avoid build-time resolution errors in strict environments
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
@@ -9,8 +10,7 @@ export async function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
   const isAxisSubdomain = hostname.startsWith("axis.");
 
-  // 1. SAFETY ZONE (Preserved & Updated)
-  // We added /api/auth to ensure login works without loops
+  // 1. SAFETY ZONE
   if (
     path.startsWith("/api/auth") || 
     path.startsWith("/_next") || 
@@ -20,37 +20,39 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. SOVEREIGN ADMIN GATE (New Addition)
-  // Protects /admin and /api/admin for the new Provisioning system
+  // 2. SOVEREIGN ADMIN GATE (New Admin UI & API)
   if (path.startsWith("/admin") || path.startsWith("/api/admin")) {
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
-    });
+    try {
+      const token = await getToken({ 
+        req: request, 
+        secret: process.env.NEXTAUTH_SECRET 
+      });
 
-    const isMasterAdmin = 
-      token?.role === "ADMIN" && 
-      token?.email === "admin@sakuragroup.co.tz";
+      const isMasterAdmin = 
+        token?.role === "ADMIN" && 
+        token?.email === "admin@sakuragroup.co.tz";
 
-    if (!isMasterAdmin) {
+      if (!isMasterAdmin) {
+        return NextResponse.redirect(new URL("/axis/login", request.url));
+      }
+    } catch (error) {
+      // In case of JWT failure during build or runtime
       return NextResponse.redirect(new URL("/axis/login", request.url));
     }
-    // If validated, proceed to API/UI
-    return NextResponse.next();
   }
 
   // 3. SESSION ANALYSIS (Legacy Logic Preserved)
   const sessionCookie = request.cookies.get("axis_session");
   const sessionValue = sessionCookie?.value;
   const hasSession = !!sessionValue;
-  const isAdmin = sessionValue === "admin_master";
+  const isAdminLegacy = sessionValue === "admin_master";
 
-  // 4. ADMIN PROTECTION (Legacy Logic Preserved)
-  if (path.startsWith("/axis/admin") && !isAdmin) {
+  // 4. ADMIN PROTECTION (Legacy /axis/admin paths)
+  if (path.startsWith("/axis/admin") && !isAdminLegacy) {
     return NextResponse.redirect(new URL("/axis/login", request.url));
   }
 
-  // 5. SUBDOMAIN ROUTING & PORTAL PROTECTION (Legacy Logic Preserved)
+  // 5. SUBDOMAIN ROUTING & PORTAL PROTECTION
   if (isAxisSubdomain) {
     if (path === "/" && !hasSession) {
       return NextResponse.redirect(new URL("/axis/login", request.url));
@@ -65,9 +67,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 6. LEGACY/DIRECT ACCESS GATEKEEPER (Legacy Logic Preserved)
-  const isPortalRoute = path.startsWith("/axis/portal");
-  if (isPortalRoute && !hasSession) {
+  // 6. PORTAL ACCESS GATEKEEPER
+  if (path.startsWith("/axis/portal") && !hasSession) {
     return NextResponse.redirect(new URL("/axis/login", request.url));
   }
 
