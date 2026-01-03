@@ -2,22 +2,25 @@
 FROM node:18-slim AS base
 RUN apt-get update && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
 
-# 2. Dependencies: Prisma-first installation
+# 2. Dependencies: Installing the Axis Engine
 FROM base AS deps
 WORKDIR /app
-COPY prisma ./prisma/
-COPY package.json package-lock.json* ./
-# We use ci for deterministic builds in production
-RUN npm ci 
 
-# 3. Builder: Compiling the Sovereign Engine
+# We only copy the bare essentials to keep this layer light
+COPY prisma ./prisma/
+COPY package.json ./
+
+# FIXED: Switched from 'npm ci' to 'npm install' because package-lock.json is missing
+RUN npm install
+
+# 3. Builder: Compiling the Sovereign App
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Generate Prisma Client specifically for the debian-slim runtime
+# Generate Prisma Client specifically for the debian-slim runtime environment
 RUN npx prisma generate
 RUN npm run build
 
@@ -37,11 +40,11 @@ RUN useradd --uid 1001 --gid nodejs --shell /bin/bash --create-home nextjs
 # CRITICAL: Copy the public folder so logos and videos actually work
 COPY --from=builder /app/public ./public
 
-# Set up standalone output
+# Set up standalone output for maximum Cloud Run efficiency
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Required for Prisma to function in standalone mode
+# Required for Prisma to function correctly in standalone mode
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
@@ -51,5 +54,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# The command starts the server
+# The command starts the production server
 CMD ["node", "server.js"]
