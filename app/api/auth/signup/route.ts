@@ -5,26 +5,35 @@ import { Resend } from "resend";
 import { getWelcomeEmailHtml } from "@/lib/mail-templates";
 
 /**
- * Axis by Sakura - Secure Signup Engine (v2.8)
- * Optimized for Cloud Run Build & Runtime Decoupling
+ * Axis by Sakura - Sovereign Signup Engine (v2.9)
+ * Hardened for Google Cloud Run & Neon Postgres
  */
 
 export async function POST(req: Request) {
+  // --- 1. SOVEREIGN SAFETY GUARD ---
+  if (!process.env.DATABASE_URL) {
+    console.warn("⚠️ Axis Build Guard: Skipping DB operation — DATABASE_URL is undefined.");
+    return NextResponse.json(
+      { error: "Infrastructure initializing. Please try again shortly." }, 
+      { status: 503 }
+    );
+  }
+
   try {
     const { email, password, org, isGoogle = false } = await req.json();
 
-    // 1. Core Validation
+    // --- 2. VALIDATION ---
     if (!email || (!password && !isGoogle)) {
       return NextResponse.json({ error: "Missing required credentials" }, { status: 400 });
     }
 
-    // 2. Identity Collision Check
+    // --- 3. IDENTITY COLLISION CHECK ---
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return NextResponse.json({ error: "Identity already exists" }, { status: 400 });
+      return NextResponse.json({ error: "Identity already exists in network" }, { status: 400 });
     }
 
-    // 3. Password Logic (Satisfying Prisma String requirement)
+    // --- 4. SECURE CREDENTIAL MAPPING ---
     let hashedPassword = "GOOGLE_SSO_OAUTH_PROTECTED"; 
     if (password) {
       hashedPassword = await hash(password, {
@@ -34,7 +43,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // 4. Persistence
+    // --- 5. PERSISTENCE ---
     const user = await prisma.user.create({
       data: {
         email,
@@ -46,9 +55,9 @@ export async function POST(req: Request) {
       },
     });
 
-    // 5. DECOUPLED NOTIFICATIONS (Initialized only at Runtime)
+    // --- 6. RUNTIME NOTIFICATIONS (Lazy Initialized) ---
     
-    // Resend Initialization (CEO Welcome Email)
+    // CEO Welcome Email via Resend
     if (process.env.RESEND_API_KEY) {
       try {
         const resend = new Resend(process.env.RESEND_API_KEY);
@@ -59,11 +68,11 @@ export async function POST(req: Request) {
           html: getWelcomeEmailHtml(email, isGoogle),
         });
       } catch (e) {
-        console.error("Resend Runtime Error:", e);
+        console.error("Resend Dispatch Error:", e);
       }
     }
 
-    // Beem Initialization (Admin Alert)
+    // Admin SMS Alert via Beem
     if (process.env.BEEM_API_KEY && process.env.BEEM_SECRET) {
       try {
         const beemAuth = Buffer.from(`${process.env.BEEM_API_KEY}:${process.env.BEEM_SECRET}`).toString("base64");
@@ -75,18 +84,19 @@ export async function POST(req: Request) {
           },
           body: JSON.stringify({
             source_addr: "SAKURA",
-            message: `New Axis Node (${email}) pending approval.`,
+            message: `Sakura Alert: New Axis Node (${email}) is pending approval.`,
             recipients: [{ recipient_id: "1", dest_addr: "255753930000" }],
           }),
         });
       } catch (e) {
-        console.error("Beem Runtime Error:", e);
+        console.error("Beem Dispatch Error:", e);
       }
     }
 
     return NextResponse.json({ success: true, message: "Handshake Complete." });
+
   } catch (error) {
-    console.error("Critical Signup Error:", error);
+    console.error("Sovereign Engine Error:", error);
     return NextResponse.json({ error: "System synchronization failure" }, { status: 500 });
   }
 }
