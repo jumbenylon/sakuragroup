@@ -1,8 +1,8 @@
-// v2.6 — SAKURA AXIS PRODUCTION ENGINE
+// This is your Source of Truth.
+// Copy this into prisma/schema.prisma
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -10,31 +10,66 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  
+  // [NEW] Sovereign Identity Fields
+  // We make them optional (?) at the DB level to prevent migration errors
+  // for existing users (like your admin), but the API will enforce them.
+  name          String?   
+  organization  String?
+  phoneNumber   String?
+  
+  role          Role      @default(USER)
+  status        String    @default("PENDING")
+  balance       Float     @default(0)
+  smsRate       Float     @default(28)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  senderIds     SenderId[]
+  messageLogs   MessageLog[]
+  transactions  Transaction[]
+}
+
+model SenderId {
+  id            String    @id @default(cuid())
+  senderId      String
+  status        SenderStatus @default(PENDING)
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model MessageLog {
+  id            String    @id @default(cuid())
+  content       String
+  recipient     String
+  status        String
+  costToTenant  Float     @default(28)
+  costToAdmin   Float     @default(18)
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String
+  sentAt        DateTime  @default(now())
+}
+
+model Transaction {
+  id            String    @id @default(cuid())
+  amount        Float
+  type          String    // "CREDIT" or "DEBIT"
+  reference     String?
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String
+  createdAt     DateTime  @default(now())
+}
+
 enum Role {
   USER
   ADMIN
-}
-
-enum AccountStatus {
-  PENDING
-  ACTIVE
-  SUSPENDED
-}
-
-enum CampaignStatus {
-  DRAFT
-  COMMITTED
-  QUEUED
-  PROCESSING
-  COMPLETE
-  PARTIAL
-}
-
-enum MessageStatus {
-  PENDING
-  PROCESSING
-  SENT
-  FAILED
 }
 
 enum SenderStatus {
@@ -42,132 +77,3 @@ enum SenderStatus {
   APPROVED
   REJECTED
 }
-
-model User {
-  id        String        @id @default(uuid())
-  email     String        @unique
-  password  String
-  role      Role          @default(USER)
-  status    AccountStatus @default(ACTIVE)
-  balance   Int           @default(0) 
-  smsRate   Int           @default(25)
-
-  senderIds SenderId[]
-  campaigns Campaign[]
-  messages  MessageLog[]
-  apiKeys   ApiKey[]
-  sessions  Session[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Session {
-  id           String   @id @default(uuid())
-  token        String   @unique
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ipAddress    String?
-  userAgent    String?
-  expiresAt    DateTime
-  createdAt    DateTime @default(now())
-}
-
-model ApiKey {
-  id        String   @id @default(uuid())
-  key       String   @unique 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-}
-
-model SenderId {
-  id          String       @id @default(uuid())
-  name        String
-  status      SenderStatus @default(PENDING)
-  userId      String
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  approvedBy  String?
-  approvedAt  DateTime?
-  rejectedBy  String?
-  rejectedAt  DateTime?
-
-  campaigns   Campaign[]
-  messages    MessageLog[]
-
-  createdAt   DateTime @default(now())
-
-  @@unique([name, userId]) 
-}
-
-model Campaign {
-  id               String         @id @default(uuid())
-  userId           String
-  user             User           @relation(fields: [userId], references: [id])
-  senderId         String?
-  sender           SenderId?      @relation(fields: [senderId], references: [id], onDelete: SetNull)
-
-  senderName       String
-  metaIp           String?
-  metaUa           String?
-
-  status           CampaignStatus @default(DRAFT)
-  totalRecipients  Int
-  totalSegments    Int
-  totalCost        Int            
-  
-  messages         MessageLog[]
-  createdAt        DateTime       @default(now())
-}
-
-model MessageLog {
-  id               String        @id @default(uuid())
-  campaignId       String?   
-  campaign         Campaign?     @relation(fields: [campaignId], references: [id], onDelete: SetNull)
-  userId           String
-  user             User          @relation(fields: [userId], references: [id])
-  senderId         String?
-  sender           SenderId?     @relation(fields: [senderId], references: [id], onDelete: SetNull)
-  senderName       String?
-
-  recipient        String
-  message          String
-  segmentCount     Int
-  costToTenant     Int       
-  costToAdmin      Int           @default(19) 
-  status           MessageStatus @default(PENDING)
-
-  providerMessageId String?
-  providerError      String?
-
-  scheduledAt      DateTime?
-  sentAt           DateTime?
-  createdAt        DateTime      @default(now())
-}
-
-// --- v2.7 ADDITIONS: LEAD GENERATION & SYSTEM SOVEREIGNTY ---
-
-model LeadCapture {
-  id               String   @id @default(uuid())
-  organizationName String
-  contactName      String
-  phone            String
-  interest         String
-  status           String   @default("NEW") // NEW, CONTACTED, QUALIFIED, CLOSED
-  notes            String?  @db.Text
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-}
-
-model SystemConfig {
-  id    String @id @default(uuid())
-  key   String @unique // e.g., "GLOBAL_BUY_PRICE", "TIER_CORE", "TIER_GROWTH"
-  value String
-  label String?
-}
-
-// Note: In your existing User model, we will use:
-// balance (Client Wallet)
-// smsRate (Your selling price: 20, 24, 28)
-// costToAdmin (In MessageLog will be 18, pulled from Beem sync)
