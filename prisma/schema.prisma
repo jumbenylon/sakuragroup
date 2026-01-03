@@ -145,3 +145,29 @@ model MessageLog {
   sentAt           DateTime?
   createdAt        DateTime      @default(now())
 }
+
+// --- v2.7 ADDITIONS: LEAD GENERATION & SYSTEM SOVEREIGNTY ---
+
+model LeadCapture {
+  id               String   @id @default(uuid())
+  organizationName String
+  contactName      String
+  phone            String
+  interest         String
+  status           String   @default("NEW") // NEW, CONTACTED, QUALIFIED, CLOSED
+  notes            String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model SystemConfig {
+  id    String @id @default(uuid())
+  key   String @unique // e.g., "GLOBAL_BUY_PRICE", "TIER_CORE", "TIER_GROWTH"
+  value String
+  label String?
+}
+
+// Note: In your existing User model, we will use:
+// balance (Client Wallet)
+// smsRate (Your selling price: 20, 24, 28)
+// costToAdmin (In MessageLog will be 18, pulled from Beem sync)
