@@ -1,42 +1,38 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
-const prisma = new PrismaClient();
+import { NextResponse } from "next/server";
 
 export async function GET() {
-  try {
-    // 1. Aggregate Financial Data
-    const stats = await prisma.messageLog.aggregate({
-      _sum: {
-        costToTenant: true, // Total Revenue (e.g., 28 TZS per msg)
-        costToAdmin: true,  // Total Cost (e.g., 18 TZS per msg)
-      },
-      _count: {
-        id: true // Total Volume
-      }
-    });
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ error: "SERVICE_OFFLINE_BUILD" }, { status: 503 });
+  }
 
-    const revenue = stats._sum.costToTenant || 0;
-    const cost = stats._sum.costToAdmin || 0;
+  try {
+    const { getPrisma } = await import('@/lib/prisma');
+    const prisma = getPrisma();
+
+    const [totalUsers, activeSenderIds, stats] = await Promise.all([
+      prisma.user.count(),
+      prisma.senderId.count({ where: { status: 'APPROVED' } }),
+      prisma.messageLog.aggregate({
+        _sum: { costToTenant: true, costToAdmin: true }
+      })
+    ]);
+
+    // Sovereign Math with explicit fallbacks
+    const revenue = stats._sum.costToTenant ?? 0;
+    const cost = stats._sum.costToAdmin ?? 0;
     const profit = revenue - cost;
 
-    // 2. Queue Status
-    const pendingSenderIds = await prisma.senderId.count({ where: { status: "PENDING" } });
-
     return NextResponse.json({
-      success: true,
-      metrics: {
-        totalVolume: stats._count.id,
-        revenue,
-        cost,
-        profit,
-        margin: revenue > 0 ? ((profit / revenue) * 100).toFixed(2) + "%" : "0%"
-      },
-      alerts: {
-        pendingSenderIds
-      }
+      totalUsers,
+      activeSenderIds,
+      financials: { revenue, cost, profit }
     });
+
   } catch (error) {
-    return NextResponse.json({ success: false }, { status: 500 });
+    console.error("ANALYTICS_SYNC_ERROR", error);
+    return NextResponse.json({ error: "Financial sync failed" }, { status: 500 });
   }
 }
