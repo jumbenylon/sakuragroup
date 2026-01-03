@@ -11,6 +11,8 @@ export const authOptions: NextAuthOptions = {
   // 1. TOP-LEVEL SECURITY CONFIG (Corrected Placement)
   secret: process.env.NEXTAUTH_SECRET,
   useSecureCookies: process.env.NODE_ENV === "production",
+
+  trustHost: true,
   
   cookies: {
     sessionToken: {
