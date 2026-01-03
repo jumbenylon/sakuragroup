@@ -1,52 +1,68 @@
-import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
+import { PrismaClient } from "@prisma/client";
+import { hash } from "@node-rs/argon2";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🛠️ Starting Sakura Axis Genesis...")
+  console.log("🚀 INITIALIZING GENESIS PROTOCOL: AXIS BY SAKURA");
 
-  const adminEmail = "admin@sakuragroup.co.tz"
-  // Specific password provided: rsw+ug^nGFK96
-  const hashedPassword = await bcrypt.hash("rsw+ug^nGFK96", 12)
+  // --- 1. SYSTEM HEALTH CHECK ---
+  console.log("🔍 Checking Infrastructure Keys...");
+  const hasBeem = !!(process.env.BEEM_API_KEY && process.env.BEEM_SECRET);
+  const hasResend = !!process.env.RESEND_API_KEY;
 
-  // 1. Create/Update Master Admin
-  const admin = await prisma.user.upsert({
-    where: { email: adminEmail },
-    update: {
-      password: hashedPassword, // Ensure password is set to your request
-      role: 'ADMIN',
-      status: 'ACTIVE',
-    },
-    create: {
-      email: adminEmail,
-      password: hashedPassword,
-      role: 'ADMIN',
-      status: 'ACTIVE',
-      balance: 0,      // Sync this via Beem API later
-      smsRate: 21,     // Admin default sell rate
-    },
-  })
+  console.log(`- Beem SMS Gateway: ${hasBeem ? "ACTIVE" : "MISSING"}`);
+  console.log(`- Resend Email Engine: ${hasResend ? "ACTIVE" : "MISSING"}`);
 
-  // 2. Initialize System Pricing (Margin Logic)
+  // --- 2. INITIALIZE PRICING TIERS & GLOBAL COST ---
+  console.log("💰 Seeding Financial Parameters...");
   const configs = [
-    { key: "BUY_PRICE_BEEM", value: "18", label: "Our cost from Beem" },
-    { key: "TIER_CORE", value: "28", label: "Retail Rate" },
-    { key: "TIER_GROWTH", value: "24", label: "SME Rate" },
-    { key: "TIER_ENTERPRISE", value: "20", label: "Corporate Rate" }
-  ]
+    { key: "GLOBAL_BUY_PRICE", value: "18", label: "Our cost from Beem per SMS" },
+    { key: "TIER_CORE", value: "28", label: "Standard SME Rate" },
+    { key: "TIER_GROWTH", value: "24", label: "High Volume SME Rate" },
+    { key: "TIER_ENTERPRISE", value: "20", label: "Corporate Rate" },
+  ];
 
   for (const config of configs) {
     await prisma.systemConfig.upsert({
       where: { key: config.key },
       update: {},
       create: config,
-    })
+    });
   }
 
-  console.log(`✅ Genesis Complete. Master Admin: ${adminEmail}`)
+  // --- 3. CREATE MASTER ADMIN (GENESIS USER) ---
+  console.log("👤 Creating Master Admin Identity...");
+  const adminPassword = await hash("Abrahamjr", {
+    memoryCost: 65536,
+    timeCost: 3,
+    parallelism: 4,
+  });
+
+  const admin = await prisma.user.upsert({
+    where: { email: "admin@sakuragroup.co.tz" },
+    update: {
+      role: "ADMIN",
+      status: "ACTIVE", // Admin is active by default
+    },
+    create: {
+      email: "admin@sakuragroup.co.tz",
+      password: adminPassword,
+      role: "ADMIN",
+      status: "ACTIVE",
+      balance: 1000000, // Initial admin testing credit
+      smsRate: 0, // Admin does not pay for internal testing
+    },
+  });
+
+  console.log(`✅ GENESIS COMPLETE. Admin Node Active: ${admin.email}`);
 }
 
 main()
-  .catch((e) => { console.error(e); process.exit(1) })
-  .finally(async () => { await prisma.$disconnect() })
+  .catch((e) => {
+    console.error("❌ GENESIS FAILED:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
