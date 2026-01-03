@@ -1,20 +1,23 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma"; // Use the safe getter
 import { Resend } from "resend";
 
 export async function GET() {
+  // 1. Build-Time Guard
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ status: "BUILD_MODE" }, { status: 200 });
+  }
+
   const report: any = {
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    services: {
-      database: "checking",
-      resend: "checking",
-      beem: "checking",
-    }
+    services: { database: "checking", resend: "checking", beem: "checking" }
   };
 
-  // 1. Database Pulse
   try {
+    const prisma = getPrisma();
     await prisma.$queryRaw`SELECT 1`;
     report.services.database = "HEALTHY";
   } catch (e) {
