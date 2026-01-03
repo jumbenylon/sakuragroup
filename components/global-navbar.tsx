@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { Menu, X, ChevronRight, Globe } from "lucide-react";
 
-const LOGO_URL = "https://storage.googleapis.com/sakura-web/sakura-logo-white.png"; // Ensure this is the clean group logo
+const LOGO_URL = "https://storage.googleapis.com/sakura-web/sakuragroup-logo-white.png"; // Ensure this is the clean group logo
 
 export const GlobalNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
