@@ -14,25 +14,10 @@ async function main() {
   console.log(`- Beem SMS Gateway: ${hasBeem ? "ACTIVE" : "MISSING"}`);
   console.log(`- Resend Email Engine: ${hasResend ? "ACTIVE" : "MISSING"}`);
 
-  // --- 2. INITIALIZE PRICING TIERS & GLOBAL COST ---
-  console.log("💰 Seeding Financial Parameters...");
-  const configs = [
-    { key: "GLOBAL_BUY_PRICE", value: "18", label: "Our cost from Beem per SMS" },
-    { key: "TIER_CORE", value: "28", label: "Standard SME Rate" },
-    { key: "TIER_GROWTH", value: "24", label: "High Volume SME Rate" },
-    { key: "TIER_ENTERPRISE", value: "20", label: "Corporate Rate" },
-  ];
-
-  for (const config of configs) {
-    await prisma.systemConfig.upsert({
-      where: { key: config.key },
-      update: {},
-      create: config,
-    });
-  }
-
-  // --- 3. CREATE MASTER ADMIN (GENESIS USER) ---
+  // --- 2. CREATE MASTER ADMIN (GENESIS USER) ---
   console.log("👤 Creating Master Admin Identity...");
+
+  // We use your specific parameters to ensure high security
   const adminPassword = await hash("Abrahamjr", {
     memoryCost: 65536,
     timeCost: 3,
@@ -43,15 +28,19 @@ async function main() {
     where: { email: "admin@sakuragroup.co.tz" },
     update: {
       role: "ADMIN",
-      status: "ACTIVE", // Admin is active by default
+      status: "ACTIVE", // Ensure Admin is always active
+      password: adminPassword, // Ensure password updates if you run seed again
     },
     create: {
       email: "admin@sakuragroup.co.tz",
       password: adminPassword,
+      name: "Sakura Admin",          // Added: Required for Dashboard
+      organization: "Sakura Group HQ", // Added: Required for Dashboard
+      phoneNumber: "+255700000000",    // Added: Required for Dashboard
       role: "ADMIN",
       status: "ACTIVE",
-      balance: 1000000, // Initial admin testing credit
-      smsRate: 0, // Admin does not pay for internal testing
+      balance: 1000000,
+      smsRate: 0,
     },
   });
 
