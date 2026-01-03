@@ -6,14 +6,13 @@ import { verify } from "@node-rs/argon2";
 
 const handler = NextAuth({
   session: { strategy: "jwt" },
-  pages: {
-    signIn: "/axis/login", // Aligned with your /axis path
-  },
+  pages: { signIn: "/axis/login" },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      allowDangerousEmailAccountLinking: true, // Merges Google and Email accounts
+      allowDangerousEmailAccountLinking: true,
+      // All Google signups are PENDING by default via Prisma's @default(PENDING)
     }),
     CredentialsProvider({
       name: "Sakura Axis",
@@ -33,27 +32,33 @@ const handler = NextAuth({
         const isValid = await verify(user.password, credentials.password);
         if (!isValid) return null;
 
-        // Admins bypass; SMEs must be ACTIVE
+        // BLOCK PENDING USERS: Admins bypass, users must be ACTIVE
         if (user.role !== "ADMIN" && user.status !== "ACTIVE") {
-          throw new Error("PENDING_APPROVAL");
+          throw new Error("ACCOUNT_PENDING_APPROVAL");
         }
 
-        return { id: user.id, email: user.email, role: user.role };
+        return user; // TypeScript now understands this contains role, status, etc.
       }
     })
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.role = user.role || "USER";
         token.id = user.id;
+        token.role = user.role;
+        token.status = user.status;
+        token.balance = user.balance;
+        token.smsRate = user.smsRate;
       }
       return token;
     },
-    async session({ session, token }: any) {
+    async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role;
         session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.status = token.status;
+        session.user.balance = token.balance;
+        session.user.smsRate = token.smsRate;
       }
       return session;
     }
