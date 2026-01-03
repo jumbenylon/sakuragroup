@@ -1,75 +1,49 @@
+export const dynamic = "force-dynamic"; // Ensure dynamic behavior
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
+import { SenderStatus } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
-    const { userId, phoneList, message, senderIdName } = await req.json();
+    const { senderIdName, userId, cost } = await req.json();
 
-    // 1. Authorization: Verify Sender ID is approved and owned by this user
+    if (!senderIdName || !userId || !cost) {
+      return NextResponse.json({ valid: false, error: "Missing parameters" }, { status: 400 });
+    }
+
+    const prisma = getPrisma();
+
+    // 1. Check Sender ID Validity
+    // [FIX] Changed 'name' to 'senderId' to match Schema
     const sender = await prisma.senderId.findFirst({
       where: { 
-        name: senderIdName, 
-        userId: userId, 
-        status: "APPROVED" 
+        senderId: senderIdName, // <--- THE FIX
+        userId: userId,
+        status: SenderStatus.APPROVED 
       }
     });
 
     if (!sender) {
-      return NextResponse.json(
-        { error: "SENDER_ID_NOT_AUTHORIZED_OR_PENDING" }, 
-        { status: 403 }
-      );
+      return NextResponse.json({ valid: false, error: "Sender ID not authorized" }, { status: 403 });
     }
 
-    // 2. Intelligence: Normalize, Deduplicate, and Filter
-    const rawPhones = Array.isArray(phoneList) ? phoneList : [];
-    
-    const normalized = rawPhones.map(p => String(p).trim().replace(/\D/g, ""));
-    
-    // REPLACEMENT: Array.from(new Set()) for maximum build compatibility
-    const uniquePhones = Array.from(new Set(normalized));
-
-    const validPhones = uniquePhones.filter(p => p.length >= 10 && p.length <= 15);
-    
-    const duplicateCount = rawPhones.length - uniquePhones.length;
-    const invalidCount = uniquePhones.length - validPhones.length;
-
-    // 3. Financial Computation
-    const segments = Math.max(1, Math.ceil(message.length / 160));
-
-    const user = await prisma.user.findUnique({ 
-      where: { id: userId },
-      select: { balance: true, smsRate: true } 
+    // 2. Check Balance
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "USER_NOT_FOUND" }, { status: 404 });
+    if (!user || user.status !== "ACTIVE") {
+      return NextResponse.json({ valid: false, error: "Account inactive" }, { status: 403 });
     }
 
-    const tenantRate = user.smsRate; 
-    const adminRate = 19; 
+    if (user.balance < cost) {
+      return NextResponse.json({ valid: false, error: `Insufficient Funds. Balance: ${user.balance}` }, { status: 402 });
+    }
 
-    const totalTenantCost = validPhones.length * segments * tenantRate;
-    const totalAdminCost = validPhones.length * segments * adminRate;
-    const projectedProfit = totalTenantCost - totalAdminCost;
-
-    return NextResponse.json({
-      summary: {
-        totalProcessed: rawPhones.length,
-        validRecipients: validPhones.length,
-        duplicatesRemoved: duplicateCount,
-        invalidFormats: invalidCount,
-        messageSegments: segments,
-        totalCost: totalTenantCost, 
-        projectedProfit: projectedProfit,
-        currentBalance: user.balance,
-        canAfford: user.balance >= totalTenantCost
-      },
-      cleanList: validPhones,
-      senderId: sender.id 
-    });
+    return NextResponse.json({ valid: true });
 
   } catch (error) {
-    return NextResponse.json({ error: "INTERNAL_VALIDATION_FAILURE" }, { status: 500 });
+    console.error("VALIDATION_ERROR", error);
+    return NextResponse.json({ valid: false, error: "System Validation Error" }, { status: 500 });
   }
 }
