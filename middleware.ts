@@ -1,82 +1,44 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-// We use a dynamic approach to avoid build-time resolution errors in strict environments
+import { NextResponse } from "next-auth/middleware"; // Use the built-in NextAuth helper
 import { getToken } from "next-auth/jwt";
+import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const url = request.nextUrl;
-  const path = url.pathname;
-  
-  const hostname = request.headers.get("host") || "";
-  const isAxisSubdomain = hostname.startsWith("axis.");
+  const token = await getToken({ 
+    req: request, 
+    secret: process.env.NEXTAUTH_SECRET 
+  });
+  const { pathname } = request.nextUrl;
 
-  // 1. SAFETY ZONE
+  // 1. PUBLIC ROUTES (Allow these always)
   if (
-    path.startsWith("/api/auth") || 
-    path.startsWith("/_next") || 
-    path.startsWith("/static") ||
-    path.includes(".")
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/axis/login") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/_next") ||
+    pathname.includes(".")
   ) {
     return NextResponse.next();
   }
 
-  // 2. SOVEREIGN ADMIN GATE (New Admin UI & API)
-  if (path.startsWith("/admin") || path.startsWith("/api/admin")) {
-    try {
-      const token = await getToken({ 
-        req: request, 
-        secret: process.env.NEXTAUTH_SECRET 
-      });
+  // 2. PROTECTED ROUTES (Require Token)
+  const isAuthPath = pathname.startsWith("/axis/portal") || 
+                     pathname.startsWith("/axis/admin") ||
+                     pathname.startsWith("/admin");
 
-      const isMasterAdmin = 
-        token?.role === "ADMIN" && 
-        token?.email === "admin@sakuragroup.co.tz";
-
-      if (!isMasterAdmin) {
-        return NextResponse.redirect(new URL("/axis/login", request.url));
-      }
-    } catch (error) {
-      // In case of JWT failure during build or runtime
-      return NextResponse.redirect(new URL("/axis/login", request.url));
-    }
+  if (isAuthPath && !token) {
+    const loginUrl = new URL("/axis/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  // 3. SESSION ANALYSIS (Legacy Logic Preserved)
-  const sessionCookie = request.cookies.get("axis_session");
-  const sessionValue = sessionCookie?.value;
-  const hasSession = !!sessionValue;
-  const isAdminLegacy = sessionValue === "admin_master";
-
-  // 4. ADMIN PROTECTION (Legacy /axis/admin paths)
-  if (path.startsWith("/axis/admin") && !isAdminLegacy) {
-    return NextResponse.redirect(new URL("/axis/login", request.url));
-  }
-
-  // 5. SUBDOMAIN ROUTING & PORTAL PROTECTION
-  if (isAxisSubdomain) {
-    if (path === "/" && !hasSession) {
-      return NextResponse.redirect(new URL("/axis/login", request.url));
-    }
-    
-    if (path === "/" && hasSession) {
-      return NextResponse.rewrite(new URL("/axis/portal", request.url));
-    }
-
-    if (path === "/login") {
-      return NextResponse.rewrite(new URL("/axis/login", request.url));
-    }
-  }
-
-  // 6. PORTAL ACCESS GATEKEEPER
-  if (path.startsWith("/axis/portal") && !hasSession) {
-    return NextResponse.redirect(new URL("/axis/login", request.url));
+  // 3. ADMIN ROLE CHECK
+  if ((pathname.startsWith("/admin") || pathname.startsWith("/axis/admin")) && token?.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/axis/portal", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/axis/:path*", "/admin/:path*"],
 };
