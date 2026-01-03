@@ -6,74 +6,96 @@ import { hash } from "@node-rs/argon2";
 import { getWelcomeEmailHtml } from "@/lib/mail-templates";
 
 /**
- * Axis by Sakura - Sovereign Signup Engine (v2.11)
- * Fixed: Removed 'organization' to match production Prisma schema.
+ * Axis by Sakura - Sovereign Signup Engine (v3.0)
+ * Logic: Handles Organisation vs Individual flows.
+ * Status: Build-Safe (Matches Schema).
  */
-
 export async function POST(req: Request) {
-  // 1. Build-Time Circuit Breaker
+  // 1. Build-Time Guard (Prevents crashes during Docker build)
   if (!process.env.DATABASE_URL) {
-    return NextResponse.json({ error: "SERVICE_OFFLINE_BUILD" }, { status: 503 });
+    return NextResponse.json({ error: "Infrastructure Initializing" }, { status: 503 });
   }
 
   try {
-    const { email, password, org, isGoogle = false } = await req.json();
+    // 2. The New "No Secrets" Payload
+    const body = await req.json();
+    const { 
+      type,           // "ORG" or "INDIVIDUAL"
+      orgName,        // Required if type is ORG
+      fullName,       // Required always
+      email,          // Required always
+      phone,          // Required always
+      password        // Required always
+    } = body;
 
-    // 2. Core Validation
-    if (!email || (!password && !isGoogle)) {
-      return NextResponse.json({ error: "Missing required credentials" }, { status: 400 });
+    // 3. Logic Validation
+    if (!email || !password || !fullName || !phone) {
+      return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
+    }
+    
+    // Strict Organization Check
+    if (type === "ORG" && !orgName) {
+      return NextResponse.json({ error: "Organization Name is required." }, { status: 400 });
     }
 
-    // 3. Lazy Import Prisma (Prevents build-time init)
+    // 4. Lazy Import (Prevents 'Missing Env' crash during build)
     const { getPrisma } = await import('@/lib/prisma');
     const prisma = getPrisma();
 
-    // 4. Identity Collision Check
+    // 5. Duplicate Check
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return NextResponse.json({ error: "Identity already exists" }, { status: 400 });
+      return NextResponse.json({ error: "Email is already registered." }, { status: 400 });
     }
 
-    // 5. Secure Credential Mapping
-    const hashedPassword = isGoogle ? "GOOGLE_SSO_OAUTH_PROTECTED" : await hash(password, {
-      memoryCost: 65536,
-      timeCost: 3,
-      parallelism: 4,
+    // 6. Security Hashing
+    const hashedPassword = await hash(password, {
+      memoryCost: 19456,
+      timeCost: 2,
+      parallelism: 1,
     });
 
-    // 6. Persistence (Aligned with current Prisma Schema)
+    // 7. Sovereign Persistence
+    // Logic: If Individual, we store the Org Name as "Individual Account" 
+    // to keep the dashboard clean.
+    const finalOrgName = type === "ORG" ? orgName : "Individual Account";
+
     await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
+        name: fullName,           // Maps directly to schema
+        organization: finalOrgName, // Maps directly to schema
+        phoneNumber: phone,       // Maps directly to schema
         role: "USER",
         status: "PENDING",
         balance: 0,
         smsRate: 28
-        // 'organization' field removed to prevent build failure
       },
     });
 
-    // 7. Lazy Notification Dispatch
+    // 8. Welcome Notification
     if (process.env.RESEND_API_KEY) {
       try {
         const { Resend } = await import("resend");
         const resend = new Resend(process.env.RESEND_API_KEY);
+        
         await resend.emails.send({
           from: "Jumbenylon | Sakura <ceo@sakuragroup.co.tz>",
           to: email,
-          subject: "Welcome to Axis by Sakura",
-          html: getWelcomeEmailHtml(email, isGoogle),
+          subject: type === "ORG" ? `Welcome, ${orgName}` : "Welcome to Axis",
+          html: getWelcomeEmailHtml(fullName, false),
         });
-      } catch (e) {
-        console.error("Resend Dispatch Error:", e);
+      } catch (e) { 
+        console.error("Email dispatch warning:", e); 
+        // We do not fail the request if email fails
       }
     }
 
-    return NextResponse.json({ success: true, message: "Handshake Complete." });
+    return NextResponse.json({ success: true, message: "Account Created." });
 
   } catch (error) {
-    console.error("Sovereign Engine Error:", error);
-    return NextResponse.json({ error: "System synchronization failure" }, { status: 500 });
+    console.error("Signup Error:", error);
+    return NextResponse.json({ error: "System failure." }, { status: 500 });
   }
 }
