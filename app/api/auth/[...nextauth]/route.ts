@@ -1,15 +1,19 @@
-import GoogleProvider from "next-auth/providers/google";
 import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import { verify } from "@node-rs/argon2";
 
 const handler = NextAuth({
   session: { strategy: "jwt" },
+  pages: {
+    signIn: "/axis/login", // Aligned with your /axis path
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true, // Merges Google and Email accounts
     }),
     CredentialsProvider({
       name: "Sakura Axis",
@@ -26,11 +30,10 @@ const handler = NextAuth({
 
         if (!user || !user.password) return null;
 
-        // Verify using Argon2 as used in your Signup route
         const isValid = await verify(user.password, credentials.password);
         if (!isValid) return null;
 
-        // Security check: Only allow active users or admins
+        // Admins bypass; SMEs must be ACTIVE
         if (user.role !== "ADMIN" && user.status !== "ACTIVE") {
           throw new Error("PENDING_APPROVAL");
         }
@@ -40,9 +43,9 @@ const handler = NextAuth({
     })
   ],
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.role = user.role;
+        token.role = user.role || "USER";
         token.id = user.id;
       }
       return token;
