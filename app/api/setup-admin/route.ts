@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { hash } from "@node-rs/argon2";
 
 export const dynamic = 'force-dynamic';
 
@@ -8,28 +9,32 @@ export async function GET(req: Request) {
     const prisma = getPrisma();
 
     const email = "admin@sakuragroup.co.tz";
-    
-    // THIS IS THE FIX:
-    // We are using a standard BCrypt hash for the password "password123"
-    // This is the most common format NextAuth expects.
-    const bcryptHash = "$2a$12$GwJ/bM9u/E9.K.h.W.e.3.u.t.u.r.e."; 
+    const password = "Sakura2025!"; // This will be your password
 
+    // 1. Generate the Hash using YOUR System's Exact Parameters
+    const hashedPassword = await hash(password, {
+      memoryCost: 19456,
+      timeCost: 2,
+      parallelism: 1,
+    });
+
+    // 2. Force Update the Admin User
     const user = await prisma.user.upsert({
       where: { email },
       update: {
-        password: bcryptHash,
+        password: hashedPassword,
         role: "ADMIN",
-        status: "ACTIVE",
+        status: "ACTIVE", // Crucial: Your auth checks for this
         name: "Sakura Admin",
       },
       create: {
         email,
-        password: bcryptHash,
-        role: "ADMIN",
+        password: hashedPassword,
+        role: "ADMIN", // Crucial: Your auth checks for this
         status: "ACTIVE",
         name: "Sakura Admin",
         organization: "Sakura Group HQ",
-        phoneNumber: "+2557539300000",
+        phoneNumber: "+255753930000",
         balance: 100000,
         smsRate: 28,
       },
@@ -37,8 +42,8 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: "ADMIN RESTORED (BCRYPT MODE)", 
-      credentials: { email: email, password: "password123" } 
+      message: "ADMIN RESTORED (ARGON2 MODE)", 
+      credentials: { email, password } 
     });
 
   } catch (error: any) {
