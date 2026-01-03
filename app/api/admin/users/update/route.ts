@@ -1,28 +1,43 @@
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const ALLOWED_STATUS = ["ACTIVE", "PENDING", "SUSPENDED"];
+const ALLOWED_ROLES = ["USER", "ADMIN"];
 
-export async function PATCH(req: Request) {
+export async function POST(req: Request) {
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ error: "SERVICE_OFFLINE_BUILD" }, { status: 503 });
+  }
+
   try {
-    const { userId, tier, topUpAmount, adminId } = await req.json();
+    const { userId, status, role, smsRate } = await req.json();
 
-    // Atomic Update
+    // 1. Validation Guards
+    if (!userId) return NextResponse.json({ error: "Node ID Required" }, { status: 400 });
+    if (status && !ALLOWED_STATUS.includes(status)) return NextResponse.json({ error: "INVALID_STATUS" }, { status: 400 });
+    if (role && !ALLOWED_ROLES.includes(role)) return NextResponse.json({ error: "INVALID_ROLE" }, { status: 400 });
+
+    const { getPrisma } = await import('@/lib/prisma');
+    const prisma = getPrisma();
+
+    // 2. Atomic Update
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
-        smsRate: tier === "CORE" ? 28 : tier === "GROWTH" ? 24 : 20,
-        balance: {
-          increment: topUpAmount || 0
-        }
+        status: status || undefined,
+        role: role || undefined,
+        smsRate: smsRate !== undefined ? Number(smsRate) : undefined,
       }
     });
 
-    // LOG: Provisioning Audit Trail
-    console.log(`[PROVISION] Admin ${adminId} updated User ${userId}: Tier ${tier}, +${topUpAmount} TZS`);
+    if (!updatedUser) return NextResponse.json({ error: "Node not found" }, { status: 404 });
 
-    return NextResponse.json({ success: true, user: updatedUser });
+    return NextResponse.json({ success: true, message: `Node ${updatedUser.email} provisioned.` });
+
   } catch (error) {
-    return NextResponse.json({ success: false, error: "UPDATE_FAILED" }, { status: 500 });
+    console.error("PROVISIONING_ERROR", error);
+    return NextResponse.json({ error: "State transition failed" }, { status: 500 });
   }
 }
