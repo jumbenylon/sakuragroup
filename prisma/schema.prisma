@@ -33,7 +33,7 @@ model User {
   messageLogs   MessageLog[]
   transactions  Transaction[]
   campaigns     Campaign[]
-  apiKeys       ApiKey[]      // [NEW] Added relation
+  apiKeys       ApiKey[]
 }
 
 model ApiKey {
@@ -95,6 +95,14 @@ model Transaction {
   user          User      @relation(fields: [userId], references: [id])
   userId        String
   createdAt     DateTime  @default(now())
+}
+
+// [NEW] The Missing Table
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {
