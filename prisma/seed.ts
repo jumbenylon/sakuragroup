@@ -17,12 +17,11 @@ async function main() {
   // --- 2. CREATE MASTER ADMIN (GENESIS USER) ---
   console.log("👤 Creating Master Admin Identity...");
 
-  // We use your specific parameters to ensure high security
   const adminPassword = await hash("Abrahamjr", {
-    memoryCost: 65536,
-    timeCost: 3,
-    parallelism: 4,
-  });
+  memoryCost: 19456, // Standard NextAuth/Argon2 memory
+  timeCost: 2,
+  parallelism: 1,
+});
 
   const admin = await prisma.user.upsert({
     where: { email: "admin@sakuragroup.co.tz" },
