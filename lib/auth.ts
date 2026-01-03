@@ -7,6 +7,26 @@ import { verify } from "@node-rs/argon2";
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   pages: { signIn: "/axis/login" },
+  
+  // 1. TOP-LEVEL SECURITY CONFIG (Corrected Placement)
+  secret: process.env.NEXTAUTH_SECRET,
+  useSecureCookies: process.env.NODE_ENV === "production",
+  
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === "production" 
+        ? `__Secure-next-auth.session-token` 
+        : `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === "production",
+        domain: '.sakuragroup.co.tz' 
+      },
+    },
+  },
+
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -20,31 +40,31 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-  if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.password) return null;
 
-  const prisma = getPrisma();
-  const user = await prisma.user.findUnique({
-    where: { email: credentials.email }
-  });
+        const prisma = getPrisma();
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email }
+        });
 
-  // Log for Debugging (View in Cloud Run Logs)
-  console.log(`[AUTH] Attempt for: ${credentials.email} - User Found: ${!!user}`);
+        // Debug Logs for Cloud Run
+        console.log(`[AUTH] Attempt: ${credentials.email} - User Found: ${!!user}`);
 
-  if (!user || !user.password) return null;
+        if (!user || !user.password) return null;
 
-  // Verify Password
-  const isValid = await verify(user.password, credentials.password);
-  console.log(`[AUTH] Password Valid: ${isValid}`);
-  if (!isValid) return null;
+        // Verify Argon2 Hash
+        const isValid = await verify(user.password, credentials.password);
+        console.log(`[AUTH] Password Valid: ${isValid}`);
+        
+        if (!isValid) return null;
 
-  // Simplified Role Check
-  if (user.status !== "ACTIVE") {
-    console.log(`[AUTH] Blocked: Status is ${user.status}`);
-    throw new Error("ACCOUNT_PENDING_APPROVAL");
-  }
+        if (user.status !== "ACTIVE") {
+          console.log(`[AUTH] Blocked: Status is ${user.status}`);
+          throw new Error("ACCOUNT_PENDING_APPROVAL");
+        }
 
-  return user;
-}
+        return user;
+      }
     })
   ],
   callbacks: {
@@ -68,6 +88,5 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     }
-  },
-  secret: process.env.NEXTAUTH_SECRET,
+  }
 };
