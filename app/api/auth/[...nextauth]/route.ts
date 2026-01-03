@@ -1,3 +1,4 @@
+import GoogleProvider from "next-auth/providers/google";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
@@ -6,6 +7,10 @@ import { verify } from "@node-rs/argon2";
 const handler = NextAuth({
   session: { strategy: "jwt" },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: "Sakura Axis",
       credentials: {
