@@ -19,7 +19,7 @@ export const GlobalNavbar = () => {
     { name: "Logistics", path: "/logistics" },
     { name: "Construction", path: "/industrial" },
     { name: "Hosting", path: "/hosting" },
-    { name: "Sakura Pay", path: "/sakurapay" }
+    { name: "Sakura Pay", path: "/sakurapay" }, // Added missing comma
     { name: "Podcast", path: "/media" }
   ];
 
