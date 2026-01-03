@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth/next"; // Assuming you use NextAuth for session management
 
 const prisma = new PrismaClient();
 
-// 1. GET: Fetch all pending Sender IDs for the Admin Queue
 export async function GET() {
   try {
     const pendingIds = await prisma.senderId.findMany({
@@ -19,14 +17,14 @@ export async function GET() {
 
     return NextResponse.json({ success: true, data: pendingIds });
   } catch (error) {
+    console.error("ADMIN_SENDER_FETCH_ERROR", error);
     return NextResponse.json({ success: false, error: "FETCH_ERROR" }, { status: 500 });
   }
 }
 
-// 2. PATCH: Approve or Reject a Sender ID
 export async function PATCH(req: Request) {
   try {
-    const { id, action, adminId } = await req.json(); // action: "APPROVED" | "REJECTED"
+    const { id, action, adminId } = await req.json();
 
     const updated = await prisma.senderId.update({
       where: { id },
@@ -41,6 +39,7 @@ export async function PATCH(req: Request) {
 
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
+    console.error("ADMIN_SENDER_UPDATE_ERROR", error);
     return NextResponse.json({ success: false, error: "UPDATE_ERROR" }, { status: 500 });
   }
 }
