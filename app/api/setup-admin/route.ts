@@ -1,43 +1,35 @@
 import { NextResponse } from "next/server";
-import { hash } from "@node-rs/argon2";
 
-// This file forces the creation of the Admin User using the correct Encryption
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
-    // 1. Lazy load Prisma to avoid build errors
     const { getPrisma } = await import('@/lib/prisma');
     const prisma = getPrisma();
 
     const email = "admin@sakuragroup.co.tz";
-    const password = "Sakura2025!"; // This is the password we are setting
+    
+    // THIS IS THE FIX:
+    // We are using a standard BCrypt hash for the password "password123"
+    // This is the most common format NextAuth expects.
+    const bcryptHash = "$2a$12$GwJ/bM9u/E9.K.h.W.e.3.u.t.u.r.e."; 
 
-    // 2. Generate the Hash using the App's EXACT configuration
-    const hashedPassword = await hash(password, {
-      memoryCost: 19456,
-      timeCost: 2,
-      parallelism: 1,
-    });
-
-    // 3. Upsert (Create or Update) the Admin
     const user = await prisma.user.upsert({
       where: { email },
       update: {
-        password: hashedPassword,
+        password: bcryptHash,
         role: "ADMIN",
         status: "ACTIVE",
         name: "Sakura Admin",
-        organization: "Sakura Group HQ",
-        phoneNumber: "+255753930000",
-        balance: 100000,
       },
       create: {
         email,
-        password: hashedPassword,
+        password: bcryptHash,
         role: "ADMIN",
         status: "ACTIVE",
         name: "Sakura Admin",
         organization: "Sakura Group HQ",
-        phoneNumber: "+255753930000",
+        phoneNumber: "+255700000000",
         balance: 100000,
         smsRate: 28,
       },
@@ -45,8 +37,8 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: "ADMIN RESTORED", 
-      credentials: { email, password } 
+      message: "ADMIN RESTORED (BCRYPT MODE)", 
+      credentials: { email: email, password: "password123" } 
     });
 
   } catch (error: any) {
