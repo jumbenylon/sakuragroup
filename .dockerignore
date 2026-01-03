@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js Build Output
+.next
+out
+
+# Environment & Secrets (Force use of Cloud Run Vars)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Version Control
+.git
+.gitignore
+
+# OS Junk
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Documentation & Extras
+README.md
+docs
+.vscode
+.idea
