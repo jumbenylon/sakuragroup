@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, User, CreditCard } from "lucide-react";
+import { Check, User, CreditCard, X } from "lucide-react";
 
 interface UserProps {
   user: {
@@ -44,28 +44,40 @@ export const UserProvisioningRow = ({ user, onUpdate }: UserProps) => {
       </div>
 
       <button 
-        onClick={() => setIsEditing(!isEditing)}
+        onClick={() => setIsEditing(true)}
         className="px-6 py-2 border border-white/10 text-[9px] font-black uppercase tracking-widest text-white hover:bg-white hover:text-black transition-all"
       >
-        {isEditing ? "Cancel" : "Manage Client"}
+        Provision Client
       </button>
 
+      {/* PREMIUM SLIDE-OVER (Build-Safe) */}
       {isEditing && (
-        <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex justify-end">
-          <motion_div 
-            initial={{ x: "100%" }} animate={{ x: 0 }} 
-            className="w-full max-w-md bg-[#0a0a0a] border-l border-white/10 p-12 overflow-y-auto"
-          >
-            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white mb-2">Provisioning</h3>
-            <p className="text-slate-500 text-xs mb-10 uppercase tracking-widest">{user.email}</p>
+        <div className="fixed inset-0 z-[250] flex justify-end">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm" 
+            onClick={() => setIsEditing(false)}
+          />
+          
+          {/* Panel */}
+          <div className="relative w-full max-w-md bg-[#0a0a0a] border-l border-white/10 p-12 h-full shadow-2xl overflow-y-auto">
+            <div className="flex justify-between items-start mb-10">
+              <div>
+                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Provisioning</h3>
+                <p className="text-slate-500 text-[10px] uppercase tracking-widest font-bold mt-1">{user.email}</p>
+              </div>
+              <button onClick={() => setIsEditing(false)} className="text-slate-500 hover:text-white transition-colors">
+                <X size={20} />
+              </button>
+            </div>
             
             <div className="space-y-8">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Select Tier</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Assignment Tier</label>
                 <select 
                   value={selectedTier} 
                   onChange={(e) => setSelectedTier(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 p-4 text-white text-xs outline-none focus:border-pink-500"
+                  className="w-full bg-white/5 border border-white/10 p-4 text-white text-xs outline-none focus:border-pink-500 appearance-none cursor-pointer"
                 >
                   <option value="CORE">CORE (28 TZS)</option>
                   <option value="GROWTH">GROWTH (24 TZS)</option>
@@ -74,31 +86,31 @@ export const UserProvisioningRow = ({ user, onUpdate }: UserProps) => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Manual Top-Up (TZS)</label>
-                <input 
-                  type="number" 
-                  placeholder="0.00"
-                  onChange={(e) => setTopUp(Number(e.target.value))}
-                  className="w-full bg-white/5 border border-white/10 p-4 text-white text-xs outline-none focus:border-pink-500" 
-                />
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Add Balance (TZS)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] font-bold">TZS</span>
+                  <input 
+                    type="number" 
+                    placeholder="0.00"
+                    onChange={(e) => setTopUp(Number(e.target.value))}
+                    className="w-full bg-white/5 border border-white/10 p-4 pl-12 text-white text-xs outline-none focus:border-pink-500" 
+                  />
+                </div>
               </div>
 
-              <button 
-                disabled={loading}
-                onClick={handleAction}
-                className="w-full py-5 bg-white text-black font-black text-[10px] uppercase tracking-widest hover:bg-pink-500 hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-              >
-                {loading ? "Updating..." : "Confirm Provisioning"} <Check size={14} />
-              </button>
+              <div className="pt-4">
+                <button 
+                  disabled={loading}
+                  onClick={handleAction}
+                  className="w-full py-5 bg-white text-black font-black text-[10px] uppercase tracking-widest hover:bg-pink-600 hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                >
+                  {loading ? "Syncing..." : "Confirm Deployment"} <Check size={14} />
+                </button>
+              </div>
             </div>
-          </motion_div>
+          </div>
         </div>
       )}
     </div>
   );
 };
-
-// Simple motion shim to avoid build errors if framer-motion is finicky in deep components
-const motion_div = ({ children, initial, animate, className }: any) => (
-  <div className={className}>{children}</div>
-);
