@@ -5,7 +5,13 @@ import { NextResponse } from "next/server";
 import { hash } from "@node-rs/argon2";
 import { getWelcomeEmailHtml } from "@/lib/mail-templates";
 
+/**
+ * Axis by Sakura - Sovereign Signup Engine (v2.11)
+ * Fixed: Removed 'organization' to match production Prisma schema.
+ */
+
 export async function POST(req: Request) {
+  // 1. Build-Time Circuit Breaker
   if (!process.env.DATABASE_URL) {
     return NextResponse.json({ error: "SERVICE_OFFLINE_BUILD" }, { status: 503 });
   }
@@ -13,27 +19,42 @@ export async function POST(req: Request) {
   try {
     const { email, password, org, isGoogle = false } = await req.json();
 
-    // Lazy Import Prisma
+    // 2. Core Validation
+    if (!email || (!password && !isGoogle)) {
+      return NextResponse.json({ error: "Missing required credentials" }, { status: 400 });
+    }
+
+    // 3. Lazy Import Prisma (Prevents build-time init)
     const { getPrisma } = await import('@/lib/prisma');
     const prisma = getPrisma();
 
+    // 4. Identity Collision Check
     const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) return NextResponse.json({ error: "Identity exists" }, { status: 400 });
+    if (existingUser) {
+      return NextResponse.json({ error: "Identity already exists" }, { status: 400 });
+    }
 
-    const hashedPassword = isGoogle ? "GOOGLE_SSO_OAUTH_PROTECTED" : await hash(password);
-
-    await prisma.user.create({
-      data: { 
-        email, 
-        password: hashedPassword, 
-        organization: org || "Independent Node",
-        status: "PENDING", 
-        role: "USER",
-        smsRate: 28 
-      }
+    // 5. Secure Credential Mapping
+    const hashedPassword = isGoogle ? "GOOGLE_SSO_OAUTH_PROTECTED" : await hash(password, {
+      memoryCost: 65536,
+      timeCost: 3,
+      parallelism: 4,
     });
 
-    // Lazy Resend Dispatch
+    // 6. Persistence (Aligned with current Prisma Schema)
+    await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        role: "USER",
+        status: "PENDING",
+        balance: 0,
+        smsRate: 28
+        // 'organization' field removed to prevent build failure
+      },
+    });
+
+    // 7. Lazy Notification Dispatch
     if (process.env.RESEND_API_KEY) {
       try {
         const { Resend } = await import("resend");
@@ -44,11 +65,15 @@ export async function POST(req: Request) {
           subject: "Welcome to Axis by Sakura",
           html: getWelcomeEmailHtml(email, isGoogle),
         });
-      } catch (e) { console.error("Resend Error", e); }
+      } catch (e) {
+        console.error("Resend Dispatch Error:", e);
+      }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: "Handshake Complete." });
+
   } catch (error) {
-    return NextResponse.json({ error: "Sync Failure" }, { status: 500 });
+    console.error("Sovereign Engine Error:", error);
+    return NextResponse.json({ error: "System synchronization failure" }, { status: 500 });
   }
 }
