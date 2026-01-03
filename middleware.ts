@@ -9,9 +9,10 @@ export async function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
   const isAxisSubdomain = hostname.startsWith("axis.");
 
-  // 1. SAFETY ZONE (Preserved)
+  // 1. SAFETY ZONE (Preserved & Updated)
+  // We added /api/auth to ensure login works without loops
   if (
-    path.startsWith("/api/auth") || // Allow auth endpoints
+    path.startsWith("/api/auth") || 
     path.startsWith("/_next") || 
     path.startsWith("/static") ||
     path.includes(".")
@@ -19,8 +20,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. NEW: SOVEREIGN GLOBAL ADMIN PROTECTION (Added)
-  // This protects the new Provisioning and Analytics routes
+  // 2. SOVEREIGN ADMIN GATE (New Addition)
+  // Protects /admin and /api/admin for the new Provisioning system
   if (path.startsWith("/admin") || path.startsWith("/api/admin")) {
     const token = await getToken({ 
       req: request, 
@@ -34,21 +35,22 @@ export async function middleware(request: NextRequest) {
     if (!isMasterAdmin) {
       return NextResponse.redirect(new URL("/axis/login", request.url));
     }
+    // If validated, proceed to API/UI
     return NextResponse.next();
   }
 
-  // 3. SESSION ANALYSIS (Existing axis_session logic preserved)
+  // 3. SESSION ANALYSIS (Legacy Logic Preserved)
   const sessionCookie = request.cookies.get("axis_session");
   const sessionValue = sessionCookie?.value;
   const hasSession = !!sessionValue;
-  const isAdminLegacy = sessionValue === "admin_master";
+  const isAdmin = sessionValue === "admin_master";
 
-  // 4. ADMIN PROTECTION (Existing axis/admin logic preserved)
-  if (path.startsWith("/axis/admin") && !isAdminLegacy) {
+  // 4. ADMIN PROTECTION (Legacy Logic Preserved)
+  if (path.startsWith("/axis/admin") && !isAdmin) {
     return NextResponse.redirect(new URL("/axis/login", request.url));
   }
 
-  // 5. SUBDOMAIN ROUTING & PORTAL PROTECTION (Preserved)
+  // 5. SUBDOMAIN ROUTING & PORTAL PROTECTION (Legacy Logic Preserved)
   if (isAxisSubdomain) {
     if (path === "/" && !hasSession) {
       return NextResponse.redirect(new URL("/axis/login", request.url));
@@ -63,7 +65,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 6. LEGACY/DIRECT ACCESS GATEKEEPER (Preserved)
+  // 6. LEGACY/DIRECT ACCESS GATEKEEPER (Legacy Logic Preserved)
   const isPortalRoute = path.startsWith("/axis/portal");
   if (isPortalRoute && !hasSession) {
     return NextResponse.redirect(new URL("/axis/login", request.url));
