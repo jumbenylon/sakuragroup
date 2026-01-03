@@ -1,31 +1,34 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
-const prisma = new PrismaClient();
+import { NextResponse } from "next/server";
 
 export async function GET() {
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ error: "SERVICE_OFFLINE_BUILD" }, { status: 503 });
+  }
+
   try {
-    // Fetch only clients (Users), not other Admins
+    const { getPrisma } = await import('@/lib/prisma');
+    const prisma = getPrisma();
+
     const users = await prisma.user.findMany({
-      where: {
-        role: "USER"
-      },
+      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         email: true,
+        role: true,
+        status: true,
         balance: true,
         smsRate: true,
-        status: true,
         createdAt: true,
-      },
-      orderBy: {
-        createdAt: "desc"
+        // organization removed to prevent Prisma runtime error
       }
     });
 
-    return NextResponse.json({ success: true, users });
+    return NextResponse.json(users);
   } catch (error) {
-    console.error("FETCH_USERS_ERROR", error);
-    return NextResponse.json({ success: false }, { status: 500 });
+    console.error("ADMIN_FETCH_ERROR", error);
+    return NextResponse.json({ error: "Identity sync failure" }, { status: 500 });
   }
 }
