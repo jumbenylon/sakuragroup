@@ -14,10 +14,13 @@ export const GlobalNavbar = () => {
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
 
   const navLinks = [
-    { name: "Axis", path: "/axis" },
+    { name: "Agency", path: "/agency" },
+    { name: "Communication", path: "/axis" },
     { name: "Logistics", path: "/logistics" },
-    { name: "Industrial", path: "/industrial" },
+    { name: "Construction", path: "/industrial" },
     { name: "Hosting", path: "/hosting" },
+    { name: "Sakura Pay", path: "/sakurapay" }
+    { name: "Podcast", path: "/media" }
   ];
 
   useEffect(() => {
@@ -73,12 +76,6 @@ export const GlobalNavbar = () => {
 
         {/* CTAs - FUNCTIONAL PURITY */}
         <div className="hidden md:flex items-center gap-6">
-          <Link 
-            href="/axis/login" 
-            className="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-          >
-            Console
-          </Link>
           <Link 
             href="/axis/signup" 
             className="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-black text-[9px] font-black uppercase tracking-widest rounded-sm hover:bg-pink-600 hover:text-white transition-all shadow-xl shadow-black/5"
