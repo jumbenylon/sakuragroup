@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getPrisma } from "@/lib/prisma"; // FIXED: Use Singleton
 import { SenderStatus, CampaignStatus } from "@prisma/client"; // Enums now exist
+import { processCampaign } from "@/lib/workers/campaign-processor";
 
 export async function POST(req: Request) {
   try {
