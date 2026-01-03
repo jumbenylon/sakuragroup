@@ -29,7 +29,7 @@ export async function GET(req: Request) {
         status: "ACTIVE",
         name: "Sakura Admin",
         organization: "Sakura Group HQ",
-        phoneNumber: "+255700000000",
+        phoneNumber: "+2557539300000",
         balance: 100000,
         smsRate: 28,
       },
