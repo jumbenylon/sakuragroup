@@ -2,134 +2,154 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { 
-  Instagram, Linkedin, Twitter, 
-  MapPin, Phone, Mail, ArrowUp,
-  ShieldCheck
+  Twitter, 
+  Instagram, 
+  Linkedin, 
+  Facebook, 
+  MapPin, 
+  Mail, 
+  Phone
 } from "lucide-react";
 
-export function GlobalFooter() {
-  const scrollToTop = () => {
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
+export const GlobalFooter = () => {
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#050912] text-white pt-40 pb-12 px-8 border-t border-white/5 relative overflow-hidden font-sans">
-      {/* Container changed to max-w-7xl for standard professional alignment */}
-      <div className="max-w-7xl mx-auto relative z-10">
-
-        {/* 1. MAIN NAVIGATION GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-24">
-          
-          {/* BRAND IDENTITY */}
-          <div className="space-y-6">
-            <Link href="/" className="block relative w-48 h-12 grayscale brightness-200">
-              <Image 
-                src="https://storage.googleapis.com/sakura-web/sakuragroup-logo-white.png" 
-                alt="Sakura Group" 
-                fill
-                className="object-contain object-left"
-              />
+    <footer className="bg-black text-white border-t border-white/10 pt-20 pb-10 relative overflow-hidden font-sans">
+      {/* Background Texture */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
+      
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        
+        {/* TOP ROW: Brand & Contact */}
+        <div className="flex flex-col md:flex-row justify-between items-start mb-20 gap-10">
+          <div className="max-w-md">
+            <Link href="/" className="text-2xl font-black tracking-tighter mb-6 block">
+              Sakura<span className="text-neutral-500">Group.</span>
             </Link>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-xs font-light">
-              Engineering the rails of African commerce through integrated technology, logistics, and industrial precision.
+            <p className="text-neutral-400 leading-relaxed mb-8 text-sm">
+              The operating backbone for Tanzanian enterprises — engineered across logistics, cloud infrastructure, communications, and industrial services.
             </p>
-            <div className="flex gap-4 pt-2">
-                {[
-                  { Icon: Instagram, href: "https://instagram.com/sakuragrouptz" },
-                  { Icon: Linkedin, href: "https://linkedin.com/company/sakuragrouptz" },
-                  { Icon: Twitter, href: "https://twitter.com/sakuragrouptz" }
-                ].map(({ Icon, href }, i) => (
-                    <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-white/10 transition-all border border-white/5">
-                        <Icon size={18} />
-                    </a>
-                ))}
+            <div className="flex gap-4">
+              {[Twitter, Instagram, Linkedin, Facebook].map((Icon, i) => (
+                <Link key={i} href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/5 transition-all">
+                  <Icon size={18} />
+                </Link>
+              ))}
             </div>
           </div>
 
-          {/* ECOSYSTEM DIVISIONS */}
-          <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-500 mb-8">Ecosystem</h4>
-            <ul className="space-y-4">
-                {[
-                    { n: "SakuraPay", l: "/sakurapay" },
-                    { n: "Logistics", l: "/logistics" },
-                    { n: "Axis API", l: "/axis" },
-                    { n: "Xhule Learn", l: "/learn" },
-                    { n: "Construction", l: "/roofcleaning" }
-                ].map((link) => (
-                    <li key={link.n}>
-                        <Link href={link.l} className="text-sm text-slate-400 hover:text-white transition-colors block py-1 font-light">
-                            {link.n}
-                        </Link>
-                    </li>
-                ))}
-            </ul>
-          </div>
-
-          {/* INTELLIGENCE & SUPPORT */}
-          <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-500 mb-8">Intelligence</h4>
-            <ul className="space-y-4">
-                {[
-                    { n: "SakuraHost", l: "/hosting" },
-                    { n: "Creative Agency", l: "/agency" },
-                    { n: "Think Loko", l: "/thinkloko" },
-                    { n: "Contact HQ", l: "/contact" },
-                    { n: "Client Portal", l: "/login" } // Standardized to /login per auth structure
-                ].map((link) => (
-                    <li key={link.n}>
-                        <Link href={link.l} className="text-sm text-slate-400 hover:text-white transition-colors block py-1 font-light">
-                            {link.n}
-                        </Link>
-                    </li>
-                ))}
-            </ul>
-          </div>
-
-          {/* GLOBAL HQ NODE */}
-          <div>
-            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-500 mb-8">Global HQ</h4>
-            <div className="bg-white/5 border border-white/5 rounded-2xl p-6 space-y-6">
-                <div className="flex gap-4">
-                    <Mail size={18} className="text-emerald-500 shrink-0 mt-0.5" />
-                    <a href="mailto:hello@sakuragroup.co.tz" className="text-sm text-slate-300 hover:text-white break-all font-light">hello@sakuragroup.co.tz</a>
-                </div>
-                <div className="flex gap-4">
-                    <Phone size={18} className="text-emerald-500 shrink-0 mt-0.5" />
-                    <div className="text-sm text-slate-300 font-mono">
-                        <p>+255 753 930 000</p>
-                        <p>+255 782 020 840</p>
-                    </div>
-                </div>
-                <div className="flex gap-4">
-                    <MapPin size={18} className="text-emerald-500 shrink-0 mt-0.5" />
-                    <p className="text-sm text-slate-300 leading-relaxed font-light">Mwenge, TRA Road<br/>Dar es Salaam, TZ</p>
-                </div>
+          <div className="flex flex-col gap-4 text-sm text-neutral-400">
+            <div className="flex items-start gap-3">
+              <MapPin size={18} className="text-neutral-600 mt-1" />
+              <span>
+                Sakura HQ, Dar es Salaam<br />
+                Tanzania, East Africa
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Mail size={18} className="text-neutral-600" />
+              <a href="mailto:corporate@sakuragroup.co.tz" className="hover:text-white transition-colors">corporate@sakuragroup.co.tz</a>
+            </div>
+            <div className="flex items-center gap-3">
+              <Phone size={18} className="text-neutral-600" />
+              <a href="tel:+255753930000" className="hover:text-white transition-colors">+255 753 930 000</a>
             </div>
           </div>
-
         </div>
 
-        {/* 2. COPYRIGHT BAR */}
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-mono uppercase tracking-widest text-slate-500">
-            <div className="flex items-center gap-4">
-                <span>© {new Date().getFullYear()} Sakura Group Ltd</span>
-                <span className="hidden md:inline w-1 h-1 bg-emerald-500 rounded-full" />
-                <span className="flex items-center gap-1"><ShieldCheck size={12} className="text-emerald-500" /> ISO Certified Network</span>
-            </div>
+        {/* MIDDLE ROW: The Ecosystem Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 border-t border-white/10 pt-16 mb-16">
+          
+          {/* COLUMN 1: SAKURAHOST (Cloud) */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-sm uppercase tracking-widest text-violet-400">SakuraHost</h4>
+            <ul className="space-y-2 text-sm text-neutral-500">
+              <li><Link href="/hosting/web" className="hover:text-violet-300 transition-colors">Managed Business Hosting</Link></li>
+              <li><Link href="/hosting/vps" className="hover:text-violet-300 transition-colors">VPS & Cloud Compute</Link></li>
+              <li><Link href="/hosting/managed" className="hover:text-violet-300 transition-colors">Platform Core</Link></li>
+              <li><Link href="/hosting/domains" className="hover:text-violet-300 transition-colors">Domains & Governance</Link></li>
+              <li><Link href="/hosting/email" className="hover:text-violet-300 transition-colors">Enterprise Email</Link></li>
+              <li><Link href="/hosting/security" className="hover:text-violet-300 transition-colors">Security & Reliability</Link></li>
+            </ul>
+          </div>
+
+          {/* COLUMN 2: RCS (Industrial) */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-sm uppercase tracking-widest text-orange-500">RCS Construction</h4>
+            <ul className="space-y-2 text-sm text-neutral-500">
+              <li><Link href="/rcs/restoration" className="hover:text-orange-300 transition-colors">Roof Restoration</Link></li>
+              <li><Link href="/rcs/waterproofing" className="hover:text-orange-300 transition-colors">Waterproofing Systems</Link></li>
+              <li><Link href="/rcs/installation" className="hover:text-orange-300 transition-colors">Industrial Roofing</Link></li>
+              <li><Link href="/rcs/construction" className="hover:text-orange-300 transition-colors">Structural & Residential</Link></li>
+              <li><Link href="/rcs/cleaning" className="hover:text-orange-300 transition-colors">Surface Restoration</Link></li>
+              <li><Link href="/rcs/repairs" className="hover:text-orange-300 transition-colors">Asset Maintenance</Link></li>
+            </ul>
+          </div>
+
+          {/* COLUMN 3: FINTECH & COMM */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-sm uppercase tracking-widest text-emerald-500">Fintech</h4>
+            <ul className="space-y-2 text-sm text-neutral-500">
+              <li><Link href="/sakurapay" className="hover:text-emerald-300 transition-colors">SakuraPay Gateway</Link></li>
+              <li><Link href="/sakurapay" className="hover:text-emerald-300 transition-colors">POS & Terminals</Link></li>
+              <li><Link href="/sakurapay" className="hover:text-emerald-300 transition-colors">Agency Banking</Link></li>
+            </ul>
             
-            <button 
-              onClick={scrollToTop} 
-              className="flex items-center gap-2 hover:text-white transition-all group"
-            >
-                Return to Zenith <ArrowUp size={14} className="group-hover:-translate-y-1 transition-transform" />
-            </button>
+            <h4 className="font-bold text-xs uppercase tracking-widest text-white/50 mt-4">Axis Platform</h4>
+            <ul className="space-y-2 text-sm text-neutral-500">
+              <li><Link href="/axis" className="hover:text-emerald-300 transition-colors">Bulk SMS API</Link></li>
+              <li><Link href="/axis" className="hover:text-emerald-300 transition-colors">WhatsApp Business</Link></li>
+            </ul>
+          </div>
+
+          {/* COLUMN 4: LOGISTICS & AGENCY */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-sm uppercase tracking-widest text-blue-500">Logistics & Field Ops</h4>
+            <ul className="space-y-2 text-sm text-neutral-500">
+              <li><Link href="/logistics" className="hover:text-blue-300 transition-colors">Secure Logistics</Link></li>
+              <li><Link href="/logistics" className="hover:text-blue-300 transition-colors">Confidential Dispatch</Link></li>
+              <li><Link href="/logistics" className="hover:text-blue-300 transition-colors">Inter-City Transport</Link></li>
+              <li><Link href="/logistics" className="hover:text-blue-300 transition-colors">Clearing & Forwarding</Link></li>
+            </ul>
+
+            <h4 className="font-bold text-xs uppercase tracking-widest text-white/50 mt-4">Creative & Brand</h4>
+            <ul className="space-y-2 text-sm text-neutral-500">
+              <li><Link href="/agency" className="hover:text-pink-300 transition-colors">Sakura Agency</Link></li>
+              <li><Link href="#" className="hover:text-pink-300 transition-colors opacity-50 cursor-not-allowed">Maridadi (Coming Soon)</Link></li>
+            </ul>
+          </div>
+
+          {/* COLUMN 5: CORPORATE */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-sm uppercase tracking-widest text-white">Corporate</h4>
+            <ul className="space-y-2 text-sm text-neutral-500">
+              <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
+              <li><Link href="/careers" className="hover:text-white transition-colors">Careers</Link></li>
+              <li><Link href="/hosting/support" className="hover:text-white transition-colors">Support & Service Desk</Link></li>
+              <li><Link href="/contact" className="hover:text-white transition-colors">Contact Corporate</Link></li>
+              
+              <li className="flex items-center gap-2 mt-6 text-xs font-mono text-green-500">
+                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                 All Systems Normal
+              </li>
+            </ul>
+          </div>
+
         </div>
+
+        {/* BOTTOM ROW: Legal & Copyright */}
+        <div className="flex flex-col md:flex-row justify-between items-center border-t border-white/10 pt-8 text-xs text-neutral-600">
+          <p>© {currentYear} Sakura Group Ltd. All rights reserved.</p>
+          <div className="flex gap-6 mt-4 md:mt-0">
+            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="#" className="hover:text-white transition-colors">Sitemap</Link>
+          </div>
+        </div>
+
       </div>
     </footer>
   );
-}
+};
