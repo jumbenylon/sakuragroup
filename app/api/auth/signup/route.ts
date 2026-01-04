@@ -3,70 +3,67 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { hash } from "@node-rs/argon2";
-import { getWelcomeEmailHtml } from "@/lib/mail-templates";
+// DIRECT RELATIVE PATH: Bypasses Alias resolution issues in Docker
+import { getWelcomeEmailHtml } from "../../../lib/mail-templates";
 
 /**
- * Axis by Sakura - Sovereign Signup Engine (v3.0)
- * Logic: Handles Organisation vs Individual flows.
- * Status: Build-Safe (Matches Schema).
+ * Axis by Sakura - Sovereign Signup Engine (v3.1)
+ * Optimized for: Linux Docker Casing & Absolute Module Resolution.
  */
 export async function POST(req: Request) {
-  // 1. Build-Time Guard (Prevents crashes during Docker build)
+  // 1. Build-Time Guard
   if (!process.env.DATABASE_URL) {
     return NextResponse.json({ error: "Infrastructure Initializing" }, { status: 503 });
   }
 
   try {
-    // 2. The New "No Secrets" Payload
     const body = await req.json();
     const { 
       type,           // "ORG" or "INDIVIDUAL"
       orgName,        // Required if type is ORG
-      fullName,       // Required always
-      email,          // Required always
-      phone,          // Required always
-      password        // Required always
+      fullName,       // User's name
+      email,          
+      phone,          
+      password        
     } = body;
 
-    // 3. Logic Validation
+    // 2. Structural Validation
     if (!email || !password || !fullName || !phone) {
-      return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
+      return NextResponse.json({ error: "Required fields missing." }, { status: 400 });
     }
     
-    // Strict Organization Check
     if (type === "ORG" && !orgName) {
-      return NextResponse.json({ error: "Organization Name is required." }, { status: 400 });
+      return NextResponse.json({ error: "Organization Name is mandatory for ORG accounts." }, { status: 400 });
     }
 
-    // 4. Lazy Import (Prevents 'Missing Env' crash during build)
-    const { getPrisma } = await import('@/lib/prisma');
+    // 3. Lazy Prisma Initialization (Ensures build-safety)
+    const { getPrisma } = await import('../../../lib/prisma');
     const prisma = getPrisma();
 
-    // 5. Duplicate Check
+    // 4. Identity Collision Check
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return NextResponse.json({ error: "Email is already registered." }, { status: 400 });
+      return NextResponse.json({ error: "This email node is already active." }, { status: 400 });
     }
 
-    // 6. Security Hashing
+    // 5. High-Entropy Security Hashing
     const hashedPassword = await hash(password, {
       memoryCost: 19456,
       timeCost: 2,
       parallelism: 1,
     });
 
-    // 7. Sovereign Persistence
-    // Logic: If Individual, we store the Org Name as "Individual Account" 
-    // to keep the dashboard clean.
+    // 6. Organization Normalization
     const finalOrgName = type === "ORG" ? orgName : "Individual Account";
 
+    // 7. Data Persistence
     await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
-        name: fullName,           // Maps directly to schema
-        organization: finalOrgName, // Maps directly to schema
-        phoneNumber: phone,       // Maps directly to schema
+        name: fullName,
+        organization: finalOrgName,
+        phoneNumber: phone,
         role: "USER",
         status: "PENDING",
         balance: 0,
@@ -74,7 +71,7 @@ export async function POST(req: Request) {
       },
     });
 
-    // 8. Welcome Notification
+    // 8. CEO Welcome Protocol
     if (process.env.RESEND_API_KEY) {
       try {
         const { Resend } = await import("resend");
@@ -83,19 +80,19 @@ export async function POST(req: Request) {
         await resend.emails.send({
           from: "Jumbenylon | Sakura <ceo@sakuragroup.co.tz>",
           to: email,
-          subject: type === "ORG" ? `Welcome, ${orgName}` : "Welcome to Axis",
+          subject: type === "ORG" ? `Provisioning: ${orgName}` : "Axis Node Activation",
           html: getWelcomeEmailHtml(fullName, false),
         });
-      } catch (e) { 
-        console.error("Email dispatch warning:", e); 
-        // We do not fail the request if email fails
+      } catch (emailError) { 
+        // Log warning but don't break the signup flow
+        console.error("Non-critical notification failure:", emailError); 
       }
     }
 
-    return NextResponse.json({ success: true, message: "Account Created." });
+    return NextResponse.json({ success: true, message: "Node Provisioned Successfully." });
 
-  } catch (error) {
-    console.error("Signup Error:", error);
-    return NextResponse.json({ error: "System failure." }, { status: 500 });
+  } catch (error: any) {
+    console.error("Sovereign Signup Failure:", error);
+    return NextResponse.json({ error: "System-level transmission failure." }, { status: 500 });
   }
 }

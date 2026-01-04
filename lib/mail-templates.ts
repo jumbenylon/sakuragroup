@@ -1,11 +1,9 @@
 /**
  * Sakura Group - Unified Email Infrastructure
- * Contains: 
- * 1. CEO Welcome (User-facing)
- * 2. Contact Intake (Internal-facing)
+ * Resolved for Build Case-Sensitivity & Functional Purity
  */
 
-// --- 1. CEO WELCOME TEMPLATE (YOUR EXISTING LOGIC) ---
+// --- 1. CEO WELCOME TEMPLATE (Client-Facing) ---
 export const getWelcomeEmailHtml = (clientEmail: string, isGoogleLogin: boolean) => {
   const loginMethod = isGoogleLogin ? "Google SSO" : "Secure Access Key";
   const logoUrl = "https://storage.googleapis.com/sakura-web/logo-full.png";
@@ -64,7 +62,7 @@ export const getWelcomeEmailHtml = (clientEmail: string, isGoogleLogin: boolean)
   `;
 };
 
-// --- 2. INTERNAL CONTACT INTAKE (NEW LOGIC) ---
+// --- 2. INTERNAL CONTACT INTAKE (Admin-Facing) ---
 export const getContactIntakeEmailHtml = (data: {
   name: string,
   email: string,
@@ -76,7 +74,7 @@ export const getContactIntakeEmailHtml = (data: {
   const colorMap: Record<string, string> = {
     logistics: "#EAB308",
     agency: "#F97316",
-    roofcleaning: "#10B981",
+    industrial: "#10B981", // Updated key from roofcleaning to industrial
     general: "#6B7280"
   };
   const accentColor = colorMap[data.service] || colorMap.general;
@@ -111,27 +109,22 @@ export const getContactIntakeEmailHtml = (data: {
           <div class="content">
             <div class="tx-id">TXN: ${data.txId}</div>
             <div class="title">New Lead Captured</div>
-            
             <div class="field">
               <span class="label">Primary Contact</span>
               <div class="value">${data.name}</div>
             </div>
-
             <div class="field">
               <span class="label">Organization</span>
               <div class="value">${data.company || "Direct Individual"}</div>
             </div>
-
             <div class="field">
               <span class="label">Email Address</span>
               <div class="value">${data.email}</div>
             </div>
-
             <div class="field">
               <span class="label">Project Details</span>
               <div class="message-box">${data.message}</div>
             </div>
-
             <div style="margin-top: 40px; text-align: center;">
               <a href="mailto:${data.email}" class="btn">Initiate Response</a>
             </div>
