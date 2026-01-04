@@ -317,7 +317,7 @@ const DangerBlock = () => (
           <span className="block mt-2 text-red-400 font-medium">It damages the asset while cleaning it.</span>
         </p>
         <p className="text-sm font-mono text-emerald-500 uppercase tracking-widest">
-          We use < 500 PSI + Bio-Chemistry instead.
+          We use &lt; 500 PSI + Bio-Chemistry instead.
         </p>
       </ScrollReveal>
     </div>
