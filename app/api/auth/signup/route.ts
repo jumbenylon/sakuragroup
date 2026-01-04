@@ -3,15 +3,15 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import { hash } from "@node-rs/argon2";
-// DIRECT RELATIVE PATH: Bypasses Alias resolution issues in Docker
-import { getWelcomeEmailHtml } from "../../../lib/mail-templates";
+// Level Check: signup(0) -> auth(1) -> api(2) -> app(3) -> root(lib/4)
+import { getWelcomeEmailHtml } from "../../../../lib/mail-templates";
 
 /**
- * Axis by Sakura - Sovereign Signup Engine (v3.1)
- * Optimized for: Linux Docker Casing & Absolute Module Resolution.
+ * Axis by Sakura - Sovereign Signup Engine (v3.3)
+ * Optimized for: Variable Accuracy and Module Resolution.
  */
 export async function POST(req: Request) {
-  // 1. Build-Time Guard
+  // Infrastructure Guard
   if (!process.env.DATABASE_URL) {
     return NextResponse.json({ error: "Infrastructure Initializing" }, { status: 503 });
   }
@@ -19,51 +19,47 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { 
-      type,           // "ORG" or "INDIVIDUAL"
-      orgName,        // Required if type is ORG
-      fullName,       // User's name
-      email,          
-      phone,          
-      password        
+      email, 
+      password, 
+      fullName, 
+      phone,      // Captured correctly from body
+      type, 
+      orgName 
     } = body;
 
-    // 2. Structural Validation
+    // 1. Logic Validation
     if (!email || !password || !fullName || !phone) {
-      return NextResponse.json({ error: "Required fields missing." }, { status: 400 });
-    }
-    
-    if (type === "ORG" && !orgName) {
-      return NextResponse.json({ error: "Organization Name is mandatory for ORG accounts." }, { status: 400 });
+      return NextResponse.json({ error: "Required fields (Email, Password, Name, Phone) missing." }, { status: 400 });
     }
 
-    // 3. Lazy Prisma Initialization (Ensures build-safety)
-    const { getPrisma } = await import('../../../lib/prisma');
+    // 2. Lazy Import Prisma (Up 4 levels)
+    const { getPrisma } = await import('../../../../lib/prisma');
     const prisma = getPrisma();
 
-    // 4. Identity Collision Check
+    // 3. Identity Collision Check
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json({ error: "This email node is already active." }, { status: 400 });
     }
 
-    // 5. High-Entropy Security Hashing
+    // 4. Security Hashing
     const hashedPassword = await hash(password, {
       memoryCost: 19456,
       timeCost: 2,
       parallelism: 1,
     });
 
-    // 6. Organization Normalization
+    // 5. Organization Normalization
     const finalOrgName = type === "ORG" ? orgName : "Individual Account";
 
-    // 7. Data Persistence
+    // 6. Data Persistence (Sovereign Node Creation)
     await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         name: fullName,
         organization: finalOrgName,
-        phoneNumber: phone,
+        phoneNumber: phone, // Now correctly mapped from captured 'phone' variable
         role: "USER",
         status: "PENDING",
         balance: 0,
@@ -71,7 +67,7 @@ export async function POST(req: Request) {
       },
     });
 
-    // 8. CEO Welcome Protocol
+    // 7. CEO Welcome Protocol
     if (process.env.RESEND_API_KEY) {
       try {
         const { Resend } = await import("resend");
@@ -84,15 +80,13 @@ export async function POST(req: Request) {
           html: getWelcomeEmailHtml(fullName, false),
         });
       } catch (emailError) { 
-        // Log warning but don't break the signup flow
         console.error("Non-critical notification failure:", emailError); 
       }
     }
 
-    return NextResponse.json({ success: true, message: "Node Provisioned Successfully." });
-
-  } catch (error: any) {
-    console.error("Sovereign Signup Failure:", error);
-    return NextResponse.json({ error: "System-level transmission failure." }, { status: 500 });
+    return NextResponse.json({ success: true, message: "Node Provisioned." });
+  } catch (e: any) {
+    console.error("Signup System Error:", e.message);
+    return NextResponse.json({ error: "System failure during node provisioning." }, { status: 500 });
   }
 }
