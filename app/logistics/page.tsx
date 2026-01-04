@@ -13,14 +13,52 @@ import {
 } from "framer-motion";
 import { 
   ArrowRight, Truck, Lock, Globe, Zap, Navigation, 
-  Clock, Users // Added Users to prevent import errors
+  Clock, Users 
 } from "lucide-react";
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
-// --- 1. KINETIC UTILITIES (FIXED TYPES) ---
+// --- 1. THE LOGISTICS PRELOADER ---
+const Preloader = ({ onComplete }: { onComplete: () => void }) => (
+  <motion.div
+    initial={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.8, ease: "easeInOut" }}
+    onAnimationComplete={onComplete}
+    className="fixed inset-0 z-[200] bg-[#050912] flex items-center justify-center"
+  >
+    <div className="text-center">
+      <motion.div 
+        className="text-8xl md:text-[10rem] font-black text-white mb-6 tracking-tighter"
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        DELIVER<span className="text-yellow-500">.</span>
+      </motion.div>
+      
+      <div className="h-1 w-48 bg-white/10 mx-auto rounded-full overflow-hidden relative">
+        <motion.div 
+          className="h-full bg-yellow-500"
+          initial={{ width: 0 }}
+          animate={{ width: "100%" }}
+          transition={{ duration: 1.8, ease: "easeInOut" }}
+        />
+      </div>
+      
+      <motion.p 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="mt-6 font-mono text-[10px] text-yellow-500/60 uppercase tracking-[0.5em]"
+      >
+        Optimizing Supply Route
+      </motion.p>
+    </div>
+  </motion.div>
+);
 
-// Corrected: Added className to the type definition and component props
+// --- 2. KINETIC UTILITIES ---
 const ScrollReveal = ({ 
   children, 
   delay = 0, 
@@ -80,8 +118,7 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
   );
 };
 
-// --- 2. THE LOGISTICS ENGINE ---
-
+// --- 3. THE LOGISTICS ENGINE ---
 const Hero = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 300]);
@@ -89,7 +126,6 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#050912]">
-      {/* Background Layer: Replaced Image with Video */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
           <video 
             autoPlay 
@@ -174,7 +210,6 @@ const ServiceMosaic = () => {
 
 const NetworkSection = () => (
     <section className="py-40 px-6 bg-[#0f172a] relative border-y border-white/5 overflow-hidden">
-    {/* Grid Pattern Overlay */}
     <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:60px_60px]" />
     
     <div className="max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row gap-20 items-center">
@@ -201,18 +236,13 @@ const NetworkSection = () => (
 
         <ScrollReveal direction="right" className="flex-1 w-full">
             <div className="relative aspect-video rounded-[2rem] overflow-hidden border border-white/10 group shadow-2xl">
-                {/* Updated to a high-fidelity logistics/data visual */}
                 <Image 
                     src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070" 
                     alt="Advanced Logistics Infrastructure"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110 grayscale brightness-75 contrast-125"
                 />
-                
-                {/* Brand Tint Overlay */}
                 <div className="absolute inset-0 bg-yellow-500/10 mix-blend-overlay" />
-                
-                {/* Central "Powered" Action Hub */}
                 <div className="absolute inset-0 flex items-center justify-center">
                     <motion.div 
                         animate={{ 
@@ -225,8 +255,6 @@ const NetworkSection = () => (
                         <Zap className="text-yellow-500 fill-yellow-500" size={32} />
                     </motion.div>
                 </div>
-
-                {/* Subtle Scanline Effect for Data Feel */}
                 <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_4px,3px_100%]" />
             </div>
         </ScrollReveal>
@@ -237,35 +265,22 @@ const NetworkSection = () => (
 export default function LogisticsPage() {
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <main className="min-h-screen bg-[#050912] text-white selection:bg-yellow-500 selection:text-black">
       <GlobalNavbar />
-      <AnimatePresence>
+      
+      <AnimatePresence mode="wait">
         {loading && (
-            <motion.div 
-                exit={{ opacity: 0 }} 
-                className="fixed inset-0 z-[200] bg-[#050912] flex items-center justify-center"
-            >
-                <div className="text-center w-64">
-                    <motion.div 
-                        initial={{ width: 0 }} 
-                        animate={{ width: "100%" }} 
-                        transition={{ duration: 1.5 }}
-                        className="h-[2px] bg-yellow-500 mb-6"
-                    />
-                    <p className="font-mono text-[10px] text-yellow-500 uppercase tracking-widest">Optimizing Supply Route...</p>
-                </div>
-            </motion.div>
+          <Preloader onComplete={() => setLoading(false)} />
         )}
       </AnimatePresence>
       
       {!loading && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          transition={{ duration: 1.2, ease: "easeOut" }}
+        >
             <Hero />
             <ServiceMosaic />
             <NetworkSection />
