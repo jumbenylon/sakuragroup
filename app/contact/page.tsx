@@ -1,137 +1,272 @@
 "use client";
 
-import React, { useState, useRef, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, MapPin, ShieldCheck, Phone } from "lucide-react";
+import { 
+  MapPin, Phone, Mail, 
+  ArrowRight, Loader2, CheckCircle, 
+  ChevronDown, Terminal
+} from "lucide-react";
+
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
-// --- FORM COMPONENT ---
-const ContactForm = () => {
-  const searchParams = useSearchParams();
-  const initialService = searchParams.get("service") || "general";
-  
-  const [activeTab, setActiveTab] = useState(initialService);
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+// DEPARTMENT CONFIGURATION
+const DEPARTMENTS = [
+  "General Inquiry",
+  "Marketing & Strategy",
+  "Software Development",
+  "Logistics & Supply Chain",
+  "Messaging (Axis/WhatsApp)",
+  "Think Loko Podcast",
+  "Xhule Learn",
+  "Roof Cleaning / Construction"
+];
+
+export default function ContactPage() {
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [txId, setTxId] = useState("");
-  const formRef = useRef<HTMLFormElement>(null);
+  const [error, setError] = useState("");
+
+  // Form State
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    service: DEPARTMENTS[0],
+    message: "",
+    honey: "" // Bot Trap
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus("submitting");
-
-    if (!formRef.current) return;
-    const formData = new FormData(formRef.current);
-    
-    const payload = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      company: formData.get("company"),
-      message: formData.get("message"),
-      honey: formData.get("website"), // Honeypot field
-      service: activeTab,
-    };
+    setLoading(true);
+    setError("");
 
     try {
-      const response = await fetch("/api/contact", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...formData,
+          source: "general" // Distinguishes this from the Axis-specific form
+        }),
       });
 
-      const result = await response.json();
-      if (result.success) {
-        setTxId(result.txId);
-        setStatus("success");
-      } else {
-        setStatus("error");
-      }
-    } catch {
-      setStatus("error");
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Transmission failed.");
+
+      setTxId(data.txId);
+      setSuccess(true);
+      setFormData({ name: "", email: "", service: DEPARTMENTS[0], message: "", honey: "" });
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto lg:mx-0">
-      <AnimatePresence mode="wait">
-        {status !== "success" ? (
-          <motion.div key="form" exit={{ opacity: 0, y: -20 }}>
-            {/* Service Selection Tabs */}
-            <div className="flex flex-wrap gap-3 mb-12">
-              {["logistics", "agency", "industrial", "general"].map((id) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setActiveTab(id)}
-                  className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${
-                    activeTab === id ? `border-yellow-500 bg-yellow-500/10 text-white` : "border-white/5 text-slate-500 hover:border-white/20"
-                  }`}
-                >
-                  {id}
-                </button>
-              ))}
-            </div>
-
-            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
-              {/* HONEYPOT - Hidden from humans */}
-              <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" />
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <input name="name" required placeholder="Full Name" className="w-full bg-[#080d1a] border border-white/5 p-4 text-white outline-none rounded-xl focus:border-yellow-500/50 transition-colors" />
-                <input name="email" required type="email" placeholder="Email" className="w-full bg-[#080d1a] border border-white/5 p-4 text-white outline-none rounded-xl focus:border-yellow-500/50 transition-colors" />
-              </div>
-              <input name="company" placeholder="Company (Optional)" className="w-full bg-[#080d1a] border border-white/5 p-4 text-white outline-none rounded-xl" />
-              <textarea name="message" required rows={5} placeholder="Inquiry Details" className="w-full bg-[#080d1a] border border-white/5 p-4 text-white outline-none rounded-xl resize-none" />
-
-              {status === "error" && <p className="text-red-500 text-[10px] font-black uppercase tracking-widest">! Transmission Interrupted</p>}
-
-              <button disabled={status === "submitting"} className="w-full py-6 bg-white text-black font-black text-xs uppercase tracking-[0.4em] rounded-xl hover:bg-yellow-500 transition-all flex items-center justify-center gap-4 disabled:opacity-50">
-                {status === "submitting" ? "Encrypting..." : "Secure Transmission"} <Send size={16} />
-              </button>
-            </form>
-          </motion.div>
-        ) : (
-          /* SUCCESS RECEIPT */
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-white text-black p-12 rounded-sm relative shadow-2xl">
-            <div className="absolute top-0 left-0 w-full h-2 bg-[radial-gradient(circle,_transparent_70%,_white_70%)] bg-[length:15px_15px] -translate-y-1" />
-            <div className="flex justify-between items-start mb-12">
-              <div><h3 className="font-black text-2xl tracking-tighter">SAKURA.</h3><p className="text-[10px] font-mono text-slate-500">TRANSMISSION OK</p></div>
-              <p className="text-[10px] font-mono">ID: {txId}</p>
-            </div>
-            <div className="space-y-4 mb-12 border-y border-slate-100 py-8 font-mono text-xs">
-              <div className="flex justify-between"><span>DEPT</span><span className="font-bold">{activeTab.toUpperCase()}</span></div>
-              <div className="flex justify-between"><span>STATUS</span><span className="font-bold text-emerald-600">RECEIVED</span></div>
-            </div>
-            <p className="text-sm italic text-center mb-8">"Your data packet has been successfully routed to Sakura HQ."</p>
-            <button onClick={() => setStatus("idle")} className="w-full text-[10px] font-black uppercase tracking-[0.3em] border-b border-black pb-2">New Inquiry</button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
-// --- MAIN PAGE WRAPPER ---
-export default function ContactPage() {
-  return (
-    <main className="min-h-screen bg-[#050912] text-white">
+    <main className="bg-[#020202] min-h-screen text-white selection:bg-emerald-500 font-sans">
       <GlobalNavbar />
-      <section className="pt-40 pb-20 px-6">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24">
-          <div className="space-y-12">
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none">LET'S BUILD <br/><span className="text-slate-500 italic font-light">FUTURE.</span></h1>
-            <div className="space-y-6">
-              <div className="flex gap-4"><MapPin className="text-yellow-500" /> <span className="text-slate-400 text-sm">Dar es Salaam, TZ</span></div>
-              <div className="flex gap-4"><Phone className="text-yellow-500" /> <span className="text-slate-400 text-sm">+255 (0) 700 000 000</span></div>
-              <div className="flex gap-4"><ShieldCheck className="text-emerald-500" /> <span className="text-slate-400 text-sm">ISO Certified Intake</span></div>
+
+      <section className="relative pt-40 pb-24 px-8 min-h-screen flex items-center">
+        {/* Background Texture */}
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-20 items-start relative z-10">
+
+          {/* LEFT FLANK: HQ DATA */}
+          <div className="space-y-16">
+            <div>
+              <p className="text-emerald-500 font-mono text-[10px] tracking-[0.6em] uppercase mb-8 flex items-center gap-3">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                System Online
+              </p>
+              <h1 className="text-6xl md:text-8xl font-black italic uppercase leading-[0.85] tracking-tighter mb-8">
+                Initiate<br/>Uplink.
+              </h1>
+              <p className="text-slate-400 text-lg font-light leading-relaxed max-w-md">
+                Whether you need industrial logistics, digital infrastructure, or creative strategy — 
+                Sakura Group is ready to engineer the solution.
+              </p>
+            </div>
+
+            {/* CONTACT MATRIX */}
+            <div className="space-y-10">
+              <div className="flex items-start gap-6 group">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-sm group-hover:border-emerald-500/50 transition-colors">
+                  <Phone className="text-emerald-500" size={24} />
+                </div>
+                <div>
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Secure Lines</h3>
+                  <p className="text-xl font-mono text-white group-hover:text-emerald-400 transition-colors">+255 753 930 000</p>
+                  <p className="text-xl font-mono text-white group-hover:text-emerald-400 transition-colors">+255 782 020 840</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-6 group">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-sm group-hover:border-emerald-500/50 transition-colors">
+                  <MapPin className="text-emerald-500" size={24} />
+                </div>
+                <div>
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Global HQ Coordinates</h3>
+                  <p className="text-lg text-white font-light leading-relaxed">
+                    Mwenge, TRA Road<br/>
+                    Dar es Salaam, Tanzania
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* STYLIZED MAP CONTAINER */}
+            <div className="w-full h-64 bg-white/5 border border-white/10 rounded-sm relative overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
+               <div className="absolute inset-0 bg-black/40 z-10" />
+               <img 
+                 src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop" 
+                 alt="Dar es Salaam Satellite" 
+                 className="w-full h-full object-cover opacity-60"
+               />
+               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+                 <div className="w-4 h-4 bg-emerald-500 rounded-full animate-ping absolute" />
+                 <div className="w-4 h-4 bg-emerald-500 rounded-full border-2 border-black relative" />
+                 <span className="mt-2 bg-black/80 text-white text-[9px] px-2 py-1 font-mono uppercase tracking-widest border border-emerald-500/30 backdrop-blur-md">
+                   Sakura Base
+                 </span>
+               </div>
             </div>
           </div>
-          <Suspense fallback={<div className="text-white font-mono text-xs animate-pulse">BOOTING INTAKE SYSTEM...</div>}>
-            <ContactForm />
-          </Suspense>
+
+          {/* RIGHT FLANK: THE TERMINAL */}
+          <div className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-8 md:p-12 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
+            
+            <AnimatePresence mode="wait">
+              {success ? (
+                // SUCCESS STATE (DIGITAL RECEIPT)
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="h-full flex flex-col items-center justify-center text-center py-20"
+                >
+                  <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6">
+                    <CheckCircle className="text-emerald-500" size={40} />
+                  </div>
+                  <h3 className="text-3xl font-black italic uppercase mb-2">Transmission Locked.</h3>
+                  <p className="text-slate-400 font-light mb-8">Our team is decrypting your request.</p>
+                  
+                  <div className="bg-white/5 border border-white/10 px-8 py-4 rounded-sm font-mono text-sm text-emerald-400 tracking-widest">
+                    TXID: {txId}
+                  </div>
+                  
+                  <button 
+                    onClick={() => setSuccess(false)}
+                    className="mt-12 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
+                  >
+                    Send Another Transmission
+                  </button>
+                </motion.div>
+              ) : (
+                // INPUT FORM
+                <motion.form 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onSubmit={handleSubmit}
+                  className="space-y-8"
+                >
+                  <div className="flex items-center gap-2 mb-8 opacity-50">
+                    <Terminal size={16} className="text-emerald-500" />
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400">Secure Input Terminal v4.0</span>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Identity</label>
+                      <input 
+                        type="text" 
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="FULL NAME"
+                        className="w-full bg-transparent border-b border-white/20 py-4 text-white placeholder:text-white/10 focus:border-emerald-500 focus:outline-none transition-colors font-light"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Contact</label>
+                      <input 
+                        type="email" 
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="EMAIL ADDRESS"
+                        className="w-full bg-transparent border-b border-white/20 py-4 text-white placeholder:text-white/10 focus:border-emerald-500 focus:outline-none transition-colors font-light"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Department</label>
+                    <div className="relative">
+                      <select 
+                        name="service"
+                        value={formData.service}
+                        onChange={handleChange}
+                        className="w-full bg-transparent border-b border-white/20 py-4 text-white appearance-none focus:border-emerald-500 focus:outline-none transition-colors font-light uppercase cursor-pointer"
+                      >
+                        {DEPARTMENTS.map(dept => (
+                          <option key={dept} value={dept} className="bg-black text-slate-300">{dept}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Briefing</label>
+                    <textarea 
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      placeholder="TELL US ABOUT YOUR PROJECT..."
+                      rows={4}
+                      className="w-full bg-transparent border-b border-white/20 py-4 text-white placeholder:text-white/10 focus:border-emerald-500 focus:outline-none transition-colors font-light resize-none"
+                      required
+                    />
+                  </div>
+
+                  {/* HONEYPOT (Hidden) */}
+                  <input type="text" name="honey" value={formData.honey} onChange={handleChange} className="hidden" />
+
+                  {error && (
+                    <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono">
+                      ERROR: {error}
+                    </div>
+                  )}
+
+                  <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full bg-white text-black py-6 text-xs font-black uppercase tracking-[0.2em] hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-4"
+                  >
+                    {loading ? <Loader2 className="animate-spin" size={16} /> : "Transmit Request"} 
+                    {!loading && <ArrowRight size={16} />}
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </div>
+
         </div>
       </section>
+
       <GlobalFooter />
     </main>
   );
