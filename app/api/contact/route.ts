@@ -1,28 +1,76 @@
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-// Direct relative path for build stability
-import { getContactIntakeEmailHtml } from "../../../lib/mail-templates";
+
+// Level Check: contact(1) -> api(2) -> app(3) -> root(4)
+import { getContactIntakeEmailHtml } from "../../../../lib/mail-templates";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+/**
+ * SAKURA UNIFIED GATEWAY v4.1
+ * Replaces both /contact and /contacts logic.
+ */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, company, message, service, honey } = body;
+    const { 
+      name, 
+      email, 
+      company, 
+      message, 
+      service, 
+      honey,   // Honeypot field from frontend
+      source   // "axis" or "general"
+    } = body;
 
-    if (honey) return NextResponse.json({ success: true, txId: "BOT_TRAP" });
+    // 1. SILENT SPAM FILTER (Honeypot)
+    if (honey) {
+      console.warn("Spam filtered via Honeypot Trap.");
+      return NextResponse.json({ success: true, txId: "FILTERED" });
+    }
 
+    // 2. GENERATE TRACE ID
     const txId = `SAK-${Math.random().toString(36).toUpperCase().substring(2, 10)}`;
 
-    await resend.emails.send({
-      from: "Sakura Intake <system@sakuragroup.co.tz>",
-      to: ["hello@sakuragroup.co.tz"],
-      subject: `[${service.toUpperCase()}] New Lead: ${name}`,
-      html: getContactIntakeEmailHtml({ name, email, company, message, service, txId }),
+    // 3. ROUTING LOGIC
+    // If source is 'axis', send to support. Otherwise, send to hello.
+    const isAxis = source === "axis";
+    const targetEmail = isAxis ? "support@sakuragroup.co.tz" : "hello@sakuragroup.co.tz";
+    const subjectLine = isAxis 
+      ? `[AXIS SUPPORT] Node Ticket: ${name}` 
+      : `[${(service || "GENERAL").toUpperCase()}] New Lead: ${name}`;
+
+    // 4. DISPATCH
+    const { data, error } = await resend.emails.send({
+      from: "Sakura Systems <system@sakuragroup.co.tz>",
+      to: [targetEmail],
+      reply_to: email,
+      subject: subjectLine,
+      html: getContactIntakeEmailHtml({ 
+        name, 
+        email, 
+        company: company || (isAxis ? "Axis Client" : "Individual"), 
+        message, 
+        service: service || source, 
+        txId 
+      }),
     });
 
+    if (error) {
+      console.error("Resend API Error:", error);
+      throw error;
+    }
+
     return NextResponse.json({ success: true, txId });
+
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error("GATEWAY ERROR:", error.message);
+    return NextResponse.json(
+      { success: false, error: "Transmission Interrupted" }, 
+      { status: 500 }
+    );
   }
 }
