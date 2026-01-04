@@ -89,15 +89,18 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#050912]">
+      {/* Background Layer: Replaced Image with Video */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
-         <Image 
-            src="https://images.unsplash.com/photo-1591768793355-74d7c869619a?q=80&w=2000"
-            alt="African professional courier"
-            fill
-            className="object-cover opacity-40 grayscale contrast-125 brightness-75"
-            priority
-         />
-         <div className="absolute inset-0 bg-gradient-to-r from-[#050912] via-[#050912]/80 to-transparent" />
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline 
+            className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale contrast-125 brightness-75"
+          >
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-shipping-containers-at-a-busy-port-40059-large.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#050912] via-[#050912]/80 to-transparent" />
       </motion.div>
 
       <div className="relative z-10 max-w-7xl mx-auto w-full">
@@ -134,7 +137,7 @@ const Hero = () => {
 
 const ServiceMosaic = () => {
     const caps = [
-        { title: "Urban Dispatch", for: "Same-Day Courier", icon: Navigation, img: "https://images.unsplash.com/photo-1619451422372-95244213a0bb?q=80&w=800" },
+        { title: "Urban Dispatch", for: "Same-Day Courier", icon: Navigation, img: "https://images.unsplash.com/photo-1513828583688-c52646db42da?q=80&w=2070" },
         { title: "Vault Transfer", for: "Confidential Docs", icon: Lock, img: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?q=80&w=800" },
         { title: "Global Forwarding", for: "Import/Export", icon: Globe, img: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=800" }
     ];
@@ -171,52 +174,64 @@ const ServiceMosaic = () => {
 
 const NetworkSection = () => (
     <section className="py-40 px-6 bg-[#0f172a] relative border-y border-white/5 overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:60px_60px]" />
-        
-        <div className="max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row gap-20 items-center">
-            <ScrollReveal direction="left" className="flex-1">
-                <h2 className="text-sm font-black text-yellow-500 uppercase tracking-[0.4em] mb-6">The Infrastructure</h2>
-                <h3 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none mb-10">
-                    Built on Trust. <br/>
-                    <span className="text-slate-600">Powered by Data.</span>
-                </h3>
-                <div className="grid grid-cols-2 gap-8">
-                    {[
-                        { l: "Trained Riders", i: Users },
-                        { l: "GPS Integrated", i: Navigation },
-                        { l: "Sealed Chain", i: Lock },
-                        { l: "24/7 Dispatch", i: Clock }
-                    ].map((feat, idx) => (
-                        <div key={idx} className="space-y-3">
-                            <feat.i className="text-yellow-500" size={24} />
-                            <p className="text-xs font-black uppercase tracking-widest text-white">{feat.l}</p>
-                        </div>
-                    ))}
-                </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="right" className="flex-1 w-full">
-                <div className="relative aspect-video rounded-[2rem] overflow-hidden border border-white/10 group">
-                    <Image 
-                        src="https://images.unsplash.com/photo-1594833202970-d7907f59d288?q=80&w=1200"
-                        alt="Supply chain dashboard"
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-110 grayscale"
-                    />
-                    <div className="absolute inset-0 bg-yellow-500/10 mix-blend-overlay" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <motion.div 
-                            animate={{ scale: [1, 1.1, 1] }}
-                            transition={{ duration: 3, repeat: Infinity }}
-                            className="bg-black/80 backdrop-blur-xl p-8 rounded-full border border-yellow-500/30"
-                        >
-                            <Zap className="text-yellow-500" size={32} />
-                        </motion.div>
+    {/* Grid Pattern Overlay */}
+    <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:60px_60px]" />
+    
+    <div className="max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row gap-20 items-center">
+        <ScrollReveal direction="left" className="flex-1">
+            <h2 className="text-sm font-black text-yellow-500 uppercase tracking-[0.4em] mb-6">The Infrastructure</h2>
+            <h3 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none mb-10">
+                Built on Trust. <br/>
+                <span className="text-slate-600">Powered by Data.</span>
+            </h3>
+            <div className="grid grid-cols-2 gap-8">
+                {[
+                    { l: "Trained Riders", i: Users },
+                    { l: "GPS Integrated", i: Navigation },
+                    { l: "Sealed Chain", i: Lock },
+                    { l: "24/7 Dispatch", i: Clock }
+                ].map((feat, idx) => (
+                    <div key={idx} className="space-y-3">
+                        <feat.i className="text-yellow-500" size={24} />
+                        <p className="text-xs font-black uppercase tracking-widest text-white">{feat.l}</p>
                     </div>
+                ))}
+            </div>
+        </ScrollReveal>
+
+        <ScrollReveal direction="right" className="flex-1 w-full">
+            <div className="relative aspect-video rounded-[2rem] overflow-hidden border border-white/10 group shadow-2xl">
+                {/* Updated to a high-fidelity logistics/data visual */}
+                <Image 
+                    src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070" 
+                    alt="Advanced Logistics Infrastructure"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110 grayscale brightness-75 contrast-125"
+                />
+                
+                {/* Brand Tint Overlay */}
+                <div className="absolute inset-0 bg-yellow-500/10 mix-blend-overlay" />
+                
+                {/* Central "Powered" Action Hub */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <motion.div 
+                        animate={{ 
+                            scale: [1, 1.1, 1],
+                            boxShadow: ["0px 0px 0px rgba(234, 179, 8, 0)", "0px 0px 40px rgba(234, 179, 8, 0.2)", "0px 0px 0px rgba(234, 179, 8, 0)"]
+                        }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                        className="bg-black/80 backdrop-blur-2xl p-8 rounded-full border border-yellow-500/40 shadow-2xl z-20"
+                    >
+                        <Zap className="text-yellow-500 fill-yellow-500" size={32} />
+                    </motion.div>
                 </div>
-            </ScrollReveal>
-        </div>
-    </section>
+
+                {/* Subtle Scanline Effect for Data Feel */}
+                <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_4px,3px_100%]" />
+            </div>
+        </ScrollReveal>
+    </div>
+</section>
 );
 
 export default function LogisticsPage() {
