@@ -337,24 +337,39 @@ const EcosystemGrid = () => (
 );
 
 const Testimonial = () => (
-    <section className="py-32 px-6 bg-[#0B1120] relative overflow-hidden">
+    <section className="py-32 px-6 bg-[#0B1120] relative overflow-hidden min-h-[800px] flex items-center">
+        {/* Background Image Layer */}
+        <div className="absolute inset-0 z-0">
+            <Image
+                src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop"
+                alt="Construction Architecture Background"
+                fill
+                className="object-cover opacity-30" // Subtle presence
+                priority
+            />
+            {/* Gradient Overlay for Text Contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0B1120] via-[#0B1120]/80 to-[#0B1120]" />
+        </div>
+
         {/* Decorative Blobs */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px]" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] z-1" />
         
-        <div className="max-w-4xl mx-auto relative z-10">
+        <div className="max-w-4xl mx-auto relative z-10 w-full">
             <ScrollReveal>
-                <div className="bg-[#080d1a]/80 backdrop-blur-xl p-12 md:p-20 rounded-[3rem] border border-white/5 text-center shadow-2xl">
+                <div className="bg-[#080d1a]/60 backdrop-blur-2xl p-12 md:p-20 rounded-[3rem] border border-white/10 text-center shadow-2xl">
                     <Quote className="text-emerald-500 mx-auto mb-8" size={48} />
+                    
                     <p className="text-2xl md:text-4xl text-white font-light leading-snug mb-12">
-                        "The integration of <span className="text-emerald-400">CRM and ERP</span> within the Sakura ecosystem gave us visibility we never thought possible. We stopped guessing and started scaling."
+                        "The integration of <span className="text-emerald-400 font-medium">CRM and ERP</span> within the Sakura ecosystem gave us visibility we never thought possible. We stopped guessing and started scaling."
                     </p>
+                    
                     <div className="flex flex-col items-center gap-2">
-                        <div className="w-16 h-16 bg-neutral-800 rounded-full mb-4 border-2 border-emerald-500 overflow-hidden relative">
+                        <div className="w-16 h-16 bg-neutral-800 rounded-full mb-4 border-2 border-emerald-500 overflow-hidden relative shadow-lg">
                              {/* Placeholder for Eddy */}
                              <div className="absolute inset-0 flex items-center justify-center text-white font-bold bg-neutral-700">ER</div>
                         </div>
-                        <h4 className="text-xl font-bold text-white">Eddy Ronnie</h4>
-                        <p className="text-slate-500 text-sm font-mono uppercase tracking-widest">Operations Manager • RCS</p>
+                        <h4 className="text-xl font-bold text-white tracking-tight">Eddy Ronnie</h4>
+                        <p className="text-emerald-500/80 text-sm font-mono uppercase tracking-[0.2em]">Operations Manager • RCS</p>
                     </div>
                 </div>
             </ScrollReveal>
