@@ -11,7 +11,6 @@ import {
   useMotionValue 
 } from "framer-motion";
 import { 
-  ArrowRight, 
   Activity, 
   ShieldCheck, 
   GitBranch, 
@@ -21,8 +20,7 @@ import {
   FileText, 
   Users, 
   Layers, 
-  Code2, 
-  Server
+  Code2
 } from "lucide-react";
 
 import { GlobalNavbar } from "@/components/global-navbar";
@@ -105,7 +103,7 @@ const ManagedNav = () => {
               key={link.label} 
               href={`#${link.id}`} 
               className={`text-[10px] font-bold uppercase tracking-widest transition-colors
-                ${link.label === 'Overview' ? 'text-violet-400' : 'text-slate-400 hover:text-white'}`}
+                ${link.label === 'Overview' ? "text-violet-400" : "text-slate-400 hover:text-white"}`}
             >
               {link.label}
             </Link>
@@ -125,7 +123,6 @@ const Hero = () => {
 
   return (
     <section id="hero" className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#020617]">
-      {/* Background Image Overlay */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <Image 
             src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2000&auto=format&fit=crop"
@@ -185,7 +182,7 @@ const Philosophy = () => (
         <div className="p-10 border border-red-900/20 bg-red-950/5 rounded-sm h-full">
            <div className="flex items-center gap-3 mb-6 text-red-400">
               <AlertOctagon />
-              <h3 className="text-xl font-bold">The "Fix-It" Trap</h3>
+              <h3 className="text-xl font-bold">The &quot;Fix-It&quot; Trap</h3>
            </div>
            <p className="text-slate-400 mb-8 leading-relaxed">
               Most businesses treat their platform like a static file. They only call for help when it breaks.
@@ -193,8 +190,8 @@ const Philosophy = () => (
            <ul className="space-y-4">
               <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> No-plan developer changes</li>
               <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> Patch-only maintenance</li>
-              <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> Unknown versions & plugin chaos</li>
-              <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> "Call us when it breaks"</li>
+              <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> Unknown versions &amp; plugin chaos</li>
+              <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> &quot;Call us when it breaks&quot;</li>
            </ul>
         </div>
       </ScrollReveal>
@@ -298,11 +295,10 @@ const ServiceTiers = () => (
       </ScrollReveal>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {/* Tier 1 */}
         <SpotlightCard className="p-8 h-full bg-[#020617]">
            <Layers className="text-slate-500 mb-6" size={32} />
            <h3 className="text-white font-bold mb-2">Essential Care</h3>
-           <p className="text-slate-500 text-xs uppercase tracking-widest mb-6">SMEs & Startups</p>
+           <p className="text-slate-500 text-xs uppercase tracking-widest mb-6">SMEs &amp; Startups</p>
            <ul className="space-y-4 mb-8 text-sm text-slate-400">
               <li className="flex gap-3"><CheckCircle2 size={16} className="text-slate-600" /> Stability checks</li>
               <li className="flex gap-3"><CheckCircle2 size={16} className="text-slate-600" /> Light security observations</li>
@@ -310,7 +306,6 @@ const ServiceTiers = () => (
            </ul>
         </SpotlightCard>
 
-        {/* Tier 2 */}
         <SpotlightCard className="p-8 h-full bg-[#020617] border-violet-500/30">
            <div className="absolute top-0 right-0 bg-violet-600 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest">
               Most Popular
@@ -325,7 +320,6 @@ const ServiceTiers = () => (
            </ul>
         </SpotlightCard>
 
-        {/* Tier 3 */}
         <SpotlightCard className="p-8 h-full bg-[#020617]">
            <ShieldCheck className="text-slate-500 mb-6" size={32} />
            <h3 className="text-white font-bold mb-2">Mission Critical</h3>
@@ -379,13 +373,13 @@ const HumanLed = () => (
           <div>
              <div className="flex items-center gap-3 mb-6 text-violet-400">
                 <Users size={24} />
-                <h2 className="text-2xl font-bold text-white">Context & Continuity</h2>
+                <h2 className="text-2xl font-bold text-white">Context &amp; Continuity</h2>
              </div>
              <p className="text-slate-400 mb-6 leading-relaxed">
                 Continuity is a performance advantage. You work with the same team who knows your history, your configurations, and your business quirks.
              </p>
              <p className="text-sm font-mono text-slate-500 border-l-2 border-violet-500/50 pl-4">
-                "No re-explaining the problem every time you call."
+                &quot;No re-explaining the problem every time you call.&quot;
              </p>
           </div>
        </ScrollReveal>
@@ -416,7 +410,7 @@ const FAQ = () => (
            {[
              { q: "Do you replace our developers?", a: "No. We protect the environment they work in. We handle stability; they handle features." },
              { q: "Do you include redesigns?", a: "No. Feature building is a separate project. Managed Core is about stability and governance." },
-             { q: "Can you manage multiple environments?", a: "Yes. We support staged deployments (Dev -> Staging -> Prod) for enterprise clients." },
+             { q: "Can you manage multiple environments?", a: "Yes. We support staged deployments (Dev → Staging → Prod) for enterprise clients." },
              { q: "Is this only for Sakura-hosted sites?", a: "Primary focus is internal, but we can manage external AWS/DigitalOcean environments after review." },
            ].map((item, i) => (
              <div key={i} className="p-6 border border-white/5 bg-[#020617] rounded-sm">
@@ -444,7 +438,7 @@ const CTA = () => (
           If your platform matters, give it structured responsibility.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-6">
-          <Link href="/contact" className="px-12 py-5 bg-white text-[#020617] font-bold text-xs uppercase tracking-[0.2em] rounded-sm hover:bg-violet-200 transition-all shadow-2xl">
+          <Link href="/contact" className="px-12 py-5 bg-white text-[#030712] font-bold text-xs uppercase tracking-[0.2em] rounded-sm overflow-hidden hover:bg-violet-200 transition-all shadow-2xl">
             Begin Managed Care
           </Link>
           <Link href="/contact" className="px-12 py-5 border border-white/20 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm hover:bg-white/5 transition-colors">

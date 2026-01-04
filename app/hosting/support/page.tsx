@@ -105,7 +105,7 @@ const SupportNav = () => {
               key={link.label} 
               href={`#${link.id}`} 
               className={`text-[10px] font-bold uppercase tracking-widest transition-colors
-                ${link.label === 'Overview' ? 'text-violet-400' : 'text-slate-400 hover:text-white'}`}
+                ${link.label === 'Overview' ? "text-violet-400" : "text-slate-400 hover:text-white"}`}
             >
               {link.label}
             </Link>
@@ -125,7 +125,6 @@ const Hero = () => {
 
   return (
     <section id="hero" className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#020617]">
-      {/* Operations Background */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <Image 
             src="https://images.unsplash.com/photo-1525182008055-f88b95ff7980?q=80&w=2000&auto=format&fit=crop"
@@ -194,7 +193,7 @@ const WhatServiceOpsMeans = () => (
               <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> One-off fixes with no history</li>
               <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> No structured escalation path</li>
               <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> No accountability trail</li>
-              <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> "Call the guy who knows" mentality</li>
+              <li className="flex gap-3 text-sm text-slate-400"><div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2" /> &quot;Call the guy who knows&quot; mentality</li>
            </ul>
         </div>
       </ScrollReveal>
@@ -209,8 +208,8 @@ const WhatServiceOpsMeans = () => (
               We bring disciplined Service Operations to Tanzanian businesses.
            </p>
            <ul className="space-y-4">
-              <li className="flex gap-3 text-sm text-slate-300"><CheckCircle2 className="text-violet-500 shrink-0" size={16} /> Incidents are documented & mapped</li>
-              <li className="flex gap-3 text-sm text-slate-300"><CheckCircle2 className="text-violet-500 shrink-0" size={16} /> Changes are controlled & reviewed</li>
+              <li className="flex gap-3 text-sm text-slate-300"><CheckCircle2 className="text-violet-500 shrink-0" size={16} /> Incidents are documented &amp; mapped</li>
+              <li className="flex gap-3 text-sm text-slate-300"><CheckCircle2 className="text-violet-500 shrink-0" size={16} /> Changes are controlled &amp; reviewed</li>
               <li className="flex gap-3 text-sm text-slate-300"><CheckCircle2 className="text-violet-500 shrink-0" size={16} /> Response is coordinated — not improvised</li>
               <li className="flex gap-3 text-sm text-slate-300"><CheckCircle2 className="text-violet-500 shrink-0" size={16} /> Knowledge stays with the organization</li>
            </ul>
@@ -231,20 +230,18 @@ const SupportTiers = () => (
       </ScrollReveal>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {/* Tier 1 */}
         <SpotlightCard className="p-8 h-full bg-[#020617]">
            <Headphones className="text-slate-500 mb-6" size={32} />
            <h3 className="text-white font-bold mb-2">Business Care</h3>
-           <p className="text-slate-500 text-xs uppercase tracking-widest mb-6">SMEs & Teams</p>
+           <p className="text-slate-500 text-xs uppercase tracking-widest mb-6">SMEs &amp; Teams</p>
            <ul className="space-y-4 mb-8 text-sm text-slate-400">
               <li className="flex gap-3"><CheckCircle2 size={16} className="text-slate-600" /> Basic troubleshooting</li>
-              <li className="flex gap-3"><CheckCircle2 size={16} className="text-slate-600" /> Account & access support</li>
+              <li className="flex gap-3"><CheckCircle2 size={16} className="text-slate-600" /> Account &amp; access support</li>
               <li className="flex gap-3"><CheckCircle2 size={16} className="text-slate-600" /> Guided recommendations</li>
               <li className="flex gap-3"><CheckCircle2 size={16} className="text-slate-600" /> Light advisory assistance</li>
            </ul>
         </SpotlightCard>
 
-        {/* Tier 2 */}
         <SpotlightCard className="p-8 h-full bg-[#020617] border-violet-500/30">
            <div className="absolute top-0 right-0 bg-violet-600 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest">
               Standard
@@ -260,7 +257,6 @@ const SupportTiers = () => (
            </ul>
         </SpotlightCard>
 
-        {/* Tier 3 */}
         <SpotlightCard className="p-8 h-full bg-[#020617]">
            <ShieldCheck className="text-slate-500 mb-6" size={32} />
            <h3 className="text-white font-bold mb-2">Enterprise Stewardship</h3>
@@ -323,7 +319,7 @@ const ChangeManagement = () => (
                 <h2 className="text-2xl font-bold text-white">Change Discipline</h2>
              </div>
              <p className="text-slate-400 leading-relaxed">
-                "Responsible operations protect productivity." We don't just change settings on a whim. Every major action follows a protocol.
+                &quot;Responsible operations protect productivity.&quot; We don&apos;t just change settings on a whim. Every major action follows a protocol.
              </p>
              <ul className="space-y-4">
                 <li className="text-sm text-slate-300 flex gap-3"><div className="w-1.5 h-1.5 bg-violet-500 rounded-full mt-2" /> Nothing changes without review</li>
@@ -343,7 +339,7 @@ const ChangeManagement = () => (
              <div className="space-y-4 text-sm font-mono">
                 <div>
                    <div className="text-slate-500 text-[10px] uppercase">Action</div>
-                   <div className="text-white">Upgrade Database Node (v14 -> v16)</div>
+                   <div className="text-white">Upgrade Database Node (v14 → v16)</div>
                 </div>
                 <div>
                    <div className="text-slate-500 text-[10px] uppercase">Risk</div>
@@ -395,7 +391,7 @@ const Knowledge = () => (
           <BookOpen size={48} className="text-slate-600 mx-auto mb-6" />
           <h2 className="text-2xl font-bold text-white mb-4">Knowledge Retention</h2>
           <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
-             "Knowledge belongs to your organization — not individuals." We maintain configuration references, ticket logs, and stability observations so your history is never lost.
+             &quot;Knowledge belongs to your organization — not individuals.&quot; We maintain configuration references, ticket logs, and stability observations so your history is never lost.
           </p>
           <div className="flex justify-center gap-4 text-xs font-mono text-slate-500 uppercase tracking-widest">
              <span>• Incident Logs</span>
