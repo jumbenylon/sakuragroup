@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import GoogleAnalytics from "@/components/GoogleAnalytics"; // [NEW] Import the component
+import GoogleAnalytics from "@/components/GoogleAnalytics"; 
+import { GlobalPreloader } from "@/components/global-preloader"; // [NEW] Import the component
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -24,8 +25,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 antialiased selection:bg-rose-500 selection:text-white transition-colors duration-300`}>
         
-        {/* [NEW] Google Analytics Injection */}
-        {/* We pass your specific ID: G-WYMNZF4RES */}
+        {/* Google Analytics Injection */}
         <GoogleAnalytics gaId="G-WYMNZF4RES" />
 
         <ThemeProvider
@@ -34,6 +34,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            {/* [NEW] Global Preloader - Intercepts route changes */}
+            <GlobalPreloader />
+            
             {children}
         </ThemeProvider>
       </body>

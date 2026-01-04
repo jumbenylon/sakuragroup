@@ -28,54 +28,6 @@ import { GlobalFooter } from "@/components/global-footer";
 const HERO_VIDEO = "https://storage.googleapis.com/sakura-web/sms/7188903_Business_Businesswoman_1920x1080.mp4"; 
 const CTA_BG = "https://storage.googleapis.com/sakura-web/sms/23230.jpg";
 
-// --- PRELOADER COMPONENT ---
-const TuchatiPreloader = ({ onComplete }: { onComplete: () => void }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
-      className="fixed inset-0 z-[200] bg-[#020617] flex items-center justify-center overflow-hidden"
-    >
-      <div className="relative z-10 text-center">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, ease: "circOut" }}
-          className="relative inline-block"
-        >
-          <h1 className="text-7xl md:text-9xl font-black italic tracking-tighter text-white uppercase">
-            Tuchati<span className="text-emerald-500">!</span>
-          </h1>
-          
-          {/* Signal Pulse Animation */}
-          <motion.div 
-            initial={{ scale: 1, opacity: 0.5 }}
-            animate={{ scale: 2, opacity: 0 }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "easeOut" }}
-            className="absolute -inset-8 bg-emerald-500/20 rounded-full blur-2xl -z-10"
-          />
-        </motion.div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-6 flex items-center justify-center gap-2"
-        >
-          <div className="flex gap-1">
-            <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-            <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-            <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-          </div>
-          <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-500">Establishing Uplink</span>
-        </motion.div>
-      </div>
-
-      {/* Background Noise */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none" />
-    </motion.div>
-  );
-};
 
 // --- CHAT COMPONENT ---
 const AnimatedChat = () => {
