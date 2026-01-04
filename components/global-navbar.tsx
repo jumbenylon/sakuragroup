@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import { Menu, X, ChevronRight, Globe } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
-const LOGO_URL = "https://storage.googleapis.com/sakura-web/sakuragroup-logo-white.png"; // Ensure this is the clean group logo
+const LOGO_URL = "https://storage.googleapis.com/sakura-web/sakuragroup-logo-white.png";
 
 export const GlobalNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,10 +17,10 @@ export const GlobalNavbar = () => {
     { name: "Agency", path: "/agency" },
     { name: "Communication", path: "/axis" },
     { name: "Logistics", path: "/logistics" },
-    { name: "Construction", path: "/industrial" },
+    { name: "Construction", path: "/roofcleaning" },
     { name: "Hosting", path: "/hosting" },
-    { name: "Sakura Pay", path: "/sakurapay" }, // Added missing comma
-    { name: "Podcast", path: "/media" }
+    { name: "Sakura Pay", path: "/sakurapay" },
+    { name: "Podcast", path: "/thinkloko" }
   ];
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export const GlobalNavbar = () => {
     <nav 
       className={`fixed top-0 w-full z-[150] transition-all duration-700 ease-in-out ${
         isScrolled 
-          ? "h-16 bg-white/70 dark:bg-black/70 backdrop-blur-2xl border-b border-black/5 dark:border-white/5" 
+          ? "h-16 bg-black/85 backdrop-blur-3xl border-b border-white/10" 
           : "h-24 bg-transparent"
       }`}
     >
@@ -46,11 +46,11 @@ export const GlobalNavbar = () => {
             alt="Sakura Group" 
             width={100} 
             height={32} 
-            className={`transition-all duration-500 ${isScrolled ? "scale-90" : "scale-100"} dark:brightness-200`}
+            className={`transition-all duration-500 brightness-200 ${isScrolled ? "scale-90" : "scale-100"}`}
           />
         </Link>
 
-        {/* NAVIGATION LINKS - PRECISION LAYOUT */}
+        {/* NAVIGATION LINKS - PURE WHITE TYPOGRAPHY */}
         <div className="hidden lg:flex items-center gap-10">
           <LayoutGroup id="global-nav">
             {navLinks.map((link) => (
@@ -59,13 +59,13 @@ export const GlobalNavbar = () => {
                 href={link.path}
                 onMouseEnter={() => setHoveredPath(link.path)}
                 onMouseLeave={() => setHoveredPath(null)}
-                className="relative text-[10px] font-black uppercase tracking-[0.25em] text-slate-500 hover:text-pink-600 dark:text-white/40 dark:hover:text-white transition-colors py-2"
+                className="relative text-[10px] font-black uppercase tracking-[0.25em] text-white/90 hover:text-white transition-opacity py-2"
               >
                 {link.name}
                 {hoveredPath === link.path && (
                   <motion.div
                     layoutId="nav-hover-bg"
-                    className="absolute -bottom-1 left-0 w-full h-px bg-pink-600"
+                    className="absolute -bottom-1 left-0 w-full h-px bg-white"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
@@ -74,11 +74,11 @@ export const GlobalNavbar = () => {
           </LayoutGroup>
         </div>
 
-        {/* CTAs - FUNCTIONAL PURITY */}
+        {/* CTA - REDESIGNED PER SPECIFICATIONS */}
         <div className="hidden md:flex items-center gap-6">
           <Link 
-            href="/axis/signup" 
-            className="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-black text-[9px] font-black uppercase tracking-widest rounded-sm hover:bg-pink-600 hover:text-white transition-all shadow-xl shadow-black/5"
+            href="/contact" 
+            className="px-8 py-2.5 border border-white/20 bg-white/5 text-white text-[9px] font-black uppercase tracking-widest rounded-[4px] hover:bg-white hover:text-black transition-all shadow-2xl"
           >
             Get Started
           </Link>
@@ -86,34 +86,38 @@ export const GlobalNavbar = () => {
 
         {/* MOBILE TRIGGER */}
         <button 
-          className="lg:hidden text-slate-900 dark:text-white"
+          className="lg:hidden text-white"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
-      {/* MOBILE OVERLAY - MINIMALIST FULLSCREEN */}
+      {/* MOBILE OVERLAY */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 top-0 bg-white dark:bg-[#020202] z-[140] flex flex-col justify-center px-12 gap-8"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            className="fixed inset-0 bg-black z-[140] flex flex-col justify-center px-12 gap-8"
           >
             {navLinks.map((link) => (
               <Link 
                 key={link.path} 
                 href={link.path} 
                 onClick={() => setMobileOpen(false)}
-                className="text-4xl font-black italic uppercase tracking-tighter hover:text-pink-600 transition-colors"
+                className="text-4xl font-black italic uppercase tracking-tighter text-white hover:text-yellow-500 transition-colors"
               >
                 {link.name}
               </Link>
             ))}
-            <div className="h-px w-full bg-black/5 dark:bg-white/5 my-4" />
-            <Link href="/axis/signup" className="text-sm font-black uppercase tracking-widest text-pink-600">
+            <div className="h-px w-full bg-white/10 my-4" />
+            <Link 
+              href="/contact" 
+              onClick={() => setMobileOpen(false)}
+              className="text-sm font-black uppercase tracking-widest text-white/60 hover:text-white"
+            >
               Start Project
             </Link>
           </motion.div>
