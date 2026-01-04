@@ -54,7 +54,6 @@ const AnimatedChat = () => {
       </div>
       <div className="p-4 space-y-4 h-[300px] relative bg-[#0b141a]">
         <div className="absolute inset-0 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] opacity-10 pointer-events-none" />
-        
         {messages.map((msg, i) => (
           <motion.div
             key={i}
@@ -99,7 +98,6 @@ const AxisSubNav = () => {
           <MessageCircle size={12} className="text-emerald-500" />
           Customers Like To Chat
         </span>
-        
         <div className="flex gap-8">
           {[
             { n: "SMS Core", l: "#sms" },
@@ -124,7 +122,7 @@ export default function AxisPage() {
       <GlobalNavbar />
       <AxisSubNav />
 
-      {/* 1. HERO */}
+      {/* 1. HERO: VALUE & OUTCOME FOCUSED */}
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[#020617]/70 z-10" />
@@ -146,7 +144,7 @@ export default function AxisPage() {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/50 backdrop-blur-md"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-400">Network Status: Nominal</span>
+            <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-400">Trusted Infrastructure • Dar es Salaam</span>
           </motion.div>
 
           <motion.h1 
@@ -155,8 +153,8 @@ export default function AxisPage() {
             transition={{ delay: 0.1 }}
             className="text-6xl md:text-8xl lg:text-[110px] font-black leading-[0.85] tracking-tighter uppercase italic text-white"
           >
-            Sovereign<br/>
-            <span className="text-emerald-500">SMS.</span>
+            Talk to your<br/>
+            <span className="text-emerald-500">Customers.</span>
           </motion.h1>
 
           <motion.p 
@@ -165,8 +163,8 @@ export default function AxisPage() {
             transition={{ delay: 0.2 }}
             className="text-xl md:text-2xl text-slate-200 font-light max-w-2xl mx-auto leading-relaxed"
           >
-            The backbone of Tanzanian business. 
-            Verified Sender IDs, instant delivery, and audit-grade reliability.
+            The trusted way. Verified Sender ID SMS and structured WhatsApp engagement. 
+            Stop being ignored by unknown numbers. Start owning the conversation.
           </motion.p>
 
           <motion.div 
@@ -185,38 +183,38 @@ export default function AxisPage() {
         </div>
       </section>
 
-      {/* 2. SMS DEEP DIVE (THE CORE + INDUSTRIES) */}
+      {/* 2. SMS DEEP DIVE (THE TRUST ARGUMENT) */}
       <section id="sms" className="py-32 px-6 bg-[#020617] border-y border-white/5 relative">
         <div className="max-w-7xl mx-auto space-y-24">
           
-          {/* TOP SPLIT: VALUE & VISUAL */}
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div className="space-y-8">
               <h2 className="text-4xl md:text-6xl font-black uppercase italic leading-none text-white">
-                Trust is <br/><span className="text-emerald-500">Identity.</span>
+                Identity is the only<br/><span className="text-emerald-500">Currency.</span>
               </h2>
               <p className="text-slate-400 text-lg font-light leading-relaxed">
-                Stop sending from random numbers. Axis registers your <strong>Sender ID</strong> directly with TCRA and all networks. 
-                When your SMS arrives, it says "SAKURA", not "+255...".
+                In a sea of betting spam and scam calls, an unknown number is invisible. 
+                Axis registers your <strong>Brand Name</strong> directly with TCRA. When you speak, 
+                your customers know it's you—instantly.
               </p>
               
               <div className="grid grid-cols-2 gap-6 pt-4">
                 <div className="p-6 bg-[#0f172a] border border-white/5 rounded-lg hover:border-emerald-500/30 transition-colors">
                   <p className="text-4xl font-black text-white mb-2">21 <span className="text-sm font-normal text-slate-500">TZS</span></p>
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-emerald-500">Flat Rate</p>
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-emerald-500">No Hidden Fees</p>
                 </div>
                 <div className="p-6 bg-[#0f172a] border border-white/5 rounded-lg hover:border-emerald-500/30 transition-colors">
-                  <p className="text-4xl font-black text-white mb-2">99.9%</p>
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-emerald-500">Uptime SLA</p>
+                  <p className="text-4xl font-black text-white mb-2">100%</p>
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-emerald-500">TCRA Compliant</p>
                 </div>
               </div>
 
               <ul className="space-y-4 pt-4">
                 {[
-                  "Instant Delivery Reports (DLR)",
-                  "Bulk Campaigns & Transactional API",
-                  "No Expiry on Credits",
-                  "Direct Voda / Tigo / Airtel Routes"
+                  "Verified Sender ID (e.g. 'SAKURA')",
+                  "Direct Routes (No cheap grey routes)",
+                  "Audit-Ready Delivery Logs",
+                  "Credits Never Expire"
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm font-bold text-slate-300">
                     <MessageSquare size={16} className="text-emerald-500" /> {item}
@@ -225,7 +223,7 @@ export default function AxisPage() {
               </ul>
             </div>
 
-            {/* VISUAL: The Phone Mockup */}
+            {/* VISUAL: Phone Mockup */}
             <div className="relative h-[500px] w-full bg-[#0f172a] rounded-2xl border border-white/10 overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent z-10" />
               <Image 
@@ -252,7 +250,7 @@ export default function AxisPage() {
             </div>
           </div>
 
-          {/* BOTTOM ROW: INDUSTRY INTEGRATION (New Addition) */}
+          {/* BOTTOM ROW: INDUSTRY INTEGRATION */}
           <div className="border-t border-white/5 pt-12">
             <div className="flex justify-between items-end mb-8">
               <h3 className="text-2xl font-black uppercase italic text-white">Powering Critical Sectors</h3>
@@ -282,7 +280,7 @@ export default function AxisPage() {
         </div>
       </section>
 
-      {/* 3. THE BRIDGE: WHATSAPP UPGRADE */}
+      {/* 3. WHATSAPP (THE OPERATING SYSTEM) */}
       <section id="whatsapp" className="py-32 px-6 bg-[#050b14] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-[#25D366]/5 blur-[120px] pointer-events-none" />
 
@@ -298,12 +296,12 @@ export default function AxisPage() {
             </div>
             
             <h2 className="text-4xl md:text-6xl font-black uppercase italic leading-none text-white">
-              Need More than<br/>Text?
+              Turn 'Chatting' into<br/>Operating.
             </h2>
             
             <p className="text-slate-400 text-lg font-light">
-              Upgrade to the <strong>WhatsApp Business API</strong>. Send PDFs, location pins, and interactive buttons. 
-              Perfect for customer support, loan reminders, and logistics tracking.
+              Tanzania runs on WhatsApp. Axis provides the API-grade tools to turn it into your operating system.
+              Send PDFs, track locations, and recover loans without leaving the chat.
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4 pt-4">
