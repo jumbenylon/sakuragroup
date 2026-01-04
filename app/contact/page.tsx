@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Phone, Mail, 
   ArrowRight, Loader2, CheckCircle, 
-  ChevronDown, Terminal
+  ChevronDown, Terminal, Crosshair
 } from "lucide-react";
 
 import { GlobalNavbar } from "@/components/global-navbar";
@@ -53,7 +53,7 @@ export default function ContactPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          source: "general" // Distinguishes this from the Axis-specific form
+          source: "general" 
         }),
       });
 
@@ -124,31 +124,47 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* STYLIZED MAP CONTAINER */}
-            <div className="w-full h-64 bg-white/5 border border-white/10 rounded-sm relative overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
-               <div className="absolute inset-0 bg-black/40 z-10" />
-               <img 
-                 src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop" 
-                 alt="Dar es Salaam Satellite" 
-                 className="w-full h-full object-cover opacity-60"
-               />
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
-                 <div className="w-4 h-4 bg-emerald-500 rounded-full animate-ping absolute" />
-                 <div className="w-4 h-4 bg-emerald-500 rounded-full border-2 border-black relative" />
-                 <span className="mt-2 bg-black/80 text-white text-[9px] px-2 py-1 font-mono uppercase tracking-widest border border-emerald-500/30 backdrop-blur-md">
-                   Sakura Base
-                 </span>
+            {/* LIVE SATELLITE LOCK (Google Maps Embed with CSS Filter) */}
+            <div className="w-full h-72 bg-white/5 border border-white/10 rounded-sm relative overflow-hidden group">
+               {/* 1. The Map Frame - Animated Entry */}
+               <motion.div 
+                 initial={{ scale: 1.5, opacity: 0 }}
+                 animate={{ scale: 1, opacity: 1 }}
+                 transition={{ duration: 2.5, ease: "circOut" }}
+                 className="w-full h-full"
+               >
+                 <iframe 
+                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.7332228367!2d39.2486!3d-6.7924!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4b1a4574744d%3A0x7c00e1c251239632!2sTRA%20Mwenge!5e0!3m2!1sen!2stz!4v1709400000000!5m2!1sen!2stz"
+                   width="100%" 
+                   height="100%" 
+                   style={{ border: 0, filter: "grayscale(100%) invert(92%) contrast(83%)" }} 
+                   allowFullScreen 
+                   loading="lazy" 
+                   referrerPolicy="no-referrer-when-downgrade"
+                   className="opacity-70 group-hover:opacity-100 transition-opacity duration-700"
+                 />
+               </motion.div>
+
+               {/* 2. HUD Overlay (The "Command Center" Look) */}
+               <div className="absolute inset-0 pointer-events-none border border-white/5 z-10">
+                  <div className="absolute top-4 left-4 flex items-center gap-2">
+                    <Crosshair size={14} className="text-emerald-500 animate-spin-slow" />
+                    <span className="text-[8px] font-mono text-emerald-500 tracking-widest uppercase">Target Locked</span>
+                  </div>
+                  <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-md px-3 py-1 border border-white/10">
+                    <span className="text-[8px] font-mono text-white tracking-widest uppercase">Live Feed • TRA Rd</span>
+                  </div>
                </div>
             </div>
           </div>
 
-          {/* RIGHT FLANK: THE TERMINAL */}
+          {/* RIGHT FLANK: THE TERMINAL (Form) */}
           <div className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-8 md:p-12 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
             
             <AnimatePresence mode="wait">
               {success ? (
-                // SUCCESS STATE (DIGITAL RECEIPT)
+                // SUCCESS STATE
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
