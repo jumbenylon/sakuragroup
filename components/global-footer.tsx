@@ -6,23 +6,25 @@ import Image from "next/image";
 import { 
   Instagram, Linkedin, Twitter, 
   MapPin, Phone, Mail, ArrowUp,
-  ShieldCheck, ArrowRight
+  ShieldCheck
 } from "lucide-react";
 
 export function GlobalFooter() {
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   return (
-    <footer className="bg-[#050912] text-white pt-24 pb-12 px-6 border-t border-white/5 relative overflow-hidden font-sans">
-      <div className="max-w-[1400px] mx-auto relative z-10">
+    <footer className="bg-[#050912] text-white pt-40 pb-12 px-8 border-t border-white/5 relative overflow-hidden font-sans">
+      {/* Container changed to max-w-7xl for standard professional alignment */}
+      <div className="max-w-7xl mx-auto relative z-10">
 
-
-        {/* 2. MAIN NAVIGATION */}
+        {/* 1. MAIN NAVIGATION GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-24">
           
-          {/* BRAND */}
+          {/* BRAND IDENTITY */}
           <div className="space-y-6">
             <Link href="/" className="block relative w-48 h-12 grayscale brightness-200">
               <Image 
@@ -36,15 +38,19 @@ export function GlobalFooter() {
               Engineering the rails of African commerce through integrated technology, logistics, and industrial precision.
             </p>
             <div className="flex gap-4 pt-2">
-                {[Instagram, Linkedin, Twitter].map((Icon, i) => (
-                    <a key={i} href="#" className="p-3 bg-white/5 rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-white/10 transition-all border border-white/5">
+                {[
+                  { Icon: Instagram, href: "https://instagram.com/sakuragrouptz" },
+                  { Icon: Linkedin, href: "https://linkedin.com/company/sakuragrouptz" },
+                  { Icon: Twitter, href: "https://twitter.com/sakuragrouptz" }
+                ].map(({ Icon, href }, i) => (
+                    <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-white/10 transition-all border border-white/5">
                         <Icon size={18} />
                     </a>
                 ))}
             </div>
           </div>
 
-          {/* ECOSYSTEM */}
+          {/* ECOSYSTEM DIVISIONS */}
           <div>
             <h4 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-500 mb-8">Ecosystem</h4>
             <ul className="space-y-4">
@@ -73,7 +79,7 @@ export function GlobalFooter() {
                     { n: "Creative Agency", l: "/agency" },
                     { n: "Think Loko", l: "/thinkloko" },
                     { n: "Contact HQ", l: "/contact" },
-                    { n: "Client Portal", l: "/axis/login" }
+                    { n: "Client Portal", l: "/login" } // Standardized to /login per auth structure
                 ].map((link) => (
                     <li key={link.n}>
                         <Link href={link.l} className="text-sm text-slate-400 hover:text-white transition-colors block py-1 font-light">
@@ -84,13 +90,13 @@ export function GlobalFooter() {
             </ul>
           </div>
 
-          {/* CONTACT BOX */}
+          {/* GLOBAL HQ NODE */}
           <div>
             <h4 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-500 mb-8">Global HQ</h4>
             <div className="bg-white/5 border border-white/5 rounded-2xl p-6 space-y-6">
                 <div className="flex gap-4">
                     <Mail size={18} className="text-emerald-500 shrink-0 mt-0.5" />
-                    <a href="mailto:hello@sakuragroup.co.tz" className="text-sm text-slate-300 hover:text-white break-all">hello@sakuragroup.co.tz</a>
+                    <a href="mailto:hello@sakuragroup.co.tz" className="text-sm text-slate-300 hover:text-white break-all font-light">hello@sakuragroup.co.tz</a>
                 </div>
                 <div className="flex gap-4">
                     <Phone size={18} className="text-emerald-500 shrink-0 mt-0.5" />
@@ -108,15 +114,18 @@ export function GlobalFooter() {
 
         </div>
 
-        {/* 3. COPYRIGHT */}
-        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-mono uppercase tracking-[0.25em] text-slate-500">
+        {/* 2. COPYRIGHT BAR */}
+        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-mono uppercase tracking-widest text-slate-500">
             <div className="flex items-center gap-4">
                 <span>© {new Date().getFullYear()} Sakura Group Ltd</span>
                 <span className="hidden md:inline w-1 h-1 bg-emerald-500 rounded-full" />
                 <span className="flex items-center gap-1"><ShieldCheck size={12} className="text-emerald-500" /> ISO Certified Network</span>
             </div>
             
-            <button onClick={scrollToTop} className="flex items-center gap-2 hover:text-white transition-all group">
+            <button 
+              onClick={scrollToTop} 
+              className="flex items-center gap-2 hover:text-white transition-all group"
+            >
                 Return to Zenith <ArrowUp size={14} className="group-hover:-translate-y-1 transition-transform" />
             </button>
         </div>
