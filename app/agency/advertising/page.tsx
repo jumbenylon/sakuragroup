@@ -230,13 +230,13 @@ const Philosophy = () => (
           <div className="space-y-4">
             <h3 className="text-xl font-black text-white uppercase tracking-widest text-amber-500">Truth Before Creativity</h3>
             <p className="text-slate-400 leading-relaxed">
-              We communicate what matters — not noise. If the core message isn't true, no amount of design will save it.
+              We communicate what matters — not noise. If the core message isn&apos;t true, no amount of design will save it.
             </p>
           </div>
           <div className="space-y-4">
             <h3 className="text-xl font-black text-white uppercase tracking-widest text-amber-500">Audience Before Platform</h3>
             <p className="text-slate-400 leading-relaxed">
-              People > Channels. We define who we are talking to before we decide where to talk to them.
+              People &gt; Channels. We define who we are talking to before we decide where to talk to them.
             </p>
           </div>
           <div className="space-y-4">
