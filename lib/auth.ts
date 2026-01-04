@@ -8,11 +8,9 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   pages: { signIn: "/axis/login" },
   
-  // 1. TOP-LEVEL SECURITY CONFIG (Corrected Placement)
   secret: process.env.NEXTAUTH_SECRET,
-  useSecureCookies: process.env.NODE_ENV === "production",
-
-  trustHost: true,
+  // In NextAuth v4, useSecureCookies is set automatically based on NEXTAUTH_URL, 
+  // but we can explicitly define our cookie policy for production stability.
   
   cookies: {
     sessionToken: {
@@ -23,7 +21,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         domain: '.sakuragroup.co.tz' 
       },
     },
@@ -49,19 +47,12 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email }
         });
 
-        // Debug Logs for Cloud Run
-        console.log(`[AUTH] Attempt: ${credentials.email} - User Found: ${!!user}`);
-
         if (!user || !user.password) return null;
 
-        // Verify Argon2 Hash
         const isValid = await verify(user.password, credentials.password);
-        console.log(`[AUTH] Password Valid: ${isValid}`);
-        
         if (!isValid) return null;
 
         if (user.status !== "ACTIVE") {
-          console.log(`[AUTH] Blocked: Status is ${user.status}`);
           throw new Error("ACCOUNT_PENDING_APPROVAL");
         }
 
@@ -76,7 +67,6 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.status = user.status;
         token.balance = user.balance;
-        token.smsRate = user.smsRate;
       }
       return token;
     },
@@ -86,7 +76,6 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).role = token.role;
         (session.user as any).status = token.status;
         (session.user as any).balance = token.balance;
-        (session.user as any).smsRate = token.smsRate;
       }
       return session;
     }
