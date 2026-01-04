@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { 
   MessageSquare, 
   Smartphone, 
@@ -28,8 +28,56 @@ import { GlobalFooter } from "@/components/global-footer";
 const HERO_VIDEO = "https://storage.googleapis.com/sakura-web/sms/7188903_Business_Businesswoman_1920x1080.mp4"; 
 const CTA_BG = "https://storage.googleapis.com/sakura-web/sms/23230.jpg";
 
-// --- COMPONENTS ---
+// --- PRELOADER COMPONENT ---
+const TuchatiPreloader = ({ onComplete }: { onComplete: () => void }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
+      className="fixed inset-0 z-[200] bg-[#020617] flex items-center justify-center overflow-hidden"
+    >
+      <div className="relative z-10 text-center">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, ease: "circOut" }}
+          className="relative inline-block"
+        >
+          <h1 className="text-7xl md:text-9xl font-black italic tracking-tighter text-white uppercase">
+            Tuchati<span className="text-emerald-500">!</span>
+          </h1>
+          
+          {/* Signal Pulse Animation */}
+          <motion.div 
+            initial={{ scale: 1, opacity: 0.5 }}
+            animate={{ scale: 2, opacity: 0 }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "easeOut" }}
+            className="absolute -inset-8 bg-emerald-500/20 rounded-full blur-2xl -z-10"
+          />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mt-6 flex items-center justify-center gap-2"
+        >
+          <div className="flex gap-1">
+            <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+            <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+            <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+          </div>
+          <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-500">Establishing Uplink</span>
+        </motion.div>
+      </div>
 
+      {/* Background Noise */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none" />
+    </motion.div>
+  );
+};
+
+// --- CHAT COMPONENT ---
 const AnimatedChat = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -54,6 +102,7 @@ const AnimatedChat = () => {
       </div>
       <div className="p-4 space-y-4 h-[300px] relative bg-[#0b141a]">
         <div className="absolute inset-0 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] opacity-10 pointer-events-none" />
+        
         {messages.map((msg, i) => (
           <motion.div
             key={i}
@@ -98,6 +147,7 @@ const AxisSubNav = () => {
           <MessageCircle size={12} className="text-emerald-500" />
           Customers Like To Chat
         </span>
+        
         <div className="flex gap-8">
           {[
             { n: "SMS Core", l: "#sms" },
@@ -117,12 +167,28 @@ const AxisSubNav = () => {
 };
 
 export default function AxisPage() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Synthetic load time for "Tuchati!" experience
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <main className="bg-[#020617] text-white selection:bg-emerald-500 font-sans min-h-screen">
+      
+      {/* THE TUCHATI PRELOADER */}
+      <AnimatePresence>
+        {loading && <TuchatiPreloader onComplete={() => setLoading(false)} />}
+      </AnimatePresence>
+
       <GlobalNavbar />
       <AxisSubNav />
 
-      {/* 1. HERO: VALUE & OUTCOME FOCUSED */}
+      {/* 1. HERO */}
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[#020617]/70 z-10" />
@@ -141,6 +207,7 @@ export default function AxisPage() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.6 }} // Delayed to start after preloader
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/50 backdrop-blur-md"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -150,7 +217,7 @@ export default function AxisPage() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 2.7 }}
             className="text-6xl md:text-8xl lg:text-[110px] font-black leading-[0.85] tracking-tighter uppercase italic text-white"
           >
             Talk to your<br/>
@@ -160,7 +227,7 @@ export default function AxisPage() {
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 2.8 }}
             className="text-xl md:text-2xl text-slate-200 font-light max-w-2xl mx-auto leading-relaxed"
           >
             The trusted way. Verified Sender ID SMS and structured WhatsApp engagement. 
@@ -170,7 +237,7 @@ export default function AxisPage() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 2.9 }}
             className="flex flex-col sm:flex-row gap-6 justify-center pt-8"
           >
             <Link href="/axis/pricing" className="px-10 py-5 bg-emerald-600 text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all shadow-[0_0_50px_-10px_rgba(16,185,129,0.4)] rounded-sm">
@@ -183,7 +250,7 @@ export default function AxisPage() {
         </div>
       </section>
 
-      {/* 2. SMS DEEP DIVE (THE TRUST ARGUMENT) */}
+      {/* 2. SMS DEEP DIVE */}
       <section id="sms" className="py-32 px-6 bg-[#020617] border-y border-white/5 relative">
         <div className="max-w-7xl mx-auto space-y-24">
           
@@ -223,7 +290,7 @@ export default function AxisPage() {
               </ul>
             </div>
 
-            {/* VISUAL: Phone Mockup */}
+            {/* VISUAL */}
             <div className="relative h-[500px] w-full bg-[#0f172a] rounded-2xl border border-white/10 overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent z-10" />
               <Image 
@@ -280,7 +347,7 @@ export default function AxisPage() {
         </div>
       </section>
 
-      {/* 3. WHATSAPP (THE OPERATING SYSTEM) */}
+      {/* 3. WHATSAPP */}
       <section id="whatsapp" className="py-32 px-6 bg-[#050b14] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-[#25D366]/5 blur-[120px] pointer-events-none" />
 
