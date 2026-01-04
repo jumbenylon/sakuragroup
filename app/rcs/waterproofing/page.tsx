@@ -80,11 +80,12 @@ const ConstructionSubNav = () => {
   }, []);
 
   const links = [
-    { label: "Roof Restoration", href: "/rcs" },
+    { label: "Overview", href: "/rcs" },
+    { label: "Restoration", href: "/rcs/restoration" },
     { label: "Waterproofing", href: "/rcs/waterproofing" },
     { label: "Installation", href: "/rcs/installation" },
-    { label: "Outdoor Cleaning", href: "/rcs/cleaning" },
     { label: "Construction", href: "/rcs/construction" },
+    { label: "Cleaning", href: "/rcs/cleaning" },
     { label: "Repairs", href: "/rcs/repairs" },
   ];
 
@@ -204,17 +205,17 @@ const Education = () => (
             { 
               title: "Thermal Expansion", 
               desc: "Extreme heat causes concrete to expand and contract, creating micro-fractures.",
-              icon: ThermometerSun 
+              icon: <ThermometerSun /> 
             },
             { 
               title: "Poor Drainage", 
               desc: "Standing water (ponding) accelerates breakdown of standard sealants.",
-              icon: Droplets 
+              icon: <Droplets /> 
             },
             { 
               title: "Installation Shortcuts", 
               desc: "Improper surface prep and lack of primer is the #1 cause of failure.",
-              icon: AlertTriangle 
+              icon: <AlertTriangle /> 
             }
           ].map((item, i) => (
             <div key={i} className="flex gap-4">
@@ -373,14 +374,14 @@ const EngagementModels = () => (
     <div className="max-w-5xl mx-auto">
       <div className="grid md:grid-cols-3 gap-6">
         {[
-          { title: "Leak Diagnostics", desc: "One-off inspection & report.", icon: Search },
-          { title: "Project Works", desc: "Full system installation.", icon: Construction },
-          { title: "Maintenance", desc: "Annual preventive care.", icon: ShieldCheck },
+          { title: "Leak Diagnostics", desc: "One-off inspection & report.", icon: <Search /> },
+          { title: "Project Works", desc: "Full system installation.", icon: <Construction /> },
+          { title: "Maintenance", desc: "Annual preventive care.", icon: <ShieldCheck /> },
         ].map((item, i) => (
           <ScrollReveal key={i} delay={i * 0.1}>
             <div className="text-center p-8 bg-white/5 rounded-sm border border-white/5 hover:bg-white/10 transition-colors">
                <div className="mx-auto w-10 h-10 bg-black rounded-full flex items-center justify-center text-cyan-500 mb-4">
-                 <item.icon size={18} />
+                 {React.cloneElement(item.icon as React.ReactElement, { size: 18 })}
                </div>
                <h3 className="text-white font-bold text-sm uppercase tracking-wide mb-2">{item.title}</h3>
                <p className="text-xs text-slate-400">{item.desc}</p>
