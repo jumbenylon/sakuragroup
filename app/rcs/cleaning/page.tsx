@@ -80,11 +80,12 @@ const ConstructionSubNav = () => {
   }, []);
 
   const links = [
-    { label: "Roof Restoration", href: "/rcs" },
+    { label: "Overview", href: "/rcs" },
+    { label: "Restoration", href: "/rcs/restoration" },
     { label: "Waterproofing", href: "/rcs/waterproofing" },
     { label: "Installation", href: "/rcs/installation" },
-    { label: "Outdoor Cleaning", href: "/rcs/cleaning" },
     { label: "Construction", href: "/rcs/construction" },
+    { label: "Cleaning", href: "/rcs/cleaning" },
     { label: "Repairs", href: "/rcs/repairs" },
   ];
 
@@ -100,7 +101,7 @@ const ConstructionSubNav = () => {
               key={link.label} 
               href={link.href} 
               className={`text-[10px] font-bold uppercase tracking-widest transition-colors
-                ${link.label === 'Outdoor Cleaning' ? 'text-emerald-400' : 'text-slate-400 hover:text-white'}`}
+                ${link.label === 'Cleaning' ? 'text-emerald-400' : 'text-slate-400 hover:text-white'}`}
             >
               {link.label}
             </Link>
