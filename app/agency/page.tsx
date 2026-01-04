@@ -1,35 +1,38 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { 
   motion, 
   useScroll, 
   useTransform, 
-  useSpring, 
-  useMotionValue, 
-  useMotionTemplate,
-  AnimatePresence,
-  useInView
+  useMotionTemplate, 
+  useMotionValue 
 } from "framer-motion";
 import { 
-  ArrowRight, MousePointer2, Briefcase, 
-  PenTool, Monitor, Megaphone, Smartphone, 
-  Globe, Zap, Layout, Code, Hash, Layers, 
-  TrendingUp, Users, Award, Coffee
+  ArrowRight, 
+  MapPin, 
+  Globe, 
+  Zap, 
+  Layout, 
+  Cpu, 
+  Search, 
+  PenTool, 
+  Megaphone,
+  BarChart3,
+  Users,
+  Workflow
 } from "lucide-react";
+
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
-// --- 1. SHARED UNBOUND COMPONENTS ---
+// --- SHARED COMPONENTS ---
 
 const CustomCursor = () => {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-  const springConfig = { damping: 25, stiffness: 700 };
-  const cursorXSpring = useSpring(cursorX, springConfig);
-  const cursorYSpring = useSpring(cursorY, springConfig);
 
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
@@ -43,56 +46,12 @@ const CustomCursor = () => {
   return (
     <motion.div
       className="fixed top-0 left-0 w-8 h-8 rounded-full border border-orange-500 pointer-events-none z-[9999] hidden md:block mix-blend-difference"
-      style={{ translateX: cursorXSpring, translateY: cursorYSpring }}
-    >
-      <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-sm" />
-    </motion.div>
+      style={{ translateX: cursorX, translateY: cursorY }}
+    />
   );
 };
 
-const Preloader = ({ onComplete }: { onComplete: () => void }) => (
-    <motion.div
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 0 }}
-        transition={{ duration: 0.5, delay: 2.5 }}
-        onAnimationComplete={onComplete}
-        className="fixed inset-0 z-[100] bg-black flex items-center justify-center"
-    >
-        <div className="text-center">
-             <motion.div 
-                 className="text-8xl font-black text-white mb-4 tracking-tighter"
-                 initial={{ scale: 0.8, opacity: 0 }}
-                 animate={{ scale: 1, opacity: 1 }}
-                 transition={{ duration: 0.5 }}
-             >
-                 CREATE.
-             </motion.div>
-             <div className="h-1 w-32 bg-orange-500 mx-auto rounded-full overflow-hidden">
-                 <motion.div 
-                    className="h-full bg-white"
-                    initial={{ width: 0 }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 1.5, ease: "easeInOut" }}
-                 />
-             </div>
-        </div>
-    </motion.div>
-);
-
-const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 50 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-100px" }}
-    transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
-  >
-    {children}
-  </motion.div>
-);
-
-// --- 2. SPECIAL EFFECTS ---
-
-const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
+const SpotlightCard = ({ children, className = "", href }: { children: React.ReactNode, className?: string, href: string }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -103,99 +62,132 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
   }
 
   return (
-    <div
-      className={`relative border border-white/10 bg-neutral-900/50 overflow-hidden group ${className}`}
+    <Link 
+      href={href}
+      className={`relative border border-white/10 bg-neutral-900/50 overflow-hidden group block ${className}`}
       onMouseMove={handleMouseMove}
     >
       <motion.div
-        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
         style={{
           background: useMotionTemplate`
             radial-gradient(
               650px circle at ${mouseX}px ${mouseY}px,
-              rgba(255, 77, 0, 0.15),
+              rgba(249, 115, 22, 0.15), 
               transparent 80%
             )
           `,
         }}
       />
       <div className="relative h-full">{children}</div>
-    </div>
+    </Link>
   );
 };
 
-const GlitchText = ({ text }: { text: string }) => {
+const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+  >
+    {children}
+  </motion.div>
+);
+
+const AgencySubNav = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    const handler = () => setIsScrolled(window.scrollY > 100);
+    window.addEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  const navItems = [
+    { label: "Overview", link: "/agency" },
+    { label: "Strategy", link: "/agency/strategy" },
+    { label: "Branding", link: "/agency/branding" },
+    { label: "Design", link: "/agency/design" },
+    { label: "Content", link: "/agency/content" },
+    { label: "Digital", link: "/agency/digital" },
+    { label: "Advertising", link: "/agency/advertising" },
+    { label: "Tech", link: "/agency/tech" },
+    { label: "CRM", link: "/agency/crm" },
+    { label: "Research", link: "/agency/research" },
+  ];
+
   return (
-    <span className="relative inline-block group hover:text-orange-500 transition-colors duration-300">
-      <span className="absolute top-0 left-0 -ml-1 text-red-500 opacity-0 group-hover:opacity-70 group-hover:animate-pulse">
-        {text}
-      </span>
-      <span className="absolute top-0 left-0 ml-1 text-cyan-500 opacity-0 group-hover:opacity-70 group-hover:animate-pulse" style={{ animationDelay: "0.1s" }}>
-        {text}
-      </span>
-      <span className="relative z-10">{text}</span>
-    </span>
+    <motion.nav
+      className={`sticky top-20 z-[90] w-full border-b border-white/5 transition-all duration-500
+        ${isScrolled ? "bg-[#050505]/90 backdrop-blur-xl py-2" : "bg-transparent py-4"}`}
+    >
+      <div className="max-w-7xl mx-auto px-6 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-8 min-w-max">
+          {navItems.map((item) => (
+            <Link 
+              key={item.label} 
+              href={item.link} 
+              className={`text-[10px] font-bold uppercase tracking-widest transition-colors
+                ${item.label === 'Overview' ? 'text-orange-500' : 'text-white/40 hover:text-white'}`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </motion.nav>
   );
 };
 
-const Counter = ({ value, label, icon: Icon }: { value: string, label: string, icon: any }) => {
-    return (
-        <div className="text-center p-6 border border-white/5 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors group">
-            <Icon className="mx-auto mb-4 text-orange-500 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all" size={32} />
-            <div className="text-4xl md:text-5xl font-black text-white mb-2">{value}</div>
-            <div className="text-xs font-mono uppercase tracking-widest text-slate-400">{label}</div>
-        </div>
-    );
-};
-
-// --- 3. PAGE SECTIONS ---
+// --- SECTIONS ---
 
 const Hero = () => {
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 400]);
-  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const y = useTransform(scrollY, [0, 300], [0, 100]);
 
   return (
-    <section className="relative h-screen min-h-[900px] flex items-center px-6 pt-20 overflow-hidden bg-black">
-      {/* BACKGROUND VIDEO */}
-      <motion.div style={{ y, opacity }} className="absolute inset-0 z-0 opacity-60">
+    <section className="relative min-h-screen flex items-center px-6 pt-20 overflow-hidden bg-[#050505]">
+      {/* Cinematic Background */}
+      <motion.div style={{ opacity, y }} className="absolute inset-0 z-0">
+         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-[#050505]" />
          <video 
             autoPlay 
             loop 
             muted 
             playsInline 
-            className="w-full h-full object-cover grayscale contrast-125"
+            className="w-full h-full object-cover opacity-50 grayscale contrast-125 scale-105"
          >
              <source src="https://storage.googleapis.com/sakura-web/sakura-agency.mp4" type="video/mp4" />
          </video>
-         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
       </motion.div>
 
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         <ScrollReveal>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-full mb-8">
              <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-             <span className="text-xs font-bold text-white uppercase tracking-widest">Global Reach • Tanzanian Roots</span>
+             <span className="text-[10px] font-bold text-white uppercase tracking-widest">Built in Tanzania • Made for the World</span>
           </div>
           
-          <h1 className="text-7xl md:text-[10rem] font-black text-white leading-[0.8] tracking-tighter mb-8">
-            IDEAS THAT <br />
+          <h1 className="text-6xl md:text-[9rem] font-black text-white leading-[0.85] tracking-tighter mb-8">
+            BOLD<br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
-                <GlitchText text="BREAK BOUNDARIES." />
+                CREATIVITY.
             </span>
           </h1>
           
           <div className="grid md:grid-cols-2 gap-12 items-end">
              <p className="text-xl md:text-2xl text-slate-300 font-light leading-relaxed border-l-4 border-orange-500 pl-6">
-                We’re the 360° creative force for banks, telcos, and startups. 
-                Fearless in ambition, precise in execution.
+               Strategy, design, technology, and storytelling — working together to transform brands, products, and digital experiences across Africa.
              </p>
              
              <div className="flex flex-col sm:flex-row gap-6">
-                <Link href="/#contact" className="group relative px-10 py-5 bg-orange-600 text-black font-bold text-lg rounded-full overflow-hidden hover:scale-105 transition-transform">
-                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                    <span className="relative flex items-center gap-2">Let's Build Bold <ArrowRight size={20}/></span>
+                <Link href="/contact" className="group relative px-10 py-5 bg-white text-black font-bold text-xs uppercase tracking-[0.2em] rounded-full overflow-hidden hover:bg-orange-500 hover:text-white transition-colors">
+                   Start a Project
+                </Link>
+                <Link href="#services" className="group relative px-10 py-5 border border-white/20 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-full overflow-hidden hover:bg-white/10 transition-colors">
+                   Explore Work
                 </Link>
              </div>
           </div>
@@ -205,239 +197,256 @@ const Hero = () => {
   );
 };
 
-const Manifesto = () => (
-    <section className="py-32 px-6 bg-black border-y border-white/10 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-orange-500/5 rounded-full blur-[120px] pointer-events-none" />
-        <div className="max-w-5xl mx-auto space-y-16 relative z-10">
-            <ScrollReveal>
-                <h2 className="text-sm font-bold text-orange-500 uppercase tracking-widest mb-4">Our Manifesto</h2>
-                <div className="space-y-8 text-3xl md:text-5xl font-bold text-white leading-tight">
-                    <p className="opacity-50 hover:opacity-100 transition-opacity duration-500">
-                        “We believe Africa tells its own story – <span className="text-white">boldly, on its own terms.</span>”
-                    </p>
-                    <p className="opacity-50 hover:opacity-100 transition-opacity duration-500">
-                        “We don’t follow trends; <span className="text-orange-500">we make them.</span>”
-                    </p>
-                    <p className="opacity-50 hover:opacity-100 transition-opacity duration-500">
-                        “Creativity powered by culture, <span className="text-white">driven by data.</span>”
-                    </p>
-                    <p className="opacity-50 hover:opacity-100 transition-opacity duration-500">
-                        “Strategy, art, and tech in <span className="text-orange-500">perfect harmony.</span>”
-                    </p>
-                </div>
-            </ScrollReveal>
+const Positioning = () => (
+  <section className="py-24 px-6 border-y border-white/5 bg-black">
+    <div className="max-w-4xl mx-auto text-center mb-16">
+      <ScrollReveal>
+        <h2 className="text-2xl md:text-4xl font-bold text-white mb-8">
+          We’re a 360° creative and technology partner.
+        </h2>
+        <div className="flex flex-wrap justify-center gap-3">
+          {["Strategy", "Branding", "Digital", "Content", "Campaigns", "Technology", "Research"].map((tag, i) => (
+            <span key={i} className="px-4 py-2 border border-white/10 rounded-full text-xs font-mono uppercase tracking-widest text-slate-400 hover:border-orange-500 hover:text-white transition-colors cursor-default">
+              {tag}
+            </span>
+          ))}
         </div>
-    </section>
+      </ScrollReveal>
+    </div>
+
+    <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-6">
+      {[
+        { title: "Strategy First", desc: "Every project starts with research, insight and clarity." },
+        { title: "Design with Purpose", desc: "Experiences that feel premium, intuitive, and meaningful." },
+        { title: "Tech Driven", desc: "Modern engineering and automation powering outcomes." },
+        { title: "Africa Rooted", desc: "Local insight. Regional perspective. Global standards." },
+      ].map((item, i) => (
+        <ScrollReveal key={i} delay={i * 0.1}>
+          <div className="p-8 border border-white/5 bg-[#0a0a0a] rounded-sm hover:border-orange-500/30 transition-colors h-full">
+            <h3 className="text-white font-bold uppercase tracking-widest mb-3 text-sm">{item.title}</h3>
+            <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
+          </div>
+        </ScrollReveal>
+      ))}
+    </div>
+  </section>
 );
 
-const SelectedWorks = () => {
-    const works = [
-        { client: "Tigo Pesa", project: "Pesa Ni Pesa", cat: "Campaign 360", img: "bg-blue-900" },
-        { client: "CRDB Bank", project: "Digital Transformation", cat: "UI/UX & App", img: "bg-green-900" },
-        { client: "Zanzibar Tourism", project: "Island of Stories", cat: "Brand Identity", img: "bg-emerald-900" },
-        { client: "Serengeti Lite", project: "Lite Your Way", cat: "Social Media", img: "bg-yellow-900" },
-    ];
-
-    return (
-        <section className="py-32 bg-[#050505] overflow-hidden">
-            <div className="px-6 mb-12 flex justify-between items-end max-w-7xl mx-auto">
-                 <div>
-                    <h2 className="text-5xl font-black text-white mb-2">SELECTED WORK</h2>
-                    <p className="text-slate-400">Proof of concept.</p>
-                 </div>
-                 <Link href="#" className="hidden md:flex items-center gap-2 text-orange-500 font-bold hover:text-white transition-colors">
-                    View All Projects <ArrowRight size={16} />
-                 </Link>
-            </div>
-            
-            {/* Horizontal Scroll Area */}
-            <div className="flex gap-6 overflow-x-auto pb-12 px-6 snap-x">
-                {works.map((w, i) => (
-                    <motion.div 
-                        key={i}
-                        className="snap-center shrink-0 w-[85vw] md:w-[600px] group cursor-pointer"
-                        whileHover={{ scale: 0.98 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <div className={`relative aspect-[16/9] rounded-3xl overflow-hidden ${w.img} mb-6 border border-white/5`}>
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
-                            {/* Placeholder visuals */}
-                            <div className="absolute inset-0 flex items-center justify-center opacity-30 group-hover:opacity-100 transition-opacity duration-500">
-                                <span className="text-4xl font-black text-white uppercase tracking-tighter">{w.client}</span>
-                            </div>
-                        </div>
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <h3 className="text-2xl font-bold text-white group-hover:text-orange-500 transition-colors">{w.project}</h3>
-                                <p className="text-slate-500">{w.client}</p>
-                            </div>
-                            <span className="px-3 py-1 border border-white/10 rounded-full text-xs font-mono text-slate-400 uppercase">
-                                {w.cat}
-                            </span>
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
-        </section>
-    );
-};
-
-const ImpactStats = () => (
-    <section className="py-20 px-6 bg-black border-y border-white/10">
-        <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <Counter value="50+" label="Brands Launched" icon={Rocket} />
-                <Counter value="120M+" label="Impressions" icon={TrendingUp} />
-                <Counter value="15" label="Industry Awards" icon={Award} />
-                <Counter value="∞" label="Coffees Drunk" icon={Coffee} />
-            </div>
+const ServiceGateway = () => (
+  <section id="services" className="py-32 px-6 bg-[#050505]">
+    <div className="max-w-7xl mx-auto">
+      <ScrollReveal>
+        <div className="mb-20">
+          <h2 className="text-4xl font-black text-white mb-6">THE ECOSYSTEM</h2>
+          <p className="text-slate-400">Integrated disciplines. Unified execution.</p>
         </div>
-    </section>
+      </ScrollReveal>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          { title: "Strategy", link: "/agency/strategy", icon: Search, desc: "Market Positioning & Advisory" },
+          { title: "Branding", link: "/agency/branding", icon: PenTool, desc: "Identity Systems & Visual Language" },
+          { title: "Design", link: "/agency/design", icon: Layout, desc: "UI/UX, Print & Communication" },
+          { title: "Content", link: "/agency/content", icon: Users, desc: "Video, Photo & Narrative" },
+          { title: "Digital Marketing", link: "/agency/digital", icon: Globe, desc: "Growth, SEO & Paid Media" },
+          { title: "Advertising & PR", link: "/agency/advertising", icon: Megaphone, desc: "Campaigns & Reputation" },
+          { title: "Technology", link: "/agency/tech", icon: Cpu, desc: "Web, App Dev & Infrastructure" },
+          { title: "CRM & Systems", link: "/agency/crm", icon: Workflow, desc: "Automation & Operations" },
+          { title: "Research", link: "/agency/research", icon: BarChart3, desc: "Consumer Insight & Data" },
+        ].map((s, i) => (
+          <ScrollReveal key={i} delay={i * 0.05}>
+            <SpotlightCard href={s.link} className="p-10 h-full bg-[#0a0a0a]">
+              <div className="flex justify-between items-start mb-8">
+                <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-slate-400 group-hover:text-orange-500 group-hover:bg-orange-500/10 transition-colors">
+                  <s.icon size={24} />
+                </div>
+                <ArrowRight className="text-white/20 group-hover:text-white group-hover:translate-x-1 transition-all" size={20} />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-wide group-hover:text-orange-500 transition-colors">
+                {s.title}
+              </h3>
+              <p className="text-sm text-slate-500 group-hover:text-slate-300 transition-colors">
+                {s.desc}
+              </p>
+            </SpotlightCard>
+          </ScrollReveal>
+        ))}
+      </div>
+    </div>
+  </section>
 );
 
-// Helper for Stats
-const Rocket = (props: any) => <Zap {...props} />; // Placeholder icon
+const SelectedWork = () => (
+  <section className="py-32 px-6 bg-black border-t border-white/5">
+    <div className="max-w-7xl mx-auto">
+      <ScrollReveal>
+        <h2 className="text-4xl font-black text-white mb-12">TRANSFORMATION STORIES</h2>
+      </ScrollReveal>
 
-const ServicesGrid = () => (
-    <section className="py-32 px-6 bg-[#050505]">
-        <div className="max-w-7xl mx-auto">
-            <ScrollReveal>
-                <div className="mb-20">
-                    <h2 className="text-5xl md:text-7xl font-black text-white mb-6">360° CREATIVE.</h2>
-                    <p className="text-xl text-slate-400 max-w-2xl">
-                        We bridge data and storytelling to build end-to-end brands. From concept to launch.
-                    </p>
-                </div>
-            </ScrollReveal>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[
-                    { title: "Brand Strategy", desc: "Naming & Visual Identity", icon: PenTool },
-                    { title: "Campaigns", desc: "Digital & Analog Advertising", icon: Megaphone },
-                    { title: "UI/UX Design", desc: "Pixel-Perfect Web & App", icon: Layout },
-                    { title: "Tech Dev", desc: "Custom Software & Platforms", icon: Code },
-                    { title: "Media Buying", desc: "Data-Driven Planning", icon: Zap },
-                    { title: "Content", desc: "Video & Storytelling", icon: Layers },
-                ].map((s, i) => (
-                    <ScrollReveal key={i} delay={i * 0.1}>
-                        <SpotlightCard className="p-8 rounded-3xl h-full border border-white/5 bg-neutral-900/40 hover:-translate-y-2 transition-transform duration-300">
-                            <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-orange-500 mb-8 group-hover:bg-orange-500 group-hover:text-black transition-all">
-                                <s.icon size={28} />
-                            </div>
-                            <h3 className="text-2xl font-bold text-white mb-2">{s.title}</h3>
-                            <p className="text-slate-400">{s.desc}</p>
-                        </SpotlightCard>
-                    </ScrollReveal>
+      <div className="grid md:grid-cols-2 gap-8">
+        {[
+          { 
+            client: "CRDB Bank", 
+            title: "Digital Experience Refresh", 
+            desc: "Simplified UX, elevated design, clearer communication. Result: Stronger engagement & adoption.",
+            tags: ["UI/UX", "Strategy"],
+            color: "bg-green-900"
+          },
+          { 
+            client: "Tigo Tanzania", 
+            title: "4G Campaign Launch", 
+            desc: "High-impact visual storytelling and vernacular messaging connecting lifestyle to speed.",
+            tags: ["Advertising", "Content"],
+            color: "bg-blue-900"
+          },
+          { 
+            client: "Sunking", 
+            title: "Market Penetration", 
+            desc: "Data-driven field research translating into a localised go-to-market playbook.",
+            tags: ["Research", "Marketing"],
+            color: "bg-yellow-900"
+          },
+          { 
+            client: "Zanzibar Tourism", 
+            title: "Island Identity System", 
+            desc: "A cohesive brand system unifying heritage with modern luxury travel.",
+            tags: ["Branding", "Design"],
+            color: "bg-teal-900"
+          }
+        ].map((w, i) => (
+          <ScrollReveal key={i} delay={i * 0.1}>
+            <div className="group cursor-pointer">
+              <div className={`aspect-video ${w.color} relative overflow-hidden mb-6 border border-white/10 rounded-sm`}>
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-all duration-700" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent opacity-80" />
+                <span className="absolute top-6 left-6 text-xs font-mono uppercase tracking-widest text-white/70 border border-white/20 px-2 py-1 rounded-sm bg-black/20 backdrop-blur-md">
+                  {w.client}
+                </span>
+              </div>
+              <div className="flex gap-2 mb-3">
+                {w.tags.map(t => (
+                  <span key={t} className="text-[9px] font-bold uppercase text-orange-500 tracking-widest">{t}</span>
                 ))}
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-orange-500 transition-colors">{w.title}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed max-w-md">{w.desc}</p>
             </div>
-        </div>
-    </section>
+          </ScrollReveal>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const Culture = () => (
+  <section className="py-32 px-6 bg-[#0c0a09] relative overflow-hidden">
+    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-orange-900/10 blur-[150px] rounded-full pointer-events-none" />
+    
+    <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
+      <div className="flex-1">
+        <ScrollReveal>
+          <div className="inline-block p-3 border border-orange-500/20 bg-orange-900/10 rounded-full mb-6">
+            <MapPin className="text-orange-500" size={20} />
+          </div>
+          <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+            Africa is not<br/>one audience.
+          </h2>
+          <p className="text-lg text-stone-400 leading-relaxed mb-6">
+            And Tanzania is not one story. We design for people, communities, language, culture, and context. 
+            Our work respects how people live, communicate, and make decisions.
+          </p>
+          <p className="text-white font-medium">
+            Global quality. Local soul.
+          </p>
+        </ScrollReveal>
+      </div>
+      
+      <div className="flex-1 grid grid-cols-2 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <ScrollReveal key={i} delay={i * 0.1}>
+            <div className="aspect-square bg-stone-900 border border-white/5 rounded-sm overflow-hidden relative group">
+               <div className="absolute inset-0 bg-stone-800 animate-pulse opacity-10" />
+               <div className="absolute inset-0 flex items-center justify-center text-stone-700 font-mono text-xs">
+                 [Culture Frame 0{i}]
+               </div>
+            </div>
+          </ScrollReveal>
+        ))}
+      </div>
+    </div>
+  </section>
 );
 
 const Process = () => (
-    <section className="py-32 px-6 bg-black border-t border-white/10">
-        <div className="max-w-7xl mx-auto">
-            <ScrollReveal>
-                <h2 className="text-4xl font-bold text-white mb-16 text-center">How We Work</h2>
-            </ScrollReveal>
-            
-            <div className="relative border-l border-white/10 ml-4 md:ml-0 md:border-none md:grid md:grid-cols-5 gap-8">
-                {[
-                    { step: "01", title: "Discover", desc: "Deep dive into your world. Data & Culture." },
-                    { step: "02", title: "Strategize", desc: "Define bold objectives. Chart the course." },
-                    { step: "03", title: "Create", desc: "Ideate fearlessly. Brainstorm & Prototype." },
-                    { step: "04", title: "Build", desc: "Execute with precision. Code & Craft." },
-                    { step: "05", title: "Optimize", desc: "Measure, learn, repeat. Continuous Growth." },
-                ].map((s, i) => (
-                    <ScrollReveal key={i} delay={i * 0.1}>
-                        <div className="mb-12 md:mb-0 pl-8 md:pl-0 relative">
-                            {/* Mobile Timeline Dot */}
-                            <div className="absolute left-[-5px] top-0 w-3 h-3 bg-orange-500 rounded-full md:hidden" />
-                            
-                            <div className="text-6xl font-black text-white/10 mb-4">{s.step}</div>
-                            <h3 className="text-xl font-bold text-white mb-2">{s.title}</h3>
-                            <p className="text-slate-500 text-sm leading-relaxed">{s.desc}</p>
-                        </div>
-                    </ScrollReveal>
-                ))}
-            </div>
-        </div>
-    </section>
-);
+  <section className="py-32 px-6 bg-black border-t border-white/5">
+    <div className="max-w-7xl mx-auto">
+      <ScrollReveal>
+        <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-16 text-center">Our Approach</h2>
+      </ScrollReveal>
 
-const Clients = () => (
-    <section className="py-32 px-6 bg-[#050505]">
-        <div className="max-w-7xl mx-auto">
-            <ScrollReveal>
-                <h2 className="text-4xl font-bold text-white mb-12">Who We Scale</h2>
-            </ScrollReveal>
-            
-            <div className="grid md:grid-cols-2 gap-8">
-                {[
-                    { title: "Banks & Finance", desc: "Simplifying complexity with trust." },
-                    { title: "Telecom & Tech", desc: "Engaging millions in digital-first campaigns." },
-                    { title: "Gov & Public Sector", desc: "Communications that inform and inspire." },
-                    { title: "Consumer Brands", desc: "Cultural insights that create loyalty." },
-                    { title: "Startups", desc: "Big ideas for bold new ventures." },
-                    { title: "NGOs", desc: "Purpose-driven campaigns for change." },
-                ].map((c, i) => (
-                    <ScrollReveal key={i}>
-                        <div className="group flex items-start gap-4 p-6 border-b border-white/10 hover:bg-white/5 transition-colors">
-                            <ArrowRight className="text-orange-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0" />
-                            <div>
-                                <h3 className="text-xl font-bold text-white group-hover:text-orange-500 transition-colors">{c.title}</h3>
-                                <p className="text-slate-500 mt-1">{c.desc}</p>
-                            </div>
-                        </div>
-                    </ScrollReveal>
-                ))}
+      <div className="grid md:grid-cols-5 gap-4">
+        {[
+          { step: "01", title: "Discover", desc: "Research & Clarity." },
+          { step: "02", title: "Define", desc: "Strategy Foundations." },
+          { step: "03", title: "Create", desc: "Concepts & Systems." },
+          { step: "04", title: "Build", desc: "Execution & Code." },
+          { step: "05", title: "Grow", desc: "Optimization & Scale." },
+        ].map((s, i) => (
+          <ScrollReveal key={i} delay={i * 0.1}>
+            <div className="p-6 border-t-2 border-white/10 hover:border-orange-500 transition-colors group">
+              <span className="text-xs font-mono text-slate-500 mb-4 block group-hover:text-orange-500">{s.step}</span>
+              <h3 className="text-lg font-bold text-white mb-2 uppercase tracking-wide">{s.title}</h3>
+              <p className="text-xs text-slate-500">{s.desc}</p>
             </div>
-        </div>
-    </section>
+          </ScrollReveal>
+        ))}
+      </div>
+    </div>
+  </section>
 );
 
 const CTA = () => (
-    <section className="py-32 px-6 bg-orange-600">
-        <div className="max-w-4xl mx-auto text-center">
-            <ScrollReveal>
-                <h2 className="text-5xl md:text-7xl font-black text-black mb-8 leading-tight">
-                    READY TO MAKE WAVES?
-                </h2>
-                <p className="text-xl text-black/80 font-medium mb-12 max-w-2xl mx-auto">
-                    We’re excited by big challenges. Drop us a line, and let’s build something legendary together.
-                </p>
-                <Link href="/#contact" className="inline-flex items-center gap-3 px-12 py-6 bg-black text-white font-bold text-xl rounded-full hover:scale-105 transition-transform shadow-2xl">
-                    Start the Project <ArrowRight size={24} />
-                </Link>
-            </ScrollReveal>
+  <section className="py-40 px-6 bg-[#0e0e0e] text-center relative overflow-hidden">
+    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-orange-900/10 pointer-events-none" />
+
+    <div className="max-w-4xl mx-auto relative z-10">
+      <ScrollReveal>
+        <h2 className="text-5xl md:text-7xl font-black text-white mb-8 leading-[0.85] tracking-tighter">
+          LET'S BUILD<br/>SOMETHING REAL.
+        </h2>
+        <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto font-light">
+          Whether you’re launching a new brand, upgrading a platform, or scaling communications — we’d love to partner with you.
+        </p>
+        <div className="flex flex-col sm:flex-row justify-center gap-6">
+          <Link href="/contact" className="px-12 py-5 bg-white text-black font-bold text-xs uppercase tracking-[0.2em] rounded-full hover:bg-orange-500 hover:text-white transition-all shadow-2xl">
+            Start a Project
+          </Link>
+          <Link href="/contact" className="px-12 py-5 border border-white/20 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-full hover:bg-white/5 transition-colors">
+            Book Strategy Call
+          </Link>
         </div>
-    </section>
+      </ScrollReveal>
+    </div>
+  </section>
 );
 
-export default function MarketingPage() {
-  const [loading, setLoading] = useState(true);
-
+export default function AgencyMasterPage() {
   return (
-    <main className="min-h-screen bg-black text-white selection:bg-orange-500 selection:text-black cursor-none">
+    <main className="min-h-screen bg-black text-white selection:bg-orange-500 selection:text-white font-sans cursor-none">
       <CustomCursor />
-      <AnimatePresence>
-        {loading && <Preloader onComplete={() => setLoading(false)} />}
-      </AnimatePresence>
+      <GlobalNavbar />
+      <AgencySubNav />
       
-      {!loading && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            <GlobalNavbar />
-            <Hero />
-            <Manifesto />
-            <ImpactStats />
-            <SelectedWorks />
-            <ServicesGrid />
-            <Process />
-            <Clients />
-            <CTA />
-            <GlobalFooter />
-        </motion.div>
-      )}
+      <Hero />
+      <Positioning />
+      <ServiceGateway />
+      <SelectedWork />
+      <Process />
+      <Culture />
+      <CTA />
+      
+      <GlobalFooter />
     </main>
   );
 }
