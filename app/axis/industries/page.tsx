@@ -231,4 +231,41 @@ export default function AxisIndustriesPage() {
             </div>
           </div>
         ))}
-      </section
+      </section>
+
+      {/* 3. GOVERNMENT / PUBLIC SECTOR */}
+      <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto bg-gradient-to-br from-[#0f172a] to-[#020617] border border-white/10 rounded-2xl p-12 md:p-20 text-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-12 opacity-10">
+            <ShieldCheck size={200} className="text-slate-500" />
+          </div>
+          
+          <div className="relative z-10">
+            <h2 className="text-3xl md:text-5xl font-black uppercase italic tracking-wide mb-6">
+              Government & Public Infrastructure
+            </h2>
+            <p className="text-lg text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed">
+              Axis is engineered for national scale. From utility outage alerts (Water/Power) to 
+              public health announcements, we provide the secure, high-throughput pipes required for civic duty.
+            </p>
+            <div className="flex justify-center gap-6">
+              <Link href="/contact" className="px-10 py-4 bg-white text-black font-black text-xs uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all rounded-sm">
+                Discuss Public Sector
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. CTA */}
+      <section className="py-32 text-center">
+        <h2 className="text-2xl font-black uppercase text-slate-500 tracking-widest mb-8">Ready to Optimize?</h2>
+        <Link href="/contact" className="inline-block px-12 py-5 border border-emerald-500/50 text-emerald-400 font-black text-xs uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-all">
+          Start Your Pilot Program
+        </Link>
+      </section>
+
+      <GlobalFooter />
+    </main>
+  );
+}

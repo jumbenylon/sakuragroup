@@ -101,7 +101,7 @@ export default function AxisPricingPage() {
         </div>
       </section>
 
-      {/* 2. THE DUAL CORE (SMS vs WHATSAPP) */}
+      {/* 2. THE DUAL CORE */}
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 items-start">
           

@@ -150,7 +150,7 @@ export default function AxisDevelopersPage() {
              <Link href="/contact" className="px-8 py-3 bg-white text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all rounded-sm">
                Get API Keys
              </Link>
-             <Link href="https://github.com/sakuragroup" target="_blank" className="px-8 py-3 border border-white/10 text-slate-300 font-mono text-xs font-bold uppercase tracking-widest hover:bg-white/5 transition-all rounded-sm">
+             <Link href="#" target="_blank" className="px-8 py-3 border border-white/10 text-slate-300 font-mono text-xs font-bold uppercase tracking-widest hover:bg-white/5 transition-all rounded-sm">
                View Documentation
              </Link>
           </div>
@@ -233,7 +233,7 @@ export default function AxisDevelopersPage() {
         </div>
       </section>
 
-      {/* 3. SECURITY & COMPLIANCE */}
+      {/* 3. SECURITY */}
       <section className="py-20 px-6 border-t border-white/5 bg-[#0b1121]">
         <div className="max-w-7xl mx-auto text-center mb-16">
           <h2 className="text-3xl font-black uppercase tracking-widest mb-4">Architecture & Compliance</h2>
