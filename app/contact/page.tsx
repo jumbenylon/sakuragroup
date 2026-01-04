@@ -81,8 +81,11 @@ export default function ContactPage() {
         
         <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-20 items-start relative z-10">
 
-          {/* LEFT FLANK: HQ DATA */}
-          <div className="space-y-16">
+          {/* LEFT FLANK: HIERARCHY LOCKED */}
+          {/* ORDER: 1. Header/Desc -> 2. Contact Details -> 3. Map */}
+          <div className="space-y-12">
+            
+            {/* 1. HEADER & DESCRIPTION */}
             <div>
               <p className="text-emerald-500 font-mono text-[10px] tracking-[0.6em] uppercase mb-8 flex items-center gap-3">
                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
@@ -97,8 +100,8 @@ export default function ContactPage() {
               </p>
             </div>
 
-            {/* CONTACT MATRIX */}
-            <div className="space-y-10">
+            {/* 2. CONTACT MATRIX */}
+            <div className="space-y-8 border-t border-white/5 pt-8">
               <div className="flex items-start gap-6 group">
                 <div className="p-4 bg-white/5 border border-white/10 rounded-sm group-hover:border-emerald-500/50 transition-colors">
                   <Phone className="text-emerald-500" size={24} />
@@ -124,28 +127,29 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* LIVE SATELLITE LOCK (Google Maps Embed with CSS Filter) */}
+            {/* 3. LIVE SATELLITE LOCK (The Map) */}
             <div className="w-full h-72 bg-white/5 border border-white/10 rounded-sm relative overflow-hidden group">
-               {/* 1. The Map Frame - Animated Entry */}
+               {/* Animated Entry */}
                <motion.div 
-                 initial={{ scale: 1.5, opacity: 0 }}
+                 initial={{ scale: 1.4, opacity: 0 }}
                  animate={{ scale: 1, opacity: 1 }}
                  transition={{ duration: 2.5, ease: "circOut" }}
                  className="w-full h-full"
                >
                  <iframe 
-                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.7332228367!2d39.2486!3d-6.7924!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4b1a4574744d%3A0x7c00e1c251239632!2sTRA%20Mwenge!5e0!3m2!1sen!2stz!4v1709400000000!5m2!1sen!2stz"
+                   // Updated to point specifically to TRA Road Mwenge with Satellite (t=k)
+                   src="https://maps.google.com/maps?q=TRA+Road,+Mwenge,+Dar+es+Salaam&t=k&z=17&ie=UTF8&iwloc=&output=embed"
                    width="100%" 
                    height="100%" 
-                   style={{ border: 0, filter: "grayscale(100%) invert(92%) contrast(83%)" }} 
+                   style={{ border: 0, filter: "grayscale(100%) invert(92%) contrast(83%) brightness(80%)" }} 
                    allowFullScreen 
                    loading="lazy" 
                    referrerPolicy="no-referrer-when-downgrade"
-                   className="opacity-70 group-hover:opacity-100 transition-opacity duration-700"
+                   className="opacity-60 group-hover:opacity-100 transition-opacity duration-700"
                  />
                </motion.div>
 
-               {/* 2. HUD Overlay (The "Command Center" Look) */}
+               {/* HUD Overlay */}
                <div className="absolute inset-0 pointer-events-none border border-white/5 z-10">
                   <div className="absolute top-4 left-4 flex items-center gap-2">
                     <Crosshair size={14} className="text-emerald-500 animate-spin-slow" />
