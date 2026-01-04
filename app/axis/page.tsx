@@ -13,12 +13,9 @@ import {
   ArrowRight, 
   MessageSquare, 
   Smartphone, 
-  Zap, 
   Globe, 
   Code2, 
-  Activity,
-  CheckCircle2,
-  Server
+  CheckCircle2
 } from "lucide-react";
 
 import { GlobalNavbar } from "@/components/global-navbar";
