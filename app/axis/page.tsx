@@ -269,7 +269,8 @@ const Stats = () => {
 const CTA = () => {
   return (
     <section className="py-40 px-6 bg-[#02040a] text-center border-t border-white/10 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url(&apos;https://grainy-gradients.vercel.app/noise.svg&apos;)] opacity-20 mix-blend-overlay" />
+      {/* FIXED: Removed &apos; from inside the Tailwind class URL */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-emerald-900/20 pointer-events-none" />
 
       <div className="max-w-4xl mx-auto relative z-10">
