@@ -21,8 +21,6 @@ import {
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
-// --- SHARED COMPONENTS ---
-
 const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -35,8 +33,8 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
 
   return (
     <div
-      className={`relative border border-white/10 bg-neutral-900/50 overflow-hidden group ${className}`}
       onMouseMove={handleMouseMove}
+      className={`relative border border-white/10 bg-neutral-900/50 overflow-hidden group ${className}`}
     >
       <motion.div
         className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
@@ -70,46 +68,37 @@ const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, dela
 
 const AxisSubNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  
   useEffect(() => {
-    const handler = () => setIsScrolled(window.scrollY > 100);
+    const handler = () => {
+      setIsScrolled(window.scrollY > 100);
+    };
     window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
+    return () => {
+      window.removeEventListener("scroll", handler);
+    };
   }, []);
-
-  const links = [
-    { label: "Overview", id: "hero" },
-    { label: "Features", id: "features" },
-    { label: "API", id: "api" },
-    { label: "Pricing", id: "pricing" },
-  ];
 
   return (
     <motion.nav
-      className={`sticky top-20 z-[90] w-full border-b border-white/5 transition-all duration-500
-        ${isScrolled ? "bg-[#050a14]/90 backdrop-blur-xl py-2" : "bg-transparent py-4"}`}
+      className={`sticky top-20 z-[90] w-full border-b border-white/5 transition-all duration-500 ${
+        isScrolled ? "bg-[#050a14]/90 backdrop-blur-xl py-2" : "bg-transparent py-4"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-6 overflow-x-auto scrollbar-hide">
         <div className="flex gap-8 min-w-max">
           <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic mr-4 hidden md:block">
             Axis Gateway
           </span>
-          {links.map((link) => (
-            <Link 
-              key={link.label} 
-              href={`#${link.id}`} 
-              className={`text-[10px] font-bold uppercase tracking-widest transition-colors
-                ${link.label === 'Overview' ? 'text-emerald-400' : 'text-slate-400 hover:text-white'}`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          <Link href="#hero" className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Overview</Link>
+          <Link href="#features" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">Features</Link>
+          <Link href="#api" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">API</Link>
+          <Link href="#pricing" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">Pricing</Link>
         </div>
       </div>
     </motion.nav>
   );
 };
-
-// --- SECTIONS ---
 
 const Hero = () => {
   const { scrollY } = useScroll();
@@ -118,7 +107,6 @@ const Hero = () => {
 
   return (
     <section id="hero" className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#050a14]">
-      {/* Matrix Green Background */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-emerald-900/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
          <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98105_1px,transparent_1px),linear-gradient(to_bottom,#10b98105_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
@@ -133,9 +121,7 @@ const Hero = () => {
           
           <h1 className="text-5xl md:text-8xl lg:text-[9rem] font-black text-white leading-[0.9] tracking-tighter mb-8 max-w-5xl mx-auto">
             CONNECT AT<br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-600">
-                SCALE.
-            </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-600">SCALE.</span>
           </h1>
           
           <p className="text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-12 font-light">
@@ -169,8 +155,6 @@ const Features = () => {
         </ScrollReveal>
 
         <div className="grid md:grid-cols-3 gap-6">
-          
-          {/* Card 1: Bulk SMS */}
           <ScrollReveal delay={0.1}>
             <SpotlightCard className="p-8 h-full text-center hover:border-emerald-500/30 transition-colors">
               <div className="w-12 h-12 mx-auto bg-white/5 rounded-full flex items-center justify-center text-slate-400 mb-4 group-hover:text-emerald-400 group-hover:bg-emerald-400/10 transition-colors">
@@ -181,7 +165,6 @@ const Features = () => {
             </SpotlightCard>
           </ScrollReveal>
 
-          {/* Card 2: WhatsApp */}
           <ScrollReveal delay={0.2}>
             <SpotlightCard className="p-8 h-full text-center hover:border-emerald-500/30 transition-colors">
               <div className="w-12 h-12 mx-auto bg-white/5 rounded-full flex items-center justify-center text-slate-400 mb-4 group-hover:text-emerald-400 group-hover:bg-emerald-400/10 transition-colors">
@@ -192,7 +175,6 @@ const Features = () => {
             </SpotlightCard>
           </ScrollReveal>
 
-          {/* Card 3: Email API */}
           <ScrollReveal delay={0.3}>
             <SpotlightCard className="p-8 h-full text-center hover:border-emerald-500/30 transition-colors">
               <div className="w-12 h-12 mx-auto bg-white/5 rounded-full flex items-center justify-center text-slate-400 mb-4 group-hover:text-emerald-400 group-hover:bg-emerald-400/10 transition-colors">
@@ -202,7 +184,6 @@ const Features = () => {
               <p className="text-xs text-slate-500">Transactional emails that actually hit the inbox.</p>
             </SpotlightCard>
           </ScrollReveal>
-
         </div>
       </div>
     </section>
@@ -241,15 +222,15 @@ const APISection = () => {
                 <div className="w-3 h-3 rounded-full bg-green-500" />
              </div>
              <div className="p-6 text-slate-300 space-y-4">
-                <p><span className="text-purple-400">const</span> <span className="text-yellow-200">axis</span> = <span className="text-blue-400">require</span>('axis-sdk');</p>
+                <p><span className="text-purple-400">const</span> <span className="text-yellow-200">axis</span> = <span className="text-blue-400">require</span>(&apos;axis-sdk&apos;);</p>
                 <p>
                    <span className="text-purple-400">await</span> axis.sms.send(&#123;<br/>
-                   &nbsp;&nbsp;to: <span className="text-green-400">'+255753...'</span>,<br/>
-                   &nbsp;&nbsp;message: <span className="text-green-400">'Your OTP is 4921'</span>,<br/>
-                   &nbsp;&nbsp;sender_id: <span className="text-green-400">'SAKURA'</span><br/>
+                   &nbsp;&nbsp;to: <span className="text-green-400">&apos;+255753...&apos;</span>,<br/>
+                   &nbsp;&nbsp;message: <span className="text-green-400">&apos;Your OTP is 4921&apos;</span>,<br/>
+                   &nbsp;&nbsp;sender_id: <span className="text-green-400">&apos;SAKURA&apos;</span><br/>
                    &#125;);
                 </p>
-                <p className="text-slate-500">// Response: { status: "queued", id: "msg_123" }</p>
+                <p className="text-slate-500">// Response: &#123; status: &quot;queued&quot;, id: &quot;msg_123&quot; &#125;</p>
              </div>
           </div>
         </ScrollReveal>
@@ -288,7 +269,7 @@ const Stats = () => {
 const CTA = () => {
   return (
     <section className="py-40 px-6 bg-[#02040a] text-center border-t border-white/10 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+      <div className="absolute inset-0 bg-[url(&apos;https://grainy-gradients.vercel.app/noise.svg&apos;)] opacity-20 mix-blend-overlay" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-emerald-900/20 pointer-events-none" />
 
       <div className="max-w-4xl mx-auto relative z-10">
