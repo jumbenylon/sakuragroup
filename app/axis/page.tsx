@@ -58,16 +58,18 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
   );
 };
 
-const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-50px" }}
-    transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
-  >
-    {children}
-  </motion.div>
-);
+const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const AxisSubNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -158,134 +160,142 @@ const Hero = () => {
   );
 };
 
-const Features = () => (
-  <section id="features" className="py-24 px-6 bg-[#050a14] border-y border-white/5">
-    <div className="max-w-7xl mx-auto">
-      <ScrollReveal>
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Unified Communication Channels</h2>
-          <p className="text-slate-400 text-lg">One integration. Every customer.</p>
-        </div>
-      </ScrollReveal>
+const Features = () => {
+  return (
+    <section id="features" className="py-24 px-6 bg-[#050a14] border-y border-white/5">
+      <div className="max-w-7xl mx-auto">
+        <ScrollReveal>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Unified Communication Channels</h2>
+            <p className="text-slate-400 text-lg">One integration. Every customer.</p>
+          </div>
+        </ScrollReveal>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        {[
-          { title: "Bulk SMS", icon: <Smartphone />, desc: "Direct operator connections for OTPs & Alerts." },
-          { title: "WhatsApp Business", icon: <MessageSquare />, desc: "Rich media messaging and automated bots." },
-          { title: "Email API", icon: <Globe />, desc: "Transactional emails that actually hit the inbox." },
-        ].map((item, i) => (
-          <ScrollReveal key={i} delay={i * 0.1}>
-            <SpotlightCard className="p-8 h-full text-center hover:border-emerald-500/30 transition-colors">
-              <div className="w-12 h-12 mx-auto bg-white/5 rounded-full flex items-center justify-center text-slate-400 mb-4 group-hover:text-emerald-400 group-hover:bg-emerald-400/10 transition-colors">
-                {item.icon}
-              </div>
-              <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-2">{item.title}</h3>
-              <p className="text-xs text-slate-500">{item.desc}</p>
-            </SpotlightCard>
-          </ScrollReveal>
-        ))}
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            { title: "Bulk SMS", icon: <Smartphone />, desc: "Direct operator connections for OTPs & Alerts." },
+            { title: "WhatsApp Business", icon: <MessageSquare />, desc: "Rich media messaging and automated bots." },
+            { title: "Email API", icon: <Globe />, desc: "Transactional emails that actually hit the inbox." },
+          ].map((item, i) => (
+            <ScrollReveal key={i} delay={i * 0.1}>
+              <SpotlightCard className="p-8 h-full text-center hover:border-emerald-500/30 transition-colors">
+                <div className="w-12 h-12 mx-auto bg-white/5 rounded-full flex items-center justify-center text-slate-400 mb-4 group-hover:text-emerald-400 group-hover:bg-emerald-400/10 transition-colors">
+                  {item.icon}
+                </div>
+                <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-2">{item.title}</h3>
+                <p className="text-xs text-slate-500">{item.desc}</p>
+              </SpotlightCard>
+            </ScrollReveal>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
-const APISection = () => (
-  <section id="api" className="py-32 px-6 bg-[#020617]">
-    <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-      <ScrollReveal>
-        <div className="inline-flex items-center gap-2 mb-6 text-emerald-500">
-          <Code2 size={20} />
-          <span className="font-mono text-xs uppercase tracking-widest">Developer Friendly</span>
-        </div>
-        <h2 className="text-4xl font-bold text-white mb-6">Built for Developers</h2>
-        <p className="text-slate-400 text-lg mb-8">
-          Clean documentation, predictable REST endpoints, and SDKs for Node, Python, and PHP. 
-          Start sending in minutes, not days.
-        </p>
-        <ul className="space-y-4 mb-8">
-           <li className="flex gap-3 text-slate-300"><CheckCircle2 className="text-emerald-500" /> Real-time Delivery Reports (DLRs)</li>
-           <li className="flex gap-3 text-slate-300"><CheckCircle2 className="text-emerald-500" /> Webhook Events</li>
-           <li className="flex gap-3 text-slate-300"><CheckCircle2 className="text-emerald-500" /> Sandboxed Testing Mode</li>
-        </ul>
-        <Link href="/contact" className="text-emerald-400 font-bold flex items-center gap-2 hover:text-white transition-colors uppercase text-xs tracking-widest">
-           Read The Docs <ArrowRight size={14} />
-        </Link>
-      </ScrollReveal>
-
-      <ScrollReveal delay={0.2}>
-        <div className="rounded-lg overflow-hidden bg-[#0a0a0a] border border-white/10 shadow-2xl font-mono text-sm">
-           <div className="bg-white/5 px-4 py-3 flex items-center gap-2 border-b border-white/5">
-              <div className="w-3 h-3 rounded-full bg-red-500" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500" />
-              <div className="w-3 h-3 rounded-full bg-green-500" />
-           </div>
-           <div className="p-6 text-slate-300 space-y-4">
-              <p><span className="text-purple-400">const</span> <span className="text-yellow-200">axis</span> = <span className="text-blue-400">require</span>('axis-sdk');</p>
-              <p>
-                 <span className="text-purple-400">await</span> axis.sms.send(&#123;<br/>
-                 &nbsp;&nbsp;to: <span className="text-green-400">'+255753...'</span>,<br/>
-                 &nbsp;&nbsp;message: <span className="text-green-400">'Your OTP is 4921'</span>,<br/>
-                 &nbsp;&nbsp;sender_id: <span className="text-green-400">'SAKURA'</span><br/>
-                 &#125;);
-              </p>
-              <p className="text-slate-500">// Response: { status: "queued", id: "msg_123" }</p>
-           </div>
-        </div>
-      </ScrollReveal>
-    </div>
-  </section>
-);
-
-const Stats = () => (
-  <section className="py-24 px-6 bg-[#050a14] border-t border-white/5">
-    <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-8 text-center">
-       <ScrollReveal>
-          <div className="p-6">
-             <div className="text-4xl font-black text-emerald-500 mb-2">50M+</div>
-             <div className="text-xs text-slate-500 uppercase tracking-widest">Messages Delivered</div>
+const APISection = () => {
+  return (
+    <section id="api" className="py-32 px-6 bg-[#020617]">
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+        <ScrollReveal>
+          <div className="inline-flex items-center gap-2 mb-6 text-emerald-500">
+            <Code2 size={20} />
+            <span className="font-mono text-xs uppercase tracking-widest">Developer Friendly</span>
           </div>
-       </ScrollReveal>
-       <ScrollReveal delay={0.1}>
-          <div className="p-6 border-x border-white/5">
-             <div className="text-4xl font-black text-white mb-2">99.9%</div>
-             <div className="text-xs text-slate-500 uppercase tracking-widest">Uptime SLA</div>
-          </div>
-       </ScrollReveal>
-       <ScrollReveal delay={0.2}>
-          <div className="p-6">
-             <div className="text-4xl font-black text-emerald-500 mb-2">200+</div>
-             <div className="text-xs text-slate-500 uppercase tracking-widest">Enterprise Clients</div>
-          </div>
-       </ScrollReveal>
-    </div>
-  </section>
-);
-
-const CTA = () => (
-  <section className="py-40 px-6 bg-[#02040a] text-center border-t border-white/10 relative overflow-hidden">
-    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
-    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-emerald-900/20 pointer-events-none" />
-
-    <div className="max-w-4xl mx-auto relative z-10">
-      <ScrollReveal>
-        <h2 className="text-5xl md:text-7xl font-black text-white mb-8 leading-[0.85] tracking-tighter">
-          START SENDING<br/>TODAY.
-        </h2>
-        <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto font-light">
-          Reliable communication infrastructure for Tanzanian businesses.
-        </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-6">
-          <Link href="/contact" className="px-12 py-5 bg-emerald-600 text-black font-bold text-xs uppercase tracking-[0.2em] rounded-sm hover:bg-emerald-500 transition-all shadow-2xl">
-            Get API Keys
+          <h2 className="text-4xl font-bold text-white mb-6">Built for Developers</h2>
+          <p className="text-slate-400 text-lg mb-8">
+            Clean documentation, predictable REST endpoints, and SDKs for Node, Python, and PHP. 
+            Start sending in minutes, not days.
+          </p>
+          <ul className="space-y-4 mb-8">
+             <li className="flex gap-3 text-slate-300"><CheckCircle2 className="text-emerald-500" /> Real-time Delivery Reports (DLRs)</li>
+             <li className="flex gap-3 text-slate-300"><CheckCircle2 className="text-emerald-500" /> Webhook Events</li>
+             <li className="flex gap-3 text-slate-300"><CheckCircle2 className="text-emerald-500" /> Sandboxed Testing Mode</li>
+          </ul>
+          <Link href="/contact" className="text-emerald-400 font-bold flex items-center gap-2 hover:text-white transition-colors uppercase text-xs tracking-widest">
+             Read The Docs <ArrowRight size={14} />
           </Link>
-          <Link href="/contact" className="px-12 py-5 border border-white/20 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm hover:bg-white/5 transition-colors">
-            Contact Sales
-          </Link>
-        </div>
-      </ScrollReveal>
-    </div>
-  </section>
-);
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.2}>
+          <div className="rounded-lg overflow-hidden bg-[#0a0a0a] border border-white/10 shadow-2xl font-mono text-sm">
+             <div className="bg-white/5 px-4 py-3 flex items-center gap-2 border-b border-white/5">
+                <div className="w-3 h-3 rounded-full bg-red-500" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                <div className="w-3 h-3 rounded-full bg-green-500" />
+             </div>
+             <div className="p-6 text-slate-300 space-y-4">
+                <p><span className="text-purple-400">const</span> <span className="text-yellow-200">axis</span> = <span className="text-blue-400">require</span>('axis-sdk');</p>
+                <p>
+                   <span className="text-purple-400">await</span> axis.sms.send(&#123;<br/>
+                   &nbsp;&nbsp;to: <span className="text-green-400">'+255753...'</span>,<br/>
+                   &nbsp;&nbsp;message: <span className="text-green-400">'Your OTP is 4921'</span>,<br/>
+                   &nbsp;&nbsp;sender_id: <span className="text-green-400">'SAKURA'</span><br/>
+                   &#125;);
+                </p>
+                <p className="text-slate-500">// Response: { status: "queued", id: "msg_123" }</p>
+             </div>
+          </div>
+        </ScrollReveal>
+      </div>
+    </section>
+  );
+};
+
+const Stats = () => {
+  return (
+    <section className="py-24 px-6 bg-[#050a14] border-t border-white/5">
+      <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-8 text-center">
+         <ScrollReveal>
+            <div className="p-6">
+               <div className="text-4xl font-black text-emerald-500 mb-2">50M+</div>
+               <div className="text-xs text-slate-500 uppercase tracking-widest">Messages Delivered</div>
+            </div>
+         </ScrollReveal>
+         <ScrollReveal delay={0.1}>
+            <div className="p-6 border-x border-white/5">
+               <div className="text-4xl font-black text-white mb-2">99.9%</div>
+               <div className="text-xs text-slate-500 uppercase tracking-widest">Uptime SLA</div>
+            </div>
+         </ScrollReveal>
+         <ScrollReveal delay={0.2}>
+            <div className="p-6">
+               <div className="text-4xl font-black text-emerald-500 mb-2">200+</div>
+               <div className="text-xs text-slate-500 uppercase tracking-widest">Enterprise Clients</div>
+            </div>
+         </ScrollReveal>
+      </div>
+    </section>
+  );
+};
+
+const CTA = () => {
+  return (
+    <section className="py-40 px-6 bg-[#02040a] text-center border-t border-white/10 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-emerald-900/20 pointer-events-none" />
+
+      <div className="max-w-4xl mx-auto relative z-10">
+        <ScrollReveal>
+          <h2 className="text-5xl md:text-7xl font-black text-white mb-8 leading-[0.85] tracking-tighter">
+            START SENDING<br/>TODAY.
+          </h2>
+          <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto font-light">
+            Reliable communication infrastructure for Tanzanian businesses.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-6">
+            <Link href="/contact" className="px-12 py-5 bg-emerald-600 text-black font-bold text-xs uppercase tracking-[0.2em] rounded-sm hover:bg-emerald-500 transition-all shadow-2xl">
+              Get API Keys
+            </Link>
+            <Link href="/contact" className="px-12 py-5 border border-white/20 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm hover:bg-white/5 transition-colors">
+              Contact Sales
+            </Link>
+          </div>
+        </ScrollReveal>
+      </div>
+    </section>
+  );
+};
 
 export default function AxisPage() {
   return (
