@@ -3,13 +3,13 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ["@node-rs/argon2"],
   },
-  
+
   output: "standalone",
   reactStrictMode: true,
   poweredByHeader: false,
-  
+
   images: {
-    formats: ['image/avif', 'image/webp'],
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
@@ -17,20 +17,18 @@ const nextConfig = {
         pathname: "/**",
       },
       {
-        protocol: 'https',
-        hostname: 'storage.googleapis.com',
-        pathname: '/**', 
+        protocol: "https",
+        hostname: "plus.unsplash.com",
+        pathname: "/**",
       },
       {
-        protocol: 'https',
-        hostname: 'images.google.com',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        pathname: "/**",
       },
-      {
-        protocol: 'https',
-        hostname: 'plus.unsplash.com',
-        pathname: '/**',
-      },
+      // Optional: add only if you actually use them
+      // { protocol: "https", hostname: "lh3.googleusercontent.com", pathname: "/**" },
+      // { protocol: "https", hostname: "encrypted-tbn0.gstatic.com", pathname: "/**" },
     ],
   },
 };

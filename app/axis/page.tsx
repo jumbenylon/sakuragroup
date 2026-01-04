@@ -21,6 +21,26 @@ import {
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
+// --- DATA CONSTANTS ---
+// Moved outside components to prevent parser nesting errors
+const FEATURES_DATA = [
+  { 
+    title: "Bulk SMS", 
+    icon: <Smartphone size={24} />, 
+    desc: "Direct operator connections for OTPs & Alerts." 
+  },
+  { 
+    title: "WhatsApp Business", 
+    icon: <MessageSquare size={24} />, 
+    desc: "Rich media messaging and automated bots." 
+  },
+  { 
+    title: "Email API", 
+    icon: <Globe size={24} />, 
+    desc: "Transactional emails that actually hit the inbox." 
+  }
+];
+
 // --- SHARED COMPONENTS ---
 
 const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
@@ -70,6 +90,7 @@ const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, dela
 
 const AxisSubNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  
   useEffect(() => {
     const handler = () => setIsScrolled(window.scrollY > 100);
     window.addEventListener("scroll", handler);
@@ -118,7 +139,6 @@ const Hero = () => {
 
   return (
     <section id="hero" className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#050a14]">
-      {/* Matrix Green Background */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-emerald-900/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
          <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98105_1px,transparent_1px),linear-gradient(to_bottom,#10b98105_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
@@ -169,11 +189,7 @@ const Features = () => {
         </ScrollReveal>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {[
-            { title: "Bulk SMS", icon: <Smartphone />, desc: "Direct operator connections for OTPs & Alerts." },
-            { title: "WhatsApp Business", icon: <MessageSquare />, desc: "Rich media messaging and automated bots." },
-            { title: "Email API", icon: <Globe />, desc: "Transactional emails that actually hit the inbox." },
-          ].map((item, i) => (
+          {FEATURES_DATA.map((item, i) => (
             <ScrollReveal key={i} delay={i * 0.1}>
               <SpotlightCard className="p-8 h-full text-center hover:border-emerald-500/30 transition-colors">
                 <div className="w-12 h-12 mx-auto bg-white/5 rounded-full flex items-center justify-center text-slate-400 mb-4 group-hover:text-emerald-400 group-hover:bg-emerald-400/10 transition-colors">
