@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { 
   Terminal, 
   Code2, 
@@ -12,11 +11,51 @@ import {
   Copy, 
   Check, 
   Server,
-  Lock
+  Lock,
+  MessageCircle
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
+
+// --- SUBNAV COMPONENT ---
+const AxisSubNav = () => {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const handler = () => setVisible(window.scrollY > 100);
+    window.addEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  return (
+    <motion.nav
+      initial={{ y: -20, opacity: 0 }}
+      animate={visible ? { y: 0, opacity: 1 } : { y: -20, opacity: 0 }}
+      className="fixed top-16 w-full z-[90] bg-[#020617]/90 backdrop-blur-xl border-b border-emerald-500/10 h-12 flex items-center"
+    >
+      <div className="max-w-7xl mx-auto w-full px-8 flex justify-between items-center">
+        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 italic flex items-center gap-2">
+          <MessageCircle size={12} className="text-emerald-500" />
+          Customers Like To Chat
+        </span>
+        <div className="flex gap-8">
+          {[
+            { n: "SMS Core", l: "/axis#sms" },
+            { n: "WhatsApp", l: "/axis#whatsapp" },
+            { n: "Pricing", l: "/axis/pricing" },
+            { n: "Use Cases", l: "/axis/industries" },
+            { n: "Developers", l: "/axis/developers" }
+          ].map((item) => (
+            <Link key={item.n} href={item.l} className="text-[9px] font-bold uppercase tracking-widest text-white/40 hover:text-emerald-400 transition-colors">
+              {item.n}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </motion.nav>
+  );
+};
 
 // --- CODE SNIPPETS ---
 const SNIPPETS = {
@@ -84,6 +123,7 @@ export default function AxisDevelopersPage() {
   return (
     <main className="bg-[#020617] text-white selection:bg-emerald-500 font-sans min-h-screen">
       <GlobalNavbar />
+      <AxisSubNav />
 
       {/* 1. HERO: API FIRST */}
       <section className="pt-40 pb-20 px-6 text-center relative overflow-hidden">
@@ -117,7 +157,7 @@ export default function AxisDevelopersPage() {
         </div>
       </section>
 
-      {/* 2. THE TERMINAL (Code Demo) */}
+      {/* 2. THE TERMINAL */}
       <section className="py-20 px-6">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
           
@@ -155,7 +195,6 @@ export default function AxisDevelopersPage() {
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-1000" />
             
             <div className="relative bg-[#0b1121] rounded-lg border border-white/10 overflow-hidden shadow-2xl">
-              {/* Terminal Header */}
               <div className="flex items-center justify-between px-4 py-3 bg-[#1e293b] border-b border-white/5">
                 <div className="flex gap-2">
                   <div className="w-3 h-3 rounded-full bg-red-500/50" />
@@ -181,7 +220,6 @@ export default function AxisDevelopersPage() {
                 </button>
               </div>
 
-              {/* Code Content */}
               <div className="p-6 overflow-x-auto">
                 <pre className="font-mono text-xs leading-relaxed">
                   <code className="text-slate-300">

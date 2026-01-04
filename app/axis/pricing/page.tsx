@@ -1,20 +1,58 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Check, 
   HelpCircle, 
-  ArrowRight, 
-  MessageSquare, 
   Smartphone,
+  MessageSquare,
   Shield,
-  Zap
+  Zap,
+  MessageCircle
 } from "lucide-react";
 
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
+
+// --- SUBNAV COMPONENT ---
+const AxisSubNav = () => {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const handler = () => setVisible(window.scrollY > 100);
+    window.addEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  return (
+    <motion.nav
+      initial={{ y: -20, opacity: 0 }}
+      animate={visible ? { y: 0, opacity: 1 } : { y: -20, opacity: 0 }}
+      className="fixed top-16 w-full z-[90] bg-[#020617]/90 backdrop-blur-xl border-b border-emerald-500/10 h-12 flex items-center"
+    >
+      <div className="max-w-7xl mx-auto w-full px-8 flex justify-between items-center">
+        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 italic flex items-center gap-2">
+          <MessageCircle size={12} className="text-emerald-500" />
+          Customers Like To Chat
+        </span>
+        <div className="flex gap-8">
+          {[
+            { n: "SMS Core", l: "/axis#sms" },
+            { n: "WhatsApp", l: "/axis#whatsapp" },
+            { n: "Pricing", l: "/axis/pricing" },
+            { n: "Use Cases", l: "/axis/industries" },
+            { n: "Developers", l: "/axis/developers" }
+          ].map((item) => (
+            <Link key={item.n} href={item.l} className="text-[9px] font-bold uppercase tracking-widest text-white/40 hover:text-emerald-400 transition-colors">
+              {item.n}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </motion.nav>
+  );
+};
 
 // --- PRICING DATA ---
 const SMS_FEATURES = [
@@ -39,6 +77,7 @@ export default function AxisPricingPage() {
   return (
     <main className="bg-[#020617] text-white selection:bg-emerald-500 font-sans min-h-screen">
       <GlobalNavbar />
+      <AxisSubNav />
 
       {/* 1. HERO: THE LEDGER */}
       <section className="pt-40 pb-20 px-6 text-center relative overflow-hidden">
@@ -176,11 +215,10 @@ export default function AxisPricingPage() {
         </div>
       </section>
 
-      {/* 4. FAQ / CLARIFICATIONS */}
+      {/* 4. FAQ */}
       <section className="py-20 px-6">
         <div className="max-w-3xl mx-auto">
           <h3 className="text-xl font-black uppercase tracking-widest mb-10 text-center">Operational Clarifications</h3>
-          
           <div className="space-y-6">
             <div className="p-6 bg-white/5 border border-white/5 rounded-lg">
               <h4 className="flex items-center gap-3 text-sm font-bold uppercase text-white mb-2">
@@ -190,17 +228,6 @@ export default function AxisPricingPage() {
               <p className="text-slate-400 text-sm leading-relaxed pl-7">
                 This is a compliance fee charged by TCRA and mobile networks to register your brand name (e.g., "SAKURA"). 
                 It is a one-time setup cost that we pass through directly.
-              </p>
-            </div>
-
-            <div className="p-6 bg-white/5 border border-white/5 rounded-lg">
-              <h4 className="flex items-center gap-3 text-sm font-bold uppercase text-white mb-2">
-                <HelpCircle size={16} className="text-slate-500" />
-                How does WhatsApp billing work?
-              </h4>
-              <p className="text-slate-400 text-sm leading-relaxed pl-7">
-                Meta charges per 24-hour conversation window, not per message. There are four categories: Marketing, Utility, Authentication, and Service. 
-                We bill you the exact Meta rate + a tiny fee per conversation to keep the server lights on.
               </p>
             </div>
           </div>
