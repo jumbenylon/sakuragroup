@@ -12,39 +12,23 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "Sakura Group | Tanzanian Industrial & Technology Backbone",
   description: "Innovation across Cloud, Fintech, Logistics, and Construction.",
-  icons: {
-    icon: 'https://storage.googleapis.com/sakura-web/logo-icon.png', 
-    apple: 'https://storage.googleapis.com/sakura-web/logo-icon.png',
-  },
+  icons: { icon: 'https://storage.googleapis.com/sakura-web/logo-icon.png' },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
-
-      <body className={`${inter.variable} bg-black text-white antialiased selection:bg-white selection:text-black`}>
+      {/* Removing 'InteractionEngine' here restores the native OS cursor.
+          'cursor-auto' is a safety fallback to ensure the mouse is visible.
+      */}
+      <body className={`${inter.variable} bg-black text-white antialiased cursor-auto`}>
         <GoogleAnalytics gaId="G-WYMNZF4RES" />
-
         <ThemeProvider attribute="class" defaultTheme="dark">
-            {/* 1. Contextual Swahili Preloader - Only fires on hub entry */}
             <GlobalPreloader />
-            
-            {/* 2. Permanent Global Navbar - Anchored at Z-100 */}
             <GlobalNavbar />
-
-            {/* 3. Unified Container 
-                   pt-20: Matches navbar height for pixel-perfect spacing.
-                   relative z-10: Ensures page content stacks correctly.
-            */}
             <main id="main-content" className="relative z-10 min-h-screen pt-20">
               {children}
             </main>
-
-            {/* 4. Shared Industrial Footer - Rendered once for the whole ecosystem */}
             <GlobalFooter />
         </ThemeProvider>
       </body>
