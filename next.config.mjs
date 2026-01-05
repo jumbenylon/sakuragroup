@@ -4,7 +4,7 @@ const nextConfig = {
     serverComponentsExternalPackages: ["@node-rs/argon2"],
   },
 
-  // HARDENING: Bypass linting/type errors during build to ensure Cloud Run success
+  // HARDENING: Critical for Google Cloud Run (Docker) stability
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -12,12 +12,15 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // PERFORMANCE: Surgical Speed Optimizations
   output: "standalone",
   reactStrictMode: true,
   poweredByHeader: false,
+  compress: true, // Speeds up data transfer
 
   images: {
-    formats: ["image/avif", "image/webp"],
+    formats: ["image/avif", "image/webp"], // Premium high-efficiency formats
+    minimumCacheTTL: 3600, // Caches assets for 1 hour to kill repeat lag
     remotePatterns: [
       {
         protocol: "https",
