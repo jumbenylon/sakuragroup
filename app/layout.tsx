@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main id="main-content" className="relative z-10 min-h-screen pt-20">
               {children}
             </main>
-            <GlobalFooter />
+      
         </ThemeProvider>
       </body>
     </html>
