@@ -18,8 +18,8 @@ import {
   CheckCircle2
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
+// NOTE: Navbar/Footer are now handled by the Root Layout as per our previous strategy. 
+// If you haven't fully refactored layout.tsx yet, keep these imports.
 
 const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
   const mouseX = useMotionValue(0);
@@ -109,7 +109,7 @@ const Hero = () => {
     <section id="hero" className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#050a14]">
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-emerald-900/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
-         <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98105_1px,transparent_1px),linear-gradient(to_bottom,#10b98105_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+         <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98105_1px,transparent_1px),linear-gradient(to_bottom,#10b98105_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse:60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       </motion.div>
 
       <div className="relative z-10 max-w-6xl mx-auto w-full text-center">
@@ -161,7 +161,7 @@ const Features = () => {
                 <Smartphone size={24} />
               </div>
               <h3 className="text-white font-bold uppercase text-xs tracking-widest mb-2">Bulk SMS</h3>
-              <p className="text-xs text-slate-500">Direct operator connections for OTPs & Alerts.</p>
+              <p className="text-xs text-slate-500">Direct operator connections for OTPs &amp; Alerts.</p>
             </SpotlightCard>
           </ScrollReveal>
 
@@ -230,7 +230,8 @@ const APISection = () => {
                    &nbsp;&nbsp;sender_id: <span className="text-green-400">&apos;SAKURA&apos;</span><br/>
                    &#125;);
                 </p>
-                <p className="text-slate-500">// Response: &#123; status: &quot;queued&quot;, id: &quot;msg_123&quot; &#125;</p>
+                {/* FIXED: Wrapped the comment in braces to prevent JSX parser error */}
+                <p className="text-slate-500">{"// Response: { status: \"queued\", id: \"msg_123\" }"}</p>
              </div>
           </div>
         </ScrollReveal>
@@ -269,8 +270,8 @@ const Stats = () => {
 const CTA = () => {
   return (
     <section className="py-40 px-6 bg-[#02040a] text-center border-t border-white/10 relative overflow-hidden">
-      {/* FIXED: Removed &apos; from inside the Tailwind class URL */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+      {/* FIXED: Removed arbitrary quotes that were confusing the build engine */}
+      <div className="absolute inset-0 bg-[url(https://grainy-gradients.vercel.app/noise.svg)] opacity-20 mix-blend-overlay" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-emerald-900/20 pointer-events-none" />
 
       <div className="max-w-4xl mx-auto relative z-10">
@@ -297,8 +298,7 @@ const CTA = () => {
 
 export default function AxisPage() {
   return (
-    <main className="min-h-screen bg-[#050a14] text-white selection:bg-emerald-500 selection:text-black font-sans cursor-none">
-      <GlobalNavbar />
+    <main className="min-h-screen bg-[#050a14] text-white selection:bg-emerald-500 selection:text-black font-sans">
       <AxisSubNav />
       
       <Hero />
@@ -306,8 +306,6 @@ export default function AxisPage() {
       <APISection />
       <Stats />
       <CTA />
-      
-      <GlobalFooter />
     </main>
   );
 }
