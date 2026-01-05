@@ -4,7 +4,6 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import GoogleAnalytics from "@/components/GoogleAnalytics"; 
 import { GlobalPreloader } from "@/components/global-preloader";
-import { InteractionEngine } from "@/components/interaction-engine";
 import { GlobalNavbar } from "@/components/global-navbar";
 import { GlobalFooter } from "@/components/global-footer";
 
@@ -28,7 +27,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
       <body className={`${inter.variable} bg-black text-white antialiased transition-colors duration-300`}>
         
-        {/* Analytics Layer */}
+        {/* 1. Analytics Layer */}
         <GoogleAnalytics gaId="G-WYMNZF4RES" />
 
         <ThemeProvider
@@ -37,21 +36,20 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {/* 1. Preloader logic handles initial entry */}
+            {/* 2. Path-Aware Swahili Preloader */}
             <GlobalPreloader />
             
-            {/* 2. Interaction Engine handles premium cursor & haptics globally */}
-            <InteractionEngine />
-
-            {/* 3. Global Navbar is always visible to fix the 'hanging' UI issue */}
+            {/* 3. Global Navbar - Permanent desktop anchor + Apple-style mobile menu */}
             <GlobalNavbar />
 
-            {/* 4. The Master Container - automatically applies to all pages */}
+            {/* 4. The Unified Main Container
+                pt-20 matches navbar height to prevent content from 'hiding' underneath.
+            */}
             <main id="main-content" className="min-h-screen pt-20">
               {children}
             </main>
 
-            {/* 5. Global Footer is always anchored at the bottom */}
+            {/* 5. Global Footer - Anchored once for the whole ecosystem */}
             <GlobalFooter />
             
         </ThemeProvider>
