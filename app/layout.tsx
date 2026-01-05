@@ -25,10 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
-      {/* HARDENING: 
-          1. Removed InteractionEngine.
-          2. Ensured native cursor returns by removing 'cursor-none'.
-      */}
+
       <body className={`${inter.variable} bg-black text-white antialiased selection:bg-white selection:text-black`}>
         <GoogleAnalytics gaId="G-WYMNZF4RES" />
 
