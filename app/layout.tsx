@@ -25,22 +25,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
-      <body className={`${inter.variable} bg-black text-white antialiased`}>
+      {/* HARDENING: 
+          1. Removed InteractionEngine.
+          2. Ensured native cursor returns by removing 'cursor-none'.
+      */}
+      <body className={`${inter.variable} bg-black text-white antialiased selection:bg-white selection:text-black`}>
         <GoogleAnalytics gaId="G-WYMNZF4RES" />
 
         <ThemeProvider attribute="class" defaultTheme="dark">
-            {/* 1. Contextual Swahili Preloader */}
+            {/* 1. Contextual Swahili Preloader - Only fires on hub entry */}
             <GlobalPreloader />
             
-            {/* 2. Permanent Global Navbar */}
+            {/* 2. Permanent Global Navbar - Anchored at Z-100 */}
             <GlobalNavbar />
 
-            {/* 3. Unified Container (pt-20 prevents content overlap) */}
-            <main id="main-content" className="min-h-screen pt-20">
+            {/* 3. Unified Container 
+                   pt-20: Matches navbar height for pixel-perfect spacing.
+                   relative z-10: Ensures page content stacks correctly.
+            */}
+            <main id="main-content" className="relative z-10 min-h-screen pt-20">
               {children}
             </main>
 
-            {/* 4. Shared Footer (Rendered once per ecosystem) */}
+            {/* 4. Shared Industrial Footer - Rendered once for the whole ecosystem */}
             <GlobalFooter />
         </ThemeProvider>
       </body>
