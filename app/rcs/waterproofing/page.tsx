@@ -23,8 +23,6 @@ import {
   AlertTriangle
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -431,7 +429,7 @@ import { Search } from "lucide-react";
 export default function WaterproofingPage() {
   return (
     <main className="min-h-screen bg-[#0B1120] text-white selection:bg-cyan-500 selection:text-black font-sans cursor-none">
-      <GlobalNavbar />
+      
       <ConstructionSubNav />
       
       <Hero />
@@ -443,7 +441,7 @@ export default function WaterproofingPage() {
       <EngagementModels />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

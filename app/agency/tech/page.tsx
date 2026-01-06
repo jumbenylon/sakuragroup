@@ -24,8 +24,6 @@ import {
   Workflow
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -357,7 +355,7 @@ const CTA = () => (
 export default function AgencyTechPage() {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-cyan-500 selection:text-black font-sans">
-      <GlobalNavbar />
+      
       <AgencySubNav />
       
       <Hero />
@@ -368,7 +366,7 @@ export default function AgencyTechPage() {
       <UseCases />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

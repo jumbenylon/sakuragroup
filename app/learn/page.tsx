@@ -15,8 +15,6 @@ import {
   PlayCircle, MessageSquare, Lightbulb, 
   Layers, Globe, Star, ShieldCheck 
 } from "lucide-react";
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- 1. SHARED UNBOUND COMPONENTS ---
 
@@ -250,13 +248,13 @@ export default function LearnPage() {
       
       {!loading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            <GlobalNavbar />
+            
             <Hero />
             <WhyXhule />
             <Tracks />
             <TutorOnboarding />
             <FinalCTA />
-            <GlobalFooter />
+            
         </motion.div>
       )}
     </main>

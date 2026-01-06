@@ -8,8 +8,6 @@ import {
   ChevronDown, Terminal, Crosshair
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // DEPARTMENT CONFIGURATION
 const DEPARTMENTS = [
@@ -73,7 +71,7 @@ export default function ContactPage() {
 
   return (
     <main className="bg-[#020202] min-h-screen text-white selection:bg-emerald-500 font-sans">
-      <GlobalNavbar />
+      
 
       <section className="relative pt-40 pb-24 px-8 min-h-screen flex items-center">
         {/* Background Texture */}
@@ -287,7 +285,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <GlobalFooter />
+      
     </main>
   );
 }

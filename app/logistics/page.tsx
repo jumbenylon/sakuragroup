@@ -14,8 +14,6 @@ import {
   Plane, Truck, MailCheck
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -214,7 +212,7 @@ const CTA = () => (
 export default function LogisticsPage() {
   return (
     <main className="min-h-screen bg-[#020617] text-white selection:bg-emerald-500 selection:text-black font-sans">
-      <GlobalNavbar />
+      
       
       <Hero />
       <Services />
@@ -222,7 +220,7 @@ export default function LogisticsPage() {
       <TanzaniaScope />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

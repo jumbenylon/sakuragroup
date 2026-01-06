@@ -23,8 +23,6 @@ import {
   Code2
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -453,7 +451,7 @@ const CTA = () => (
 export default function ManagedCorePage() {
   return (
     <main className="min-h-screen bg-[#020617] text-white selection:bg-violet-500 selection:text-white font-sans cursor-none">
-      <GlobalNavbar />
+      
       <ManagedNav />
       
       <Hero />
@@ -467,7 +465,7 @@ export default function ManagedCorePage() {
       <FAQ />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

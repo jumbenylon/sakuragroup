@@ -23,8 +23,6 @@ import {
   FileText
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -441,7 +439,7 @@ const CTA = () => (
 export default function AgencyResearchPage() {
   return (
     <main className="min-h-screen bg-[#0c0a09] text-white selection:bg-orange-500 selection:text-white font-sans">
-      <GlobalNavbar />
+      
       <AgencySubNav />
       
       <Hero />
@@ -454,7 +452,7 @@ export default function AgencyResearchPage() {
       <Process />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

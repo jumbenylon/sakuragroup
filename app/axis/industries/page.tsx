@@ -19,8 +19,6 @@ import {
   MessageCircle
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SUBNAV COMPONENT ---
 const AxisSubNav = () => {
@@ -139,7 +137,7 @@ const INDUSTRIES = [
 export default function AxisIndustriesPage() {
   return (
     <main className="bg-[#020617] text-white selection:bg-emerald-500 font-sans min-h-screen">
-      <GlobalNavbar />
+      
       <AxisSubNav />
 
       {/* 1. HERO: SECTOR INTELLIGENCE */}
@@ -265,7 +263,7 @@ export default function AxisIndustriesPage() {
         </Link>
       </section>
 
-      <GlobalFooter />
+      
     </main>
   );
 }

@@ -23,8 +23,6 @@ import {
   Monitor
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -374,7 +372,7 @@ const CTA = () => (
 export default function AgencyBrandingPage() {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-purple-500 selection:text-white font-sans">
-      <GlobalNavbar />
+      
       <AgencySubNav />
       
       <Hero />
@@ -386,7 +384,7 @@ export default function AgencyBrandingPage() {
       <ImplementationBridge />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

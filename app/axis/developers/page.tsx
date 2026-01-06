@@ -16,8 +16,6 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SUBNAV COMPONENT ---
 const AxisSubNav = () => {
@@ -122,7 +120,7 @@ export default function AxisDevelopersPage() {
 
   return (
     <main className="bg-[#020617] text-white selection:bg-emerald-500 font-sans min-h-screen">
-      <GlobalNavbar />
+      
       <AxisSubNav />
 
       {/* 1. HERO: API FIRST */}
@@ -277,7 +275,7 @@ export default function AxisDevelopersPage() {
         </div>
       </section>
 
-      <GlobalFooter />
+      
     </main>
   );
 }

@@ -23,8 +23,6 @@ import {
   Construction
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -391,7 +389,7 @@ const CTA = () => (
 export default function RestorationPage() {
   return (
     <main className="min-h-screen bg-[#0B1120] text-white selection:bg-orange-500 selection:text-black font-sans cursor-none">
-      <GlobalNavbar />
+      
       <ConstructionSubNav />
       
       <Hero />
@@ -402,7 +400,7 @@ export default function RestorationPage() {
       <Sectors />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

@@ -18,8 +18,6 @@ import {
   Server, Zap, ShieldCheck, Plane, Briefcase, 
   Terminal, Mic, MapPin, Phone, Mail 
 } from "lucide-react";
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- CUSTOM COLORS ---
 // Dark Navy: #0B1120
@@ -469,14 +467,14 @@ export default function Home() {
       
       {!loading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            <GlobalNavbar />
+            
             <Hero />
             <TrustTicker />
             <OurStory />
             <EcosystemGrid />
             <Testimonial />
             <ContactCockpit />
-            <GlobalFooter />
+            
         </motion.div>
       )}
     </main>

@@ -24,8 +24,6 @@ import {
   Bot
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -354,7 +352,7 @@ const CTA = () => (
 export default function AgencyCRMPage() {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-teal-500 selection:text-black font-sans">
-      <GlobalNavbar />
+      
       <AgencySubNav />
       
       <Hero />
@@ -365,7 +363,7 @@ export default function AgencyCRMPage() {
       <Integrations />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

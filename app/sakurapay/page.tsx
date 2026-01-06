@@ -28,8 +28,6 @@ import {
   Building2
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -493,7 +491,7 @@ const CTA = () => (
 export default function SakuraPayPage() {
   return (
     <main className="min-h-screen bg-[#050a14] text-white selection:bg-emerald-500 selection:text-black font-sans cursor-none">
-      <GlobalNavbar />
+      
       <SakuraPayNav />
       
       <Hero />
@@ -505,7 +503,7 @@ export default function SakuraPayPage() {
       <Pricing />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

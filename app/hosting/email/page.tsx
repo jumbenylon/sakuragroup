@@ -26,8 +26,6 @@ import {
   Server
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -455,7 +453,7 @@ const CTA = () => (
 export default function EmailPage() {
   return (
     <main className="min-h-screen bg-[#020617] text-white selection:bg-indigo-500 selection:text-white font-sans cursor-none">
-      <GlobalNavbar />
+      
       <EmailNav />
       
       <Hero />
@@ -468,7 +466,7 @@ export default function EmailPage() {
       <FAQ />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

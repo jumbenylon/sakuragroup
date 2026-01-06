@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { UserProvisioningRow } from "@/components/admin/UserProvisioningRow";
-import { GlobalNavbar } from "@/components/global-navbar";
 
 export default function AdminProvisioningPage() {
   const [users, setUsers] = useState([]);
@@ -41,7 +40,7 @@ export default function AdminProvisioningPage() {
 
   return (
     <main className="min-h-screen bg-[#020202] text-white selection:bg-pink-500 antialiased pt-32 px-8">
-      <GlobalNavbar />
+      
       <div className="max-w-5xl mx-auto">
         <header className="mb-16">
           <h1 className="text-4xl font-black uppercase italic tracking-tighter">Client Provisioning</h1>

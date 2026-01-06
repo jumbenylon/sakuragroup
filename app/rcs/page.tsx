@@ -25,8 +25,6 @@ import {
   MapPin
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -396,7 +394,7 @@ const CTA = () => (
 export default function RCSMasterPage() {
   return (
     <main className="min-h-screen bg-[#0B1120] text-white selection:bg-slate-500 selection:text-white font-sans cursor-none">
-      <GlobalNavbar />
+      
       <ConstructionSubNav />
       
       <Hero />
@@ -405,7 +403,7 @@ export default function RCSMasterPage() {
       <Safety />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

@@ -17,8 +17,6 @@ import {
   Calendar, Clock, User, Send, Pause, 
   Radio, Signal, Hash 
 } from "lucide-react";
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- 1. SHARED UNBOUND COMPONENTS ---
 
@@ -375,13 +373,13 @@ export default function MediaPage() {
       
       {!loading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            <GlobalNavbar />
+            
             <Marquee />
             <Hero />
             <AboutContext />
             <LatestDrops />
             <Invitation />
-            <GlobalFooter />
+            
             <PlayerDock />
         </motion.div>
       )}

@@ -25,8 +25,6 @@ import {
   HardDrive
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -436,7 +434,7 @@ const CTA = () => (
 export default function WebHostingPage() {
   return (
     <main className="min-h-screen bg-[#020617] text-white selection:bg-emerald-500 selection:text-white font-sans cursor-none">
-      <GlobalNavbar />
+      
       <WebHostingNav />
       
       <Hero />
@@ -447,7 +445,7 @@ export default function WebHostingPage() {
       <Migration />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

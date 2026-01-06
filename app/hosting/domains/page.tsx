@@ -26,8 +26,6 @@ import {
   Building2
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -466,7 +464,7 @@ const CTA = () => (
 export default function DomainsPage() {
   return (
     <main className="min-h-screen bg-[#030712] text-white selection:bg-violet-500 selection:text-white font-sans cursor-none">
-      <GlobalNavbar />
+      
       <DomainsSubNav />
       
       <Hero />
@@ -479,7 +477,7 @@ export default function DomainsPage() {
       <FAQ />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

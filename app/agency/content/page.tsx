@@ -24,8 +24,6 @@ import {
   Aperture
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -352,7 +350,7 @@ const CTA = () => (
 export default function AgencyContentPage() {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-rose-500 selection:text-white font-sans">
-      <GlobalNavbar />
+      
       <AgencySubNav />
       
       <Hero />
@@ -363,7 +361,7 @@ export default function AgencyContentPage() {
       <Process />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }

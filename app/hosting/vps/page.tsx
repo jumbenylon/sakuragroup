@@ -27,8 +27,6 @@ import {
   CreditCard
 } from "lucide-react";
 
-import { GlobalNavbar } from "@/components/global-navbar";
-import { GlobalFooter } from "@/components/global-footer";
 
 // --- SHARED COMPONENTS ---
 
@@ -439,7 +437,7 @@ const CTA = () => (
 export default function VPSPage() {
   return (
     <main className="min-h-screen bg-[#030712] text-white selection:bg-violet-500 selection:text-white font-sans cursor-none">
-      <GlobalNavbar />
+      
       <VPSNav />
       
       <Hero />
@@ -451,7 +449,7 @@ export default function VPSPage() {
       <UseCases />
       <CTA />
       
-      <GlobalFooter />
+      
     </main>
   );
 }
