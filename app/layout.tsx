@@ -31,9 +31,9 @@ export const metadata: Metadata = {
     type: "website",
   },
   icons: {
-    icon: "/favicon.ico", // Ensure you have this file in /public
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: "https://storage.googleapis.com/sakura-web/favicon.png",
+    shortcut: "https://storage.googleapis.com/sakura-web/favicon.png",
+    apple: "https://storage.googleapis.com/sakura-web/favicon.png",
   },
 };
 
