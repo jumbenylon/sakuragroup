@@ -34,7 +34,7 @@ export default function AboutPage() {
               backbone. The architects of Tanzanian sovereignty."
             </p>
             <div className="text-neutral-500 font-mono text-xs uppercase tracking-[0.3em]">
-              Established 2024 — Dar es Salaam, TZ
+              Established 2019 — Dar es Salaam, TZ
             </div>
           </div>
         </div>
@@ -56,16 +56,17 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Industrial Visual Anchor */}
+      {/* Industrial Visual Anchor - DAR ES SALAAM CONTEXT */}
       <section className="relative h-[60vh] border-y border-white/10">
         <Image 
-          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2000" 
-          alt="Sakura Industrial Infrastructure" 
+          // Tanzanite Bridge / Dar Skyline - High Contrast
+          src="https://images.unsplash.com/photo-1621253683679-b4618e470692?q=80&w=2070&auto=format&fit=crop" 
+          alt="Dar es Salaam Infrastructure" 
           fill 
-          className="object-cover grayscale contrast-125 opacity-40"
+          className="object-cover grayscale contrast-125 opacity-50"
         />
         <div className="absolute inset-0 flex items-center justify-center">
-            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-center italic">
+            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-center italic relative z-10 text-white mix-blend-overlay">
                 The Operating <br/> Backbone.
             </h2>
         </div>
