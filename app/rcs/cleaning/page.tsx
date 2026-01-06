@@ -230,12 +230,10 @@ const InteractiveComparison = () => {
 
     const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
         if (!isDragging.current || !containerRef.current) return;
-        
         const rect = containerRef.current.getBoundingClientRect();
         const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
         const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
         const percentage = (x / rect.width) * 100;
-        
         setSliderPosition(percentage);
     };
 
@@ -262,24 +260,31 @@ const InteractiveComparison = () => {
                         onTouchEnd={handleInteractionEnd}
                         onMouseLeave={handleInteractionEnd}
                     >
-                        {/* AFTER IMAGE (Background) */}
-                        <div className="absolute inset-0 bg-[#1a1a1a]">
-                           {/* Placeholder for Paving After */}
-                           <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
-                              <span className="text-emerald-500 font-bold text-2xl">CLEAN & SEALED</span>
-                           </div>
-                           <div className="absolute top-6 right-6 px-4 py-2 bg-emerald-500/90 backdrop-blur text-[#0B1120] text-xs font-bold uppercase tracking-widest rounded-full shadow-xl">
+                        {/* AFTER IMAGE (Background - Clean) */}
+                        <div className="absolute inset-0">
+                           <Image 
+                             src="https://images.unsplash.com/photo-1590486803833-1c5dc8ce2ac6?q=80&w=2070&auto=format&fit=crop"
+                             alt="Clean Paving"
+                             fill
+                             className="object-cover"
+                           />
+                           <div className="absolute top-6 right-6 px-4 py-2 bg-emerald-500/90 backdrop-blur text-[#0B1120] text-xs font-bold uppercase tracking-widest rounded-full shadow-xl z-10">
                                After
                            </div>
                         </div>
 
-                        {/* BEFORE IMAGE (Clipped Foreground) */}
+                        {/* BEFORE IMAGE (Foreground - Dirty) */}
                         <div 
-                            className="absolute inset-0 overflow-hidden border-r-2 border-emerald-500 bg-[#2a2a2a]"
+                            className="absolute inset-0 overflow-hidden border-r-2 border-emerald-500"
                             style={{ width: `${sliderPosition}%` }}
                         >
-                             <div className="relative w-full h-full bg-stone-900 flex items-center justify-center">  
-                                <span className="text-slate-600 font-bold text-2xl">ALGAE & GRIME</span>
+                             <div className="relative w-full h-full">
+                                <Image 
+                                  src="https://images.unsplash.com/photo-1632759929288-026d303277cb?q=80&w=2070&auto=format&fit=crop"
+                                  alt="Dirty Paving"
+                                  fill
+                                  className="object-cover object-left grayscale contrast-125"
+                                />
                              </div>
                              <div className="absolute top-6 left-6 px-4 py-2 bg-black/80 backdrop-blur text-white text-xs font-bold uppercase tracking-widest rounded-full border border-white/10">
                                 Before
