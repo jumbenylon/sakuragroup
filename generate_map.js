@@ -23,7 +23,7 @@ function getRoutes(dir, prefix = '') {
     return routes;
 }
 
-console.log("\n--- SAKURA GROUP SITE MAP ---");
+console.log("\n--- SAKURA GROUP SITE MAP ---);
 const siteMap = getRoutes(root);
 siteMap.forEach(route => console.log(`LINK FOUND: ${route.replace('//', '/')}`));
 console.log("-----------------------------\n");
