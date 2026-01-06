@@ -116,6 +116,18 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#050505] overflow-hidden">
+      {/* 1. Add Image Background */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="https://images.unsplash.com/photo-1558655146-d09347e0b7a9?q=80&w=2070&auto=format&fit=crop"
+          alt="Geometric Design Structure"
+          fill
+          className="object-cover opacity-20 mix-blend-overlay"
+          priority
+        />
+        <div className="absolute inset-0 bg-[#050505]/90" />
+      </div>
+
       {/* Animated Blueprint Grid */}
       <div className="absolute inset-0 z-0 opacity-20">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#22d3ee10_1px,transparent_1px),linear-gradient(to_bottom,#22d3ee10_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
@@ -134,7 +146,7 @@ const Hero = () => {
           
           <div className="grid md:grid-cols-2 gap-12 items-start">
             <p className="text-lg md:text-xl text-slate-400 font-light leading-relaxed">
-              We craft visual systems, interfaces, and communication assets that feel modern, usable, and aligned with your brand — across digital and print environments.
+              We craft visual systems, interfaces, and communication assets that feel modern, usable, and aligned with your brand.
               <span className="block mt-4 text-white font-medium">Built for scale, accessibility, and real-world application.</span>
             </p>
             
