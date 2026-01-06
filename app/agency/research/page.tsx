@@ -114,14 +114,19 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#0c0a09] overflow-hidden">
-      {/* Pattern Background */}
-      <div className="absolute inset-0 bg-[#0c0a09]">
-         {/* Warm / Human Glow */}
-         <div className="absolute top-[-20%] right-[10%] w-[800px] h-[800px] bg-orange-900/10 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
-         <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-stone-800/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
-         {/* Dot Matrix Pattern */}
-         <div className="absolute inset-0 bg-[radial-gradient(#a8a29e15_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+      {/* 1. Add Image Background */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop"
+          alt="Human Centered Research"
+          fill
+          className="object-cover opacity-20 mix-blend-overlay grayscale"
+          priority
+        />
+        <div className="absolute inset-0 bg-[#0c0a09]/90" />
       </div>
+
+      <div className="absolute top-[-20%] right-[10%] w-[800px] h-[800px] bg-orange-900/10 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
       
       <div className="max-w-7xl mx-auto relative z-10 w-full">
         <motion.div style={{ opacity, y }}>
@@ -138,7 +143,7 @@ const Hero = () => {
           <div className="grid md:grid-cols-2 gap-12 items-start">
             <p className="text-lg md:text-xl text-stone-400 font-light leading-relaxed">
               Research that reveals how people think, feel, decide — and buy. 
-              We uncover insights that shape brands, products, and communications that truly connect with Tanzanians.
+              We uncover insights that shape brands, products, and communications.
               <span className="block mt-4 text-white font-medium">Grounded in culture. Powered by data.</span>
             </p>
             
