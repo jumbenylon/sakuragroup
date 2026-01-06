@@ -134,9 +134,32 @@ const Hero = () => {
          />
          <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/90 to-transparent" />
       </motion.div>
-      {/* ... keep the rest of your content (headline/text) the same ... */}
+
       <div className="relative z-10 max-w-6xl mx-auto w-full text-center">
-         {/* ... */}
+        <ScrollReveal>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-sky-950/30 border border-sky-500/20 rounded-full mb-8 backdrop-blur-md mx-auto">
+             <Server size={14} className="text-sky-400" />
+             <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest">Root Access Control</span>
+          </div>
+          
+          <h1 className="text-5xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-8 max-w-5xl mx-auto">
+            RAW COMPUTE<br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">POWER.</span>
+          </h1>
+          
+          <p className="text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-12 font-light">
+             Deploy high-performance NVMe VPS instances in Dar es Salaam. Full root access, dedicated IP, and instant provisioning.
+          </p>
+              
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link href="/contact" className="group relative px-10 py-5 bg-sky-600 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm overflow-hidden hover:bg-sky-500 transition-colors shadow-[0_0_40px_rgba(56,189,248,0.3)]">
+                Deploy Instance
+            </Link>
+            <Link href="#specs" className="px-10 py-5 border border-white/20 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm transition-all backdrop-blur-sm">
+                View Specs
+            </Link>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
