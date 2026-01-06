@@ -9,20 +9,12 @@ import {
   useTransform, 
   useSpring, 
   useMotionValue, 
-  useMotionTemplate,
   AnimatePresence 
 } from "framer-motion";
 import { 
-  ArrowRight, CheckCircle2, Cloud, Truck, 
-  CreditCard, Layout, BookOpen, Quote, 
-  Server, Zap, ShieldCheck, Plane, Briefcase, 
-  Terminal, Mic, MapPin, Phone, Mail 
+  ArrowRight, Truck, CreditCard, Server, Zap, ShieldCheck, 
+  Plane, Briefcase, Terminal, Mic, MapPin, Phone, Quote, Crosshair
 } from "lucide-react";
-
-// --- CUSTOM COLORS ---
-// Dark Navy: #0B1120
-// Mint Green: #34D399
-// Marigold: #FBBF24
 
 // --- 1. CUSTOM CURSOR COMPONENT ---
 const CustomCursor = () => {
@@ -129,19 +121,19 @@ const TiltCard = ({ children, className }: { children: React.ReactNode, classNam
   );
 };
 
-// --- DATA ---
+// --- DATA: CORRECTED LINKS ---
 const services = [
-  // ROW 1: INFRASTRUCTURE (Unified Naming)
+  // ROW 1: INFRASTRUCTURE
   { title: "SakuraHost", desc: "Enterprise Cloud & Domains", icon: Server, href: "/hosting", color: "text-blue-400" },
-  { title: "Axis by Sakura", desc: "Unified Comm API", icon: Zap, href: "/axis", color: "text-amber-400" },
-  { title: "Sakura Pay", desc: "Fintech Gateway", icon: CreditCard, href: "/sakurapay", color: "text-emerald-400" },
+  { title: "Axis Gateway", desc: "Unified Messaging API", icon: Zap, href: "/axis", color: "text-amber-400" },
+  { title: "Sakura Pay", desc: "Fintech & Payments", icon: CreditCard, href: "/sakurapay", color: "text-emerald-400" },
   // ROW 2: OPERATIONS
   { title: "Sakura Logistics", desc: "Supply Chain & Haulage", icon: Truck, href: "/logistics", color: "text-rose-400" },
-  { title: "Roof Cleaning (RCS)", desc: "Industrial Restoration", icon: ShieldCheck, href: "/roofcleaning", color: "text-cyan-400" },
+  { title: "RCS Construction", desc: "Industrial Restoration", icon: ShieldCheck, href: "/rcs", color: "text-cyan-400" },
   { title: "Sakura Travels", desc: "Cinematic Adventures", icon: Plane, href: "/travel", color: "text-indigo-400" },
   // ROW 3: GROWTH
-  { title: "Sakura Agency", desc: "Strategy & Branding", icon: Briefcase, href: "/marketing", color: "text-orange-400" },
-  { title: "Xhule — Learn", desc: "Skills for Real World", icon: Terminal, href: "/learn", color: "text-yellow-400" },
+  { title: "Sakura Agency", desc: "Strategy & Branding", icon: Briefcase, href: "/agency", color: "text-orange-400" },
+  { title: "Xhule Learn", desc: "Skills for Real World", icon: Terminal, href: "/learn", color: "text-yellow-400" },
   { title: "Think Loko", desc: "Culture & Media", icon: Mic, href: "/thinkloko", color: "text-red-500" },
 ];
 
@@ -151,8 +143,6 @@ const Hero = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 400]);
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
-  
-  // Parallax Text Effect
   const textY = useTransform(scrollY, [0, 500], [0, 100]); 
 
   return (
@@ -188,13 +178,13 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6">
-            <Link href="/#contact" className="px-10 py-5 bg-emerald-500 hover:bg-emerald-400 text-[#0B1120] font-bold rounded-full transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-[0_0_40px_-10px_rgba(52,211,153,0.5)]">
+            <Link href="/contact" className="px-10 py-5 bg-emerald-500 hover:bg-emerald-400 text-[#0B1120] font-bold rounded-full transition-all hover:scale-105 flex items-center justify-center gap-2 shadow-[0_0_40px_-10px_rgba(52,211,153,0.5)]">
               Book Consultation
               <ArrowRight size={20} />
             </Link>
-            <button className="px-10 py-5 border border-white/10 hover:bg-white/5 text-white font-medium rounded-full transition-all">
+            <Link href="#ecosystem" className="px-10 py-5 border border-white/10 hover:bg-white/5 text-white font-medium rounded-full transition-all flex items-center justify-center">
               Explore Solutions
-            </button>
+            </Link>
           </div>
         </ScrollReveal>
       </div>
@@ -239,16 +229,17 @@ const OurStory = () => {
   return (
     <section id="story" className="py-32 px-6 bg-[#0B1120] overflow-hidden">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
-         {/* IMAGE SIDE */}
+         {/* IMAGE SIDE - SEO IMAGE USED HERE */}
          <TiltCard className="relative aspect-[4/5] rounded-3xl bg-neutral-900 group">
              <div className="absolute inset-0 rounded-3xl overflow-hidden border border-white/10">
                 <Image 
                     src="https://storage.googleapis.com/sakura-web/sakuragroup-founders.jpg" 
-                    alt="Jumbenylon and Omary"
+                    alt="Jumbenylon and Omary - Sakura Group Founders"
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-transparent to-transparent opacity-80" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-transparent to-transparent opacity-60" />
              </div>
              
              {/* FLOATING BADGE */}
@@ -256,7 +247,7 @@ const OurStory = () => {
                 style={{ rotate }}
                 className="absolute -bottom-8 -right-8 w-40 h-40 bg-amber-400 rounded-full flex items-center justify-center text-[#0B1120] font-black text-xl leading-none text-center p-4 shadow-2xl z-20"
              >
-                SINCE 2017
+                SINCE 2018
              </motion.div>
          </TiltCard>
          
@@ -264,23 +255,28 @@ const OurStory = () => {
          <div className="space-y-10 relative">
              <ScrollReveal>
                 <div className="inline-block px-3 py-1 border border-amber-400/30 rounded-full text-amber-400 text-xs font-bold uppercase tracking-widest mb-6">
-                    The Origin
+                   The Origin
                 </div>
                 <h2 className="text-5xl md:text-7xl font-bold text-white mb-8">
-                    Bridging the <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
-                        Modern Gap.
-                    </span>
+                   Bridging the <br />
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
+                       Modern Gap.
+                   </span>
                 </h2>
                 <div className="space-y-6 text-slate-400 text-lg leading-relaxed font-light">
-                    <p>
-                        It started with a conversation between two friends, <strong className="text-white">Jumbenylon and Omary</strong>. 
-                        They saw a fragmented market where businesses had to juggle a dozen vendors just to operate.
-                    </p>
-                    <p>
-                        They decided to build a singular ecosystem. A place where a company could host its data, 
-                        move its cargo, and train its staff—all without leaving the Sakura network.
-                    </p>
+                   <p>
+                       It started with a conversation between two friends, <strong className="text-white">Jumbenylon and Omary</strong>. 
+                       They saw a fragmented market where businesses had to juggle a dozen vendors just to operate.
+                   </p>
+                   <p>
+                       They decided to build a singular ecosystem. A place where a company could host its data, 
+                       move its cargo, and train its staff—all without leaving the Sakura network.
+                   </p>
+                </div>
+                <div className="pt-8">
+                    <Link href="/about" className="text-amber-400 font-bold uppercase text-xs tracking-widest hover:text-white transition-colors flex items-center gap-2">
+                        Read Full Story <ArrowRight size={14} />
+                    </Link>
                 </div>
              </ScrollReveal>
          </div>
@@ -335,18 +331,17 @@ const EcosystemGrid = () => (
 );
 
 const Testimonial = () => (
-    <section className="py-32 px-6 bg-[#0B1120] relative overflow-hidden min-h-[800px] flex items-center">
+    <section className="py-32 px-6 bg-[#0B1120] relative overflow-hidden min-h-[600px] flex items-center">
         {/* Background Image Layer */}
         <div className="absolute inset-0 z-0">
             <Image
                 src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop"
                 alt="Construction Architecture Background"
                 fill
-                className="object-cover opacity-30" // Subtle presence
-                priority
+                className="object-cover opacity-20" // Subtle presence
             />
             {/* Gradient Overlay for Text Contrast */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0B1120] via-[#0B1120]/80 to-[#0B1120]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0B1120] via-[#0B1120]/90 to-[#0B1120]" />
         </div>
 
         {/* Decorative Blobs */}
@@ -363,7 +358,6 @@ const Testimonial = () => (
                     
                     <div className="flex flex-col items-center gap-2">
                         <div className="w-16 h-16 bg-neutral-800 rounded-full mb-4 border-2 border-emerald-500 overflow-hidden relative shadow-lg">
-                             {/* Placeholder for Eddy */}
                              <div className="absolute inset-0 flex items-center justify-center text-white font-bold bg-neutral-700">ER</div>
                         </div>
                         <h4 className="text-xl font-bold text-white tracking-tight">Eddy Ronnie</h4>
@@ -393,35 +387,17 @@ const ContactCockpit = () => (
                         </p>
                     </div>
 
-                    <form className="space-y-6">
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-slate-500">Name</label>
-                                <input className="w-full bg-[#0B1120] border border-white/10 rounded-xl p-4 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="John Doe" />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-slate-500">Company</label>
-                                <input className="w-full bg-[#0B1120] border border-white/10 rounded-xl p-4 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Sakura Inc." />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase text-slate-500">Email</label>
-                            <input className="w-full bg-[#0B1120] border border-white/10 rounded-xl p-4 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="john@company.com" />
-                        </div>
-                        <div className="space-y-2">
-                             <label className="text-xs font-bold uppercase text-slate-500">Message</label>
-                             <textarea rows={4} className="w-full bg-[#0B1120] border border-white/10 rounded-xl p-4 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Tell us about your project..." />
-                        </div>
-                        <button className="w-full bg-white text-black font-bold py-5 rounded-xl hover:bg-emerald-400 hover:text-black transition-all duration-300 text-lg">
-                            Send Request
-                        </button>
-                    </form>
+                    <div className="space-y-6">
+                        <Link href="/contact" className="w-full bg-white text-black font-bold py-5 rounded-xl hover:bg-emerald-400 hover:text-black transition-all duration-300 text-lg flex items-center justify-center gap-2">
+                            Open Transmission
+                            <ArrowRight size={20} />
+                        </Link>
+                    </div>
                 </ScrollReveal>
             </div>
 
             {/* RIGHT: MAP VISUALIZATION */}
             <div className="relative h-[500px] lg:h-auto bg-[#0B1120] overflow-hidden">
-                {/* Overlay details */}
                 <div className="absolute top-12 left-12 z-20 space-y-6">
                     <div className="bg-black/80 backdrop-blur-md p-6 rounded-2xl border border-white/10 max-w-xs">
                          <div className="flex items-start gap-4 mb-4">
@@ -440,16 +416,17 @@ const ContactCockpit = () => (
                     </div>
                 </div>
 
-                {/* Actual Map Embed */}
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247.62492458114178!2d39.23026060569367!3d-6.769999122965163!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x18371bd280b59d59%3A0x542020034d27d3d!2sSakurahost%20Network%20%26%20IT%20Solutions!5e0!3m2!1sen!2stz!4v1767291463344!5m2!1sen!2stz" 
-                    width="100%" 
-                    height="100%" 
-                    style={{ border: 0, filter: "grayscale(100%) invert(90%) opacity(0.8)" }} 
-                    allowFullScreen 
-                    loading="lazy" 
-                    className="absolute inset-0 w-full h-full"
-                ></iframe>
+                <div className="absolute inset-0 opacity-60">
+                   <iframe 
+                      src="https://maps.google.com/maps?q=TRA+Road,+Mwenge,+Dar+es+Salaam&t=k&z=17&ie=UTF8&iwloc=&output=embed"
+                      width="100%" 
+                      height="100%" 
+                      style={{ border: 0, filter: "grayscale(100%) invert(90%) opacity(0.8)" }} 
+                      allowFullScreen 
+                      loading="lazy" 
+                      className="absolute inset-0 w-full h-full"
+                   />
+                </div>
             </div>
         </div>
     </section>
