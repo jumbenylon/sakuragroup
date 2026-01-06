@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-
 // --- SUBNAV COMPONENT ---
 const AxisSubNav = () => {
   const [visible, setVisible] = useState(false);
@@ -35,15 +34,13 @@ const AxisSubNav = () => {
       <div className="max-w-7xl mx-auto w-full px-8 flex justify-between items-center">
         <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 italic flex items-center gap-2">
           <MessageCircle size={12} className="text-emerald-500" />
-          Customers Like To Chat
+          Axis Developers
         </span>
         <div className="flex gap-8">
           {[
-            { n: "SMS Core", l: "/axis#sms" },
-            { n: "WhatsApp", l: "/axis#whatsapp" },
-            { n: "Pricing", l: "/axis/pricing" },
-            { n: "Use Cases", l: "/axis/industries" },
-            { n: "Developers", l: "/axis/developers" }
+            { n: "Back to Product", l: "/axis" },
+            { n: "Documentation", l: "#" },
+            { n: "Status", l: "#" },
           ].map((item) => (
             <Link key={item.n} href={item.l} className="text-[9px] font-bold uppercase tracking-widest text-white/40 hover:text-emerald-400 transition-colors">
               {item.n}
@@ -56,7 +53,7 @@ const AxisSubNav = () => {
 };
 
 // --- CODE SNIPPETS ---
-const SNIPPETS = {
+const SNIPPETS: Record<string, string> = {
   node: `const axios = require('axios');
 
 // 1. Configure the Payload
@@ -75,7 +72,7 @@ async function sendSMS() {
       { headers: { 'Authorization': 'Bearer sk_live_...' } }
     );
     console.log('Transmission ID:', res.data.txId);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Dispatch Failed:', error.message);
   }
 }
@@ -145,7 +142,7 @@ export default function AxisDevelopersPage() {
           </p>
 
           <div className="flex justify-center gap-6 pt-6">
-             <Link href="/contact" className="px-8 py-3 bg-white text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all rounded-sm">
+             <Link href="/axis/portal" className="px-8 py-3 bg-white text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all rounded-sm">
                Get API Keys
              </Link>
              <Link href="#" target="_blank" className="px-8 py-3 border border-white/10 text-slate-300 font-mono text-xs font-bold uppercase tracking-widest hover:bg-white/5 transition-all rounded-sm">
@@ -251,7 +248,7 @@ export default function AxisDevelopersPage() {
               <Server className="w-10 h-10 text-blue-500 mx-auto mb-6" />
               <h3 className="text-sm font-black uppercase tracking-widest mb-4">Local Data Residency</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Primary data nodes are compliant with Tanzania's Personal Data Protection Act (PDPA).
+                Primary data nodes are compliant with Tanzania&apos;s Personal Data Protection Act (PDPA).
               </p>
            </div>
 
@@ -269,13 +266,4 @@ export default function AxisDevelopersPage() {
       <section className="py-32 text-center">
         <h2 className="text-2xl font-black uppercase text-slate-500 tracking-widest mb-8">Ready to Build?</h2>
         <div className="flex justify-center gap-6">
-           <Link href="/contact" className="inline-flex items-center gap-2 px-12 py-5 bg-emerald-600 text-white font-black text-xs uppercase tracking-widest hover:bg-emerald-500 transition-all rounded-sm shadow-lg shadow-emerald-900/20">
-             Get API Keys <Code2 size={16} />
-           </Link>
-        </div>
-      </section>
-
-      
-    </main>
-  );
-}
+           <Link href="/contact" className="inline-flex items-center gap-2 px-12 py-5 bg-emerald-600 text-white font-black text-xs uppercase tracking-widest
