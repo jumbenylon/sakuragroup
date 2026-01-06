@@ -1,3 +1,57 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Bulk SMS Tanzania & WhatsApp API Gateway | Axis by Sakura",
+  description: "The most reliable Bulk SMS and WhatsApp API provider in Tanzania. Direct connections to Vodacom, Tigo, Airtel & Halotel. Send marketing SMS, OTPs, and alerts with 98% delivery rates. Start for 21 TZS.",
+  alternates: {
+    canonical: "https://sakuragroup.co.tz/axis",
+  },
+  keywords: [
+    "Bulk SMS Tanzania",
+    "SMS API Dar es Salaam",
+    "WhatsApp Business API Tanzania",
+    "SMS Marketing Services",
+    "OTP SMS Provider",
+    "Shortcodes Tanzania",
+    "USSD Gateway",
+    "Axis Gateway",
+    "Sakura Group"
+  ],
+  openGraph: {
+    title: "Axis Gateway | Enterprise Bulk SMS & WhatsApp API",
+    description: "Connect with millions of customers instantly. The tailored messaging infrastructure for Tanzanian businesses. 99.9% Uptime.",
+    url: "https://sakuragroup.co.tz/axis",
+    siteName: "Sakura Group",
+    images: [
+      {
+        url: "https://storage.googleapis.com/sakura-web/axis-seo-card.jpg", // Ensure this image exists or use a generic one
+        width: 1200,
+        height: 630,
+        alt: "Axis Gateway - Bulk SMS Dashboard",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bulk SMS & WhatsApp API for Tanzania | Axis",
+    description: "Reach every phone in Tanzania. Direct carrier routes, developer-friendly APIs, and instant delivery reports.",
+    images: ["https://storage.googleapis.com/sakura-web/axis-seo-card.jpg"], // Same image
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
+
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
