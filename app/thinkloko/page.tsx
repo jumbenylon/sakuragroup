@@ -357,23 +357,35 @@ const PlayerDock = () => (
 const Invitation = () => (
     <section className="py-24 px-6 bg-gradient-to-b from-[#0B1120] to-[#1c0808]">
         <div className="max-w-4xl mx-auto bg-[#080d1a] border border-red-500/20 p-12 md:p-16 rounded-[3rem] relative overflow-hidden text-center">
+            {/* Texture Background */}
+            <div className="absolute inset-0 opacity-10">
+                <Image 
+                    src="https://images.unsplash.com/photo-1478737270239-2f02b77ac6d5?q=80&w=2070&auto=format&fit=crop"
+                    alt="Audio Texture"
+                    fill
+                    className="object-cover grayscale"
+                />
+            </div>
+            
             <div className="absolute top-0 right-0 w-64 h-64 bg-red-600/10 rounded-full blur-[80px]" />
             
             <ScrollReveal>
-                <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Do You Carry a Story?</h2>
-                <p className="text-slate-400 text-lg mb-10 max-w-lg mx-auto">
-                    If your story comes from lived reality, not from a template — we’d love to listen.
-                </p>
+                <div className="relative z-10">
+                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Do You Carry a Story?</h2>
+                    <p className="text-slate-400 text-lg mb-10 max-w-lg mx-auto">
+                        If your story comes from lived reality, not from a template — we’d love to listen.
+                    </p>
 
-                <form className="space-y-6 max-w-lg mx-auto text-left">
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase text-slate-500">Name</label>
-                        <input className="w-full bg-[#0B1120] border border-white/10 rounded-xl p-4 text-white focus:border-red-500 outline-none transition-colors" placeholder="Your Name" />
-                    </div>
-                    <button className="w-full bg-red-600 text-white font-bold py-5 rounded-xl hover:bg-red-500 transition-all duration-300 text-lg flex items-center justify-center gap-2">
-                        <Send size={18} /> Request Guest Session
-                    </button>
-                </form>
+                    <form className="space-y-6 max-w-lg mx-auto text-left">
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold uppercase text-slate-500">Name</label>
+                            <input className="w-full bg-[#0B1120] border border-white/10 rounded-xl p-4 text-white focus:border-red-500 outline-none transition-colors" placeholder="Your Name" />
+                        </div>
+                        <button className="w-full bg-red-600 text-white font-bold py-5 rounded-xl hover:bg-red-500 transition-all duration-300 text-lg flex items-center justify-center gap-2">
+                            <Send size={18} /> Request Guest Session
+                        </button>
+                    </form>
+                </div>
             </ScrollReveal>
         </div>
     </section>
