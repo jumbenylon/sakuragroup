@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Register .co.tz Domain",
     "Cloud Server Tanzania",
     "Corporate Email Hosting",
-    "Accredited Domain registrar Tanzania"
+    "Accredited Domain registrar Tanzania",
     "SSL Certificates Tanzania"
   ],
   openGraph: {
