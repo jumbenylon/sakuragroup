@@ -132,7 +132,31 @@ const Hero = () => {
          />
          <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/90 to-transparent" />
       </motion.div>
-      {/* ... keep content ... */}
+
+      <div className="relative z-10 max-w-6xl mx-auto w-full text-center">
+        <ScrollReveal>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-sky-950/30 border border-sky-500/20 rounded-full mb-8 backdrop-blur-md mx-auto">
+             <Globe size={14} className="text-sky-400" />
+             <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest">Digital Identity</span>
+          </div>
+          
+          <h1 className="text-5xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-8 max-w-5xl mx-auto">
+            CLAIM YOUR<br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">TERRITORY.</span>
+          </h1>
+          
+          <p className="text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-12 font-light">
+             Secure your .co.tz, .com, or .africa domain today. Instant registration, free DNS management, and enterprise-grade lock protection.
+          </p>
+              
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <div className="flex bg-white/5 border border-white/10 rounded-lg overflow-hidden w-full max-w-md">
+                <input type="text" placeholder="Search your domain..." className="bg-transparent text-white px-6 py-4 w-full outline-none placeholder:text-slate-500" />
+                <button className="bg-sky-600 text-white px-8 py-4 font-bold uppercase text-xs tracking-widest hover:bg-sky-500 transition-colors">Search</button>
+            </div>
+          </div>
+        </ScrollReveal>
+      </div>
     </section>
   );
 };
