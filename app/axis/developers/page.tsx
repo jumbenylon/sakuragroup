@@ -1,113 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { 
-  Terminal, 
-  Code2, 
-  Webhook, 
-  ShieldAlert, 
-  Zap, 
-  Copy, 
-  Check, 
-  Server,
-  Lock,
-  MessageCircle
-} from "lucide-react";
 import { motion } from "framer-motion";
+import { Terminal, Code2, Cpu, GitBranch, Zap, Shield, BookOpen, ChevronRight, Check, Copy, Server, Lock, MessageCircle } from "lucide-react";
 
-// --- SUBNAV COMPONENT ---
-const AxisSubNav = () => {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const handler = () => setVisible(window.scrollY > 100);
-    window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
+// --- COMPONENTS ---
 
-  return (
-    <motion.nav
-      initial={{ y: -20, opacity: 0 }}
-      animate={visible ? { y: 0, opacity: 1 } : { y: -20, opacity: 0 }}
-      className="fixed top-16 w-full z-[90] bg-[#020617]/90 backdrop-blur-xl border-b border-emerald-500/10 h-12 flex items-center"
-    >
-      <div className="max-w-7xl mx-auto w-full px-8 flex justify-between items-center">
-        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 italic flex items-center gap-2">
-          <MessageCircle size={12} className="text-emerald-500" />
-          Axis Developers
-        </span>
-        <div className="flex gap-8">
-          {[
-            { n: "Back to Product", l: "/axis" },
-            { n: "Documentation", l: "#" },
-            { n: "Status", l: "#" },
-          ].map((item) => (
-            <Link key={item.n} href={item.l} className="text-[9px] font-bold uppercase tracking-widest text-white/40 hover:text-emerald-400 transition-colors">
-              {item.n}
-            </Link>
-          ))}
-        </div>
-      </div>
-    </motion.nav>
-  );
-};
-
-// --- CODE SNIPPETS ---
-const SNIPPETS: Record<string, string> = {
-  node: `const axios = require('axios');
-
-// 1. Configure the Payload
-const payload = {
-  to: '+255753930000',
-  from: 'SAKURA',
-  body: 'Your verification code is: 8492'
-};
-
-// 2. Dispatch via Axis Gateway
-async function sendSMS() {
-  try {
-    const res = await axios.post(
-      'https://api.axis.sakuragroup.co.tz/v1/sms', 
-      payload,
-      { headers: { 'Authorization': 'Bearer sk_live_...' } }
-    );
-    console.log('Transmission ID:', res.data.txId);
-  } catch (error: any) {
-    console.error('Dispatch Failed:', error.message);
-  }
-}
-
-sendSMS();`,
-
-  php: `<?php
-
-$curl = curl_init();
-
-$payload = json_encode([
-  "to" => "+255753930000",
-  "from" => "SAKURA",
-  "body" => "Your verification code is: 8492"
-]);
-
-curl_setopt_array($curl, [
-  CURLOPT_URL => "https://api.axis.sakuragroup.co.tz/v1/sms",
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_POST => true,
-  CURLOPT_POSTFIELDS => $payload,
-  CURLOPT_HTTPHEADER => [
-    "Authorization: Bearer sk_live_...",
-    "Content-Type: application/json"
-  ],
-]);
-
-$response = curl_exec($curl);
-echo $response;
-`
-};
-
-export default function AxisDevelopersPage() {
+const CodeBlock = () => {
   const [activeTab, setActiveTab] = useState<'node' | 'php'>('node');
   const [copied, setCopied] = useState(false);
+
+  const SNIPPETS = {
+    node: `const axios = require('axios');\n\nawait axios.post('https://api.sakuragroup.co.tz/v1/sms', {\n  to: '+255754123456',\n  sender_id: 'SAKURA',\n  message: 'Your OTP is 8492'\n}, {\n  headers: { 'Authorization': 'Bearer sk_live_...' }\n});`,
+    php: `<?php\n\n$client = new GuzzleHttp\\Client();\n$res = $client->request('POST', 'https://api.sakuragroup.co.tz/v1/sms', [\n  'json' => [\n    'to' => '+255754123456',\n    'sender_id' => 'SAKURA',\n    'message' => 'Your OTP is 8492'\n  ],\n  'headers' => ['Authorization' => 'Bearer sk_live_...']\n]);`
+  };
 
   const copyCode = () => {
     navigator.clipboard.writeText(SNIPPETS[activeTab]);
@@ -116,154 +23,150 @@ export default function AxisDevelopersPage() {
   };
 
   return (
-    <main className="bg-[#020617] text-white selection:bg-emerald-500 font-sans min-h-screen">
-      
+    <div className="bg-[#0f172a] rounded-xl border border-white/10 p-6 font-mono text-xs md:text-sm shadow-2xl overflow-hidden relative">
+      <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+        <div className="flex gap-2">
+          <div className="w-3 h-3 rounded-full bg-red-500" />
+          <div className="w-3 h-3 rounded-full bg-yellow-500" />
+          <div className="w-3 h-3 rounded-full bg-green-500" />
+        </div>
+        <div className="flex gap-4">
+           <button onClick={() => setActiveTab('node')} className={`hover:text-white transition-colors ${activeTab === 'node' ? 'text-emerald-400' : 'text-slate-500'}`}>NODE</button>
+           <button onClick={() => setActiveTab('php')} className={`hover:text-white transition-colors ${activeTab === 'php' ? 'text-blue-400' : 'text-slate-500'}`}>PHP</button>
+           <button onClick={copyCode} className="text-slate-500 hover:text-white">
+             {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+           </button>
+        </div>
+      </div>
+      <div className="relative z-10 overflow-x-auto">
+        <pre className="text-slate-300 leading-relaxed">
+          {SNIPPETS[activeTab]}
+        </pre>
+      </div>
+      {/* Glow Effect */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[80px] pointer-events-none" />
+    </div>
+  );
+};
+
+const DocCard = ({ title, icon: Icon, desc }: { title: string, icon: any, desc: string }) => (
+  <Link href="#" className="group p-6 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all">
+    <div className="flex items-center justify-between mb-4">
+      <div className="p-2 bg-emerald-500/10 rounded-md text-emerald-500 group-hover:text-emerald-400 transition-colors">
+        <Icon size={20} />
+      </div>
+      <ChevronRight size={16} className="text-slate-600 group-hover:text-white transition-colors" />
+    </div>
+    <h3 className="text-white font-bold mb-2">{title}</h3>
+    <p className="text-slate-400 text-sm">{desc}</p>
+  </Link>
+);
+
+const AxisSubNav = () => (
+    <nav className="border-b border-white/5 bg-[#050a14]/90 backdrop-blur fixed top-0 w-full z-50">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/axis" className="text-xs font-mono text-emerald-500 uppercase tracking-widest flex items-center gap-2">
+            <MessageCircle size={14} /> Back to Product
+          </Link>
+          <div className="flex gap-6 text-xs font-bold text-slate-400">
+            <Link href="#" className="hover:text-white">API Ref</Link>
+            <Link href="#" className="hover:text-white">SDKs</Link>
+            <Link href="#" className="hover:text-white">Status</Link>
+          </div>
+        </div>
+    </nav>
+);
+
+export default function AxisDevelopersPage() {
+  return (
+    <main className="min-h-screen bg-[#050a14] text-white selection:bg-emerald-500 selection:text-black font-sans">
       <AxisSubNav />
 
-      {/* 1. HERO: API FIRST */}
-      <section className="pt-40 pb-20 px-6 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none" />
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-emerald-900/10 blur-[120px] pointer-events-none" />
+      {/* HERO */}
+      <section className="pt-40 pb-20 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98105_1px,transparent_1px),linear-gradient(to_bottom,#10b98105_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-20" />
         
-        <div className="relative z-10 max-w-4xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 mb-4">
-            <Terminal size={12} className="text-emerald-400" />
-            <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-400">v1.4 Stable</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">
-            Build with<br/>
-            <span className="text-slate-500">Confidence.</span>
-          </h1>
-          
-          <p className="text-xl text-slate-400 font-light max-w-2xl mx-auto">
-            A developer-first messaging API engineered for reliability. 
-            Connect your stack to the Tanzanian telecom grid in minutes, not weeks.
-          </p>
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="inline-flex items-center gap-2 mb-6 text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+              <Terminal size={14} />
+              <span className="font-mono text-[10px] uppercase tracking-widest">Axis Developer Network</span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tight">
+              Build Faster.<br/>
+              <span className="text-slate-500">Break Nothing.</span>
+            </h1>
+            <p className="text-lg text-slate-400 mb-10 max-w-lg leading-relaxed">
+              Direct carrier connections to Vodacom, Tigo, Airtel, and Halotel. 
+              Single API for SMS, USSD, and WhatsApp. 99.99% Uptime SLA.
+            </p>
+            <div className="flex gap-4">
+              <Link href="/axis/portal" className="px-8 py-3 bg-emerald-600 text-black font-bold rounded-md hover:bg-emerald-500 transition-colors">
+                Get API Key
+              </Link>
+              <Link href="#" className="px-8 py-3 border border-white/20 text-white font-bold rounded-md hover:bg-white/10 transition-colors">
+                Read the Docs
+              </Link>
+            </div>
+          </motion.div>
 
-          <div className="flex justify-center gap-6 pt-6">
-             <Link href="/axis/portal" className="px-8 py-3 bg-white text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all rounded-sm">
-               Get API Keys
-             </Link>
-             <Link href="#" target="_blank" className="px-8 py-3 border border-white/10 text-slate-300 font-mono text-xs font-bold uppercase tracking-widest hover:bg-white/5 transition-all rounded-sm">
-               View Documentation
-             </Link>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <CodeBlock />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* RESOURCES GRID */}
+      <section className="py-20 px-6 border-t border-white/5 bg-[#02040a]">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-sm font-mono text-slate-500 uppercase tracking-widest mb-12">Documentation Modules</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <DocCard title="Messaging API" icon={Code2} desc="Send SMS, OTPs, and WhatsApp alerts programmatically." />
+            <DocCard title="Webhooks" icon={GitBranch} desc="Real-time delivery reports and incoming message events." />
+            <DocCard title="Verify API" icon={Shield} desc="2FA and phone number verification logic pre-built." />
+            <DocCard title="Guides" icon={BookOpen} desc="Tutorials for Node.js, Python, PHP, and Go." />
           </div>
         </div>
       </section>
 
-      {/* 2. THE TERMINAL */}
-      <section className="py-20 px-6">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-          
-          {/* LEFT: Context */}
-          <div className="space-y-12">
-            <div className="space-y-6">
-              <h2 className="text-3xl font-black uppercase italic">
-                Integration is <span className="text-emerald-500">Trivial.</span>
-              </h2>
-              <p className="text-slate-400 leading-relaxed">
-                Whether you run a monolithic PHP backend or a serverless Node.js stack, Axis speaks your language. 
-                Our RESTful endpoints are strictly typed, versioned, and idempotent.
-              </p>
-            </div>
-
-            <div className="space-y-6">
-               {[
-                 { icon: <Zap size={20} className="text-yellow-400" />, title: "Sub-Second Latency", desc: "Direct routes to MNOs ensuring <2s delivery." },
-                 { icon: <Webhook size={20} className="text-pink-500" />, title: "Real-time Webhooks", desc: "Get delivery reports (DLR) pushed to your endpoint instantly." },
-                 { icon: <ShieldAlert size={20} className="text-emerald-500" />, title: "Sandbox Environment", desc: "Test freely without spending credits or triggering real SMS." }
-               ].map((feat, i) => (
-                 <div key={i} className="flex gap-4 p-4 border border-white/5 rounded-lg bg-white/[0.02]">
-                    <div className="mt-1">{feat.icon}</div>
-                    <div>
-                      <h4 className="font-bold text-sm uppercase tracking-wide text-white">{feat.title}</h4>
-                      <p className="text-xs text-slate-400 mt-1">{feat.desc}</p>
-                    </div>
-                 </div>
-               ))}
-            </div>
+      {/* TECH SPECS */}
+      <section className="py-20 px-6 border-t border-white/5">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-12">
+          <div className="flex-1">
+            <h3 className="text-2xl font-bold text-white mb-4">Built for Scale</h3>
+            <p className="text-slate-400 mb-8">
+              Our infrastructure is distributed across 3 availability zones. We handle 5,000+ TPS (Transactions Per Second) without breaking a sweat.
+            </p>
+            <ul className="space-y-4 font-mono text-sm text-emerald-400">
+              <li className="flex gap-3"><Zap size={16} /> Sub-200ms Latency</li>
+              <li className="flex gap-3"><Cpu size={16} /> Auto-Scaling Queues</li>
+              <li className="flex gap-3"><Shield size={16} /> TLS 1.3 Encryption</li>
+            </ul>
           </div>
-
-          {/* RIGHT: Code Block */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-1000" />
-            
-            <div className="relative bg-[#0b1121] rounded-lg border border-white/10 overflow-hidden shadow-2xl">
-              <div className="flex items-center justify-between px-4 py-3 bg-[#1e293b] border-b border-white/5">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/50" />
+          <div className="flex-1 p-8 bg-white/5 rounded-xl border border-white/10">
+            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">System Status</h4>
+            <div className="space-y-4">
+              {['API Gateway', 'SMS Relay (Vodacom)', 'SMS Relay (Tigo)', 'WhatsApp Bridge'].map((service, i) => (
+                <div key={i} className="flex justify-between items-center pb-4 border-b border-white/5 last:border-0 last:pb-0">
+                  <span className="text-sm font-medium text-white">{service}</span>
+                  <span className="text-xs font-bold text-emerald-500 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    OPERATIONAL
+                  </span>
                 </div>
-                <div className="flex gap-4 text-[10px] font-mono font-bold text-slate-400">
-                  <button 
-                    onClick={() => setActiveTab('node')} 
-                    className={`hover:text-white transition-colors ${activeTab === 'node' ? 'text-emerald-400' : ''}`}
-                  >
-                    INDEX.JS
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('php')} 
-                    className={`hover:text-white transition-colors ${activeTab === 'php' ? 'text-blue-400' : ''}`}
-                  >
-                    SEND.PHP
-                  </button>
-                </div>
-                <button onClick={copyCode} className="text-slate-500 hover:text-white transition-colors">
-                  {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
-                </button>
-              </div>
-
-              <div className="p-6 overflow-x-auto">
-                <pre className="font-mono text-xs leading-relaxed">
-                  <code className="text-slate-300">
-                    {SNIPPETS[activeTab]}
-                  </code>
-                </pre>
-              </div>
+              ))}
             </div>
           </div>
-
         </div>
       </section>
-
-      {/* 3. SECURITY */}
-      <section className="py-20 px-6 border-t border-white/5 bg-[#0b1121]">
-        <div className="max-w-7xl mx-auto text-center mb-16">
-          <h2 className="text-3xl font-black uppercase tracking-widest mb-4">Architecture & Compliance</h2>
-          <p className="text-slate-500 font-mono text-xs uppercase tracking-widest">Built for the paranoid</p>
-        </div>
-
-        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-8">
-           <div className="p-8 bg-[#020617] border border-white/10 rounded-xl text-center hover:border-emerald-500/30 transition-colors">
-              <Lock className="w-10 h-10 text-emerald-500 mx-auto mb-6" />
-              <h3 className="text-sm font-black uppercase tracking-widest mb-4">TLS 1.3 Encryption</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                All data in transit is encrypted via TLS 1.3. We enforce strict HTTPS on all API endpoints.
-              </p>
-           </div>
-           
-           <div className="p-8 bg-[#020617] border border-white/10 rounded-xl text-center hover:border-blue-500/30 transition-colors">
-              <Server className="w-10 h-10 text-blue-500 mx-auto mb-6" />
-              <h3 className="text-sm font-black uppercase tracking-widest mb-4">Local Data Residency</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Primary data nodes are compliant with Tanzania&apos;s Personal Data Protection Act (PDPA).
-              </p>
-           </div>
-
-           <div className="p-8 bg-[#020617] border border-white/10 rounded-xl text-center hover:border-pink-500/30 transition-colors">
-              <Code2 className="w-10 h-10 text-pink-500 mx-auto mb-6" />
-              <h3 className="text-sm font-black uppercase tracking-widest mb-4">99.9% Uptime SLA</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Our distributed gateway architecture ensures message dispatch even during carrier outages.
-              </p>
-           </div>
-        </div>
-      </section>
-
-      {/* 4. CTA */}
-      <section className="py-32 text-center">
-        <h2 className="text-2xl font-black uppercase text-slate-500 tracking-widest mb-8">Ready to Build?</h2>
-        <div className="flex justify-center gap-6">
-           <Link href="/contact" className="inline-flex items-center gap-2 px-12 py-5 bg-emerald-600 text-white font-black text-xs uppercase tracking-widest
+    </main>
+  );
+}
