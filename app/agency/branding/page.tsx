@@ -113,9 +113,19 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#050505] overflow-hidden">
-      {/* Background Ambience */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-black" />
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-900/10 blur-[120px] rounded-full pointer-events-none" />
+      {/* 1. Add Image Background */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop"
+          alt="Brand Identity Fluidity"
+          fill
+          className="object-cover opacity-30 mix-blend-screen"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
+      </div>
+
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-900/20 blur-[120px] rounded-full pointer-events-none" />
       
       <div className="max-w-7xl mx-auto relative z-10 w-full">
         <motion.div style={{ opacity }}>
