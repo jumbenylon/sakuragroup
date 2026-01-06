@@ -118,11 +118,11 @@ const Hero = () => {
             playsInline 
             className="w-full h-full object-cover opacity-30 mix-blend-screen"
          >
-            {/* Using a reliable tech background video */}
-            <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4" />
+            {/* Using the Sakura Cloud abstract video */}
+            <source src="https://storage.googleapis.com/sakura-web/axis-hero.mp4" type="video/mp4" />
          </video>
          
-         {/* Poster Fallback in case video fails */}
+         {/* Fallback Image */}
          <Image 
             src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop"
             alt="Connectivity Background"
@@ -402,6 +402,7 @@ const APISection = () => {
 
         <ScrollReveal delay={0.2}>
           <div className="rounded-lg overflow-hidden bg-[#0a0a0a] border border-white/10 shadow-2xl font-mono text-sm relative group">
+             {/* 4. VISUAL UPGRADE: Abstract Code Background */}
              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none" />
              
              <div className="bg-white/5 px-4 py-3 flex items-center gap-2 border-b border-white/5 relative z-10">
