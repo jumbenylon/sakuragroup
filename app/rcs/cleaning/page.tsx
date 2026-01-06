@@ -240,13 +240,16 @@ const InteractiveComparison = () => {
     const handleInteractionStart = () => { isDragging.current = true; };
     const handleInteractionEnd = () => { isDragging.current = false; };
 
+    // SHARED IMAGE: A clean, high-res paving/driveway shot
+    const IMAGE_URL = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=2070&auto=format&fit=crop";
+
     return (
         <section className="py-24 px-6 bg-[#080d1a] border-y border-white/5">
             <div className="max-w-7xl mx-auto">
                 <ScrollReveal>
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold text-white mb-4">Paving Restoration</h2>
-                        <p className="text-slate-400">Drag to see organic growth removal on driveway pavers.</p>
+                        <p className="text-slate-400">Drag to see organic growth removal.</p>
                     </div>
                     
                     <div 
@@ -260,10 +263,10 @@ const InteractiveComparison = () => {
                         onTouchEnd={handleInteractionEnd}
                         onMouseLeave={handleInteractionEnd}
                     >
-                        {/* AFTER IMAGE (Background - Clean) */}
+                        {/* AFTER LAYER (Background - CLEAN) */}
                         <div className="absolute inset-0">
                            <Image 
-                             src="https://images.unsplash.com/photo-1590486803833-1c5dc8ce2ac6?q=80&w=2070&auto=format&fit=crop"
+                             src={IMAGE_URL}
                              alt="Clean Paving"
                              fill
                              className="object-cover"
@@ -273,17 +276,18 @@ const InteractiveComparison = () => {
                            </div>
                         </div>
 
-                        {/* BEFORE IMAGE (Foreground - Dirty) */}
+                        {/* BEFORE LAYER (Foreground - DIRTY SIMULATION) */}
                         <div 
                             className="absolute inset-0 overflow-hidden border-r-2 border-emerald-500"
                             style={{ width: `${sliderPosition}%` }}
                         >
-                             <div className="relative w-full h-full">
+                             <div className="relative w-full h-full bg-[#3d3834]"> {/* Dark underlay */}
                                 <Image 
-                                  src="https://images.unsplash.com/photo-1632759929288-026d303277cb?q=80&w=2070&auto=format&fit=crop"
+                                  src={IMAGE_URL}
                                   alt="Dirty Paving"
                                   fill
-                                  className="object-cover object-left grayscale contrast-125"
+                                  // CSS MAGIC: High contrast + Sepia + Dimming = "Dirty" look
+                                  className="object-cover contrast-[1.1] brightness-[0.7] sepia-[0.4] grayscale-[0.3]"
                                 />
                              </div>
                              <div className="absolute top-6 left-6 px-4 py-2 bg-black/80 backdrop-blur text-white text-xs font-bold uppercase tracking-widest rounded-full border border-white/10">
