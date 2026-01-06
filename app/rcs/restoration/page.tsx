@@ -196,12 +196,10 @@ const ComparisonSlider = () => {
 
     const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
         if (!isDragging.current || !containerRef.current) return;
-        
         const rect = containerRef.current.getBoundingClientRect();
         const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
         const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
         const percentage = (x / rect.width) * 100;
-        
         setSliderPosition(percentage);
     };
 
@@ -228,27 +226,34 @@ const ComparisonSlider = () => {
                         onTouchEnd={handleInteractionEnd}
                         onMouseLeave={handleInteractionEnd}
                     >
-                        {/* AFTER IMAGE (Background) */}
-                        <div className="absolute inset-0 bg-[#1a1a1a]">
-                           {/* Placeholder for Restored Roof */}
-                           <div className="w-full h-full bg-slate-800 flex items-center justify-center">
-                              <span className="text-orange-500 font-bold text-2xl">COATED & PROTECTED</span>
-                           </div>
-                           <div className="absolute top-6 right-6 px-4 py-2 bg-orange-500/90 backdrop-blur text-[#0B1120] text-xs font-bold uppercase tracking-widest rounded-full shadow-xl">
-                               After Restoration
+                        {/* AFTER IMAGE (Background - Coated) */}
+                        <div className="absolute inset-0">
+                           <Image 
+                             src="https://images.unsplash.com/photo-1629807473015-41699c4471b5?q=80&w=2070&auto=format&fit=crop"
+                             alt="Restored Roof"
+                             fill
+                             className="object-cover"
+                           />
+                           <div className="absolute top-6 right-6 px-4 py-2 bg-orange-500/90 backdrop-blur text-[#0B1120] text-xs font-bold uppercase tracking-widest rounded-full shadow-xl z-10">
+                               Restored
                            </div>
                         </div>
 
-                        {/* BEFORE IMAGE (Clipped Foreground) */}
+                        {/* BEFORE IMAGE (Foreground - Rusted) */}
                         <div 
-                            className="absolute inset-0 overflow-hidden border-r-2 border-orange-500 bg-[#2a2a2a]"
+                            className="absolute inset-0 overflow-hidden border-r-2 border-orange-500"
                             style={{ width: `${sliderPosition}%` }}
                         >
-                             <div className="relative w-full h-full bg-orange-950/20 flex items-center justify-center">  
-                                <span className="text-orange-700/50 font-bold text-2xl">RUSTED & LEAKING</span>
+                             <div className="relative w-full h-full">
+                                <Image 
+                                  src="https://images.unsplash.com/photo-1563298723-dcfebaa392e3?q=80&w=2067&auto=format&fit=crop"
+                                  alt="Rusted Roof"
+                                  fill
+                                  className="object-cover object-left"
+                                />
                              </div>
                              <div className="absolute top-6 left-6 px-4 py-2 bg-black/80 backdrop-blur text-white text-xs font-bold uppercase tracking-widest rounded-full border border-white/10">
-                                Before
+                                Rusted
                              </div>
                         </div>
 
