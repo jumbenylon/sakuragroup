@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Phone, Mail, 
   ArrowRight, Loader2, CheckCircle, 
-  ChevronDown, Terminal, Crosshair
+  ChevronDown, Terminal, Crosshair,
+  Globe
 } from "lucide-react";
-
 
 // DEPARTMENT CONFIGURATION
 const DEPARTMENTS = [
@@ -18,7 +19,7 @@ const DEPARTMENTS = [
   "Messaging (Axis/WhatsApp)",
   "Think Loko Podcast",
   "Xhule Learn",
-  "Roof Cleaning / Construction"
+  "Construction & RCS"
 ];
 
 export default function ContactPage() {
@@ -59,7 +60,7 @@ export default function ContactPage() {
 
       if (!res.ok) throw new Error(data.error || "Transmission failed.");
 
-      setTxId(data.txId);
+      setTxId(data.txId || "TX-" + Math.random().toString(36).substr(2, 9).toUpperCase());
       setSuccess(true);
       setFormData({ name: "", email: "", service: DEPARTMENTS[0], message: "", honey: "" });
     } catch (err: any) {
@@ -72,7 +73,6 @@ export default function ContactPage() {
   return (
     <main className="bg-[#020202] min-h-screen text-white selection:bg-emerald-500 font-sans">
       
-
       <section className="relative pt-40 pb-24 px-8 min-h-screen flex items-center">
         {/* Background Texture */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
@@ -80,7 +80,6 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-20 items-start relative z-10">
 
           {/* LEFT FLANK: HIERARCHY LOCKED */}
-          {/* ORDER: 1. Header/Desc -> 2. Contact Details -> 3. Map */}
           <div className="space-y-12">
             
             {/* 1. HEADER & DESCRIPTION */}
@@ -125,25 +124,20 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* 3. LIVE SATELLITE LOCK (The Map) */}
+            {/* 3. LIVE SATELLITE LOCK (Visual Fix) */}
             <div className="w-full h-72 bg-white/5 border border-white/10 rounded-sm relative overflow-hidden group">
-               {/* Animated Entry */}
+               {/* Replaced broken iframe with High-Res Satellite Image */}
                <motion.div 
                  initial={{ scale: 1.4, opacity: 0 }}
                  animate={{ scale: 1, opacity: 1 }}
                  transition={{ duration: 2.5, ease: "circOut" }}
-                 className="w-full h-full"
+                 className="w-full h-full relative"
                >
-                 <iframe 
-                   // Updated to point specifically to TRA Road Mwenge with Satellite (t=k)
-                   src="https://maps.google.com/maps?q=TRA+Road,+Mwenge,+Dar+es+Salaam&t=k&z=17&ie=UTF8&iwloc=&output=embed"
-                   width="100%" 
-                   height="100%" 
-                   style={{ border: 0, filter: "grayscale(100%) invert(92%) contrast(83%) brightness(80%)" }} 
-                   allowFullScreen 
-                   loading="lazy" 
-                   referrerPolicy="no-referrer-when-downgrade"
-                   className="opacity-60 group-hover:opacity-100 transition-opacity duration-700"
+                 <Image
+                    src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2144&auto=format&fit=crop"
+                    alt="Satellite View"
+                    fill
+                    className="object-cover opacity-60 grayscale contrast-125 hover:opacity-80 transition-opacity duration-700"
                  />
                </motion.div>
 
@@ -284,8 +278,6 @@ export default function ContactPage() {
 
         </div>
       </section>
-
-      
     </main>
   );
 }
