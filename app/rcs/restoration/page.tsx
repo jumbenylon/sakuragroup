@@ -206,13 +206,16 @@ const ComparisonSlider = () => {
     const handleInteractionStart = () => { isDragging.current = true; };
     const handleInteractionEnd = () => { isDragging.current = false; };
 
+    // SHARED IMAGE: A clean industrial roof
+    const IMAGE_URL = "https://images.unsplash.com/photo-1535203308298-6320b92df3d9?q=80&w=2070&auto=format&fit=crop";
+
     return (
         <section className="py-24 px-6 bg-[#0B1120]">
             <div className="max-w-7xl mx-auto">
                 <ScrollReveal>
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-white mb-4">The Transformation</h2>
-                        <p className="text-slate-400">Drag to see the impact of industrial coating.</p>
+                        <h2 className="text-3xl font-bold text-white mb-4">Rust Encapsulation</h2>
+                        <p className="text-slate-400">Drag to apply the protective industrial coating.</p>
                     </div>
                     
                     <div 
@@ -226,34 +229,35 @@ const ComparisonSlider = () => {
                         onTouchEnd={handleInteractionEnd}
                         onMouseLeave={handleInteractionEnd}
                     >
-                        {/* AFTER IMAGE (Background - Coated) */}
+                        {/* AFTER LAYER (Background - COATED/CLEAN) */}
                         <div className="absolute inset-0">
                            <Image 
-                             src="https://images.unsplash.com/photo-1629807473015-41699c4471b5?q=80&w=2070&auto=format&fit=crop"
-                             alt="Restored Roof"
+                             src={IMAGE_URL}
+                             alt="Coated Roof"
                              fill
                              className="object-cover"
                            />
                            <div className="absolute top-6 right-6 px-4 py-2 bg-orange-500/90 backdrop-blur text-[#0B1120] text-xs font-bold uppercase tracking-widest rounded-full shadow-xl z-10">
-                               Restored
+                               Protected
                            </div>
                         </div>
 
-                        {/* BEFORE IMAGE (Foreground - Rusted) */}
+                        {/* BEFORE LAYER (Foreground - RUST SIMULATION) */}
                         <div 
                             className="absolute inset-0 overflow-hidden border-r-2 border-orange-500"
                             style={{ width: `${sliderPosition}%` }}
                         >
                              <div className="relative w-full h-full">
                                 <Image 
-                                  src="https://images.unsplash.com/photo-1563298723-dcfebaa392e3?q=80&w=2067&auto=format&fit=crop"
+                                  src={IMAGE_URL}
                                   alt="Rusted Roof"
                                   fill
-                                  className="object-cover object-left"
+                                  // CSS MAGIC: Sepia + Hue Rotate makes it look orange/rusty
+                                  className="object-cover sepia-[0.8] hue-rotate-[-30deg] saturate-[1.5] brightness-[0.7]"
                                 />
                              </div>
                              <div className="absolute top-6 left-6 px-4 py-2 bg-black/80 backdrop-blur text-white text-xs font-bold uppercase tracking-widest rounded-full border border-white/10">
-                                Rusted
+                                Corroded
                              </div>
                         </div>
 
