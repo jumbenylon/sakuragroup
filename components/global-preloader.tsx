@@ -26,29 +26,23 @@ export function GlobalPreloader() {
       setLoading(false);
       return;
     }
-    const timer = setTimeout(() => setLoading(false), 1400);
+    const timer = setTimeout(() => setLoading(false), 1200);
     return () => clearTimeout(timer);
   }, [pathname, config]);
 
-  if (!config) return null; // Zero preloader for sub-pages
+  if (!config) return null;
 
   return (
     <AnimatePresence>
       {loading && (
         <motion.div
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
           className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center"
         >
           <div className="w-10 h-10 border-2 border-white/5 border-t-white rounded-full animate-spin mb-8" />
-          <motion.h2 
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            style={{ color: config.color }}
-            className="text-2xl font-black uppercase tracking-[0.4em] italic"
-          >
+          <h2 style={{ color: config.color }} className="text-4xl font-black uppercase tracking-[0.4em] italic">
             {config.word}
-          </motion.h2>
+          </h2>
         </motion.div>
       )}
     </AnimatePresence>

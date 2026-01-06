@@ -12,11 +12,12 @@ export function GlobalNavbar() {
   const pathname = usePathname();
 
   const links = [
-    { name: "SakuraHost", href: "/hosting" },
-    { name: "SakuraPay", href: "/sakurapay" },
-    { name: "Axis", href: "/axis" },
-    { name: "RCS Build", href: "/rcs" },
-    { name: "Logistics", href: "/logistics" },
+    { name: "Design", href: "/agency" },
+    { name: "Host", href: "/hosting" },
+    { name: "Chat", href: "/axis" },
+    { name: "Pay", href: "/sakurapay" },
+    { name: "Build", href: "/rcs" },
+    { name: "Move", href: "/logistics" },
     { name: "Travel", href: "/travel" },
   ];
 
