@@ -115,12 +115,20 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#050505] overflow-hidden">
-      {/* Abstract Data Stream Background */}
-      <div className="absolute inset-0 bg-black">
-         <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-indigo-900/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
-         <div className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] bg-orange-900/10 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
-         {/* Grid Lines */}
-         <div className="absolute inset-0 bg-[linear-gradient(to_right,#6366f110_1px,transparent_1px),linear-gradient(to_bottom,#6366f110_1px,transparent_1px)] bg-[size:6rem_6rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+      {/* 1. Add Image Background */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop"
+          alt="Digital Data Analytics"
+          fill
+          className="object-cover opacity-20 mix-blend-color-dodge"
+          priority
+        />
+        <div className="absolute inset-0 bg-[#050505]/90" />
+      </div>
+
+      <div className="absolute inset-0 bg-black/50">
+         <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-indigo-900/20 blur-[150px] rounded-full mix-blend-screen" />
       </div>
       
       <div className="max-w-7xl mx-auto relative z-10 w-full">
@@ -136,7 +144,7 @@ const Hero = () => {
           
           <div className="grid md:grid-cols-2 gap-12 items-start">
             <p className="text-lg md:text-xl text-slate-400 font-light leading-relaxed">
-              We help brands grow awareness, engagement, and revenue through data-driven strategy and campaigns built for Tanzania’s digital landscape.
+              We help brands grow awareness, engagement, and revenue through data-driven strategy and campaigns.
               <span className="block mt-4 text-white font-medium">Performance-focused. Platform-native.</span>
             </p>
             
