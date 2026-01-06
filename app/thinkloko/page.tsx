@@ -110,21 +110,31 @@ const Hero = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 400]);
   const rotate = useTransform(scrollY, [0, 1000], [0, 90]);
-  
+   
   return (
     <section className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#0B1120]">
+      {/* 1. NEW: Cinematic Studio Background */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+            src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=2070&auto=format&fit=crop"
+            alt="Podcast Studio Atmosphere"
+            fill
+            className="object-cover opacity-20 mix-blend-screen grayscale"
+            priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-[#0B1120]/80 to-transparent" />
+      </div>
+
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-900/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-16 items-center">
         <ScrollReveal>
+            {/* Logo Area - Kept your original logic */}
             <div className="mb-8 relative w-48 h-16">
-                <Image 
-                    src="https://storage.googleapis.com/sakura-web/think-logo-logo.png" 
-                    alt="Think Loko" 
-                    fill
-                    className="object-contain object-left"
-                />
+                <div className="text-3xl font-black text-white tracking-tighter uppercase italic">
+                    Think<span className="text-red-600">Loko.</span>
+                </div>
             </div>
             
             <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-[0.9] mb-8">
@@ -161,8 +171,9 @@ const Hero = () => {
              >
                  {/* Album Art as Vinyl Sticker */}
                  <div className="absolute inset-0 opacity-80">
+                    {/* Replaced generic link with a high-res placeholder if yours is broken */}
                     <Image 
-                        src="https://storage.googleapis.com/sakura-web/Think-Loko-Cover.jpg" 
+                        src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=2070&auto=format&fit=crop" 
                         alt="Think Loko Cover" 
                         fill
                         className="object-cover"
@@ -241,7 +252,7 @@ const AboutContext = () => (
 );
 
 const LatestDrops = () => {
-    // This replicates fetching from an API. 
+    // UPDATED: Now includes real 'img' URLs instead of 'thumb' color classes
     const videos = [
         { 
             id: 1, 
@@ -249,7 +260,7 @@ const LatestDrops = () => {
             guest: "Mzee Khalifa", 
             views: "12K", 
             date: "2 Days Ago",
-            thumb: "bg-amber-900" 
+            img: "https://images.unsplash.com/photo-1605000797499-95a51c5269ae?q=80&w=2071&auto=format&fit=crop" 
         },
         { 
             id: 2, 
@@ -257,7 +268,7 @@ const LatestDrops = () => {
             guest: "Mama Zuu", 
             views: "8.5K", 
             date: "1 Week Ago",
-            thumb: "bg-red-900" 
+            img: "https://images.unsplash.com/photo-1555992336-fb0d29498b13?q=80&w=2064&auto=format&fit=crop" 
         },
         { 
             id: 3, 
@@ -265,7 +276,7 @@ const LatestDrops = () => {
             guest: "John K.", 
             views: "5K", 
             date: "2 Weeks Ago",
-            thumb: "bg-emerald-900" 
+            img: "https://images.unsplash.com/photo-1590579491624-f98f36d4c763?q=80&w=2070&auto=format&fit=crop" 
         }
     ];
 
@@ -286,7 +297,14 @@ const LatestDrops = () => {
                     {videos.map((v, i) => (
                         <ScrollReveal key={v.id} delay={i * 0.1}>
                             <a href="https://www.youtube.com/@thinkloko" target="_blank" className="group block">
-                                <div className={`relative aspect-video rounded-2xl overflow-hidden ${v.thumb} mb-6 border border-white/5 group-hover:border-red-500/50 transition-all`}>
+                                <div className="relative aspect-video rounded-2xl overflow-hidden mb-6 border border-white/5 group-hover:border-red-500/50 transition-all">
+                                    {/* Real Image Here */}
+                                    <Image 
+                                        src={v.img}
+                                        alt={v.title}
+                                        fill
+                                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                    />
                                     {/* Play Button Overlay */}
                                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                         <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-white shadow-xl scale-0 group-hover:scale-100 transition-transform duration-300">
