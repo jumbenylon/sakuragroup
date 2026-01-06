@@ -115,11 +115,21 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#050505] overflow-hidden">
-      {/* Cinematic Lighting Background */}
-      <div className="absolute inset-0 bg-black">
-         <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-rose-900/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
-         <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-orange-900/10 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
-         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay" />
+      {/* 1. Add Image Background */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2070&auto=format&fit=crop"
+          alt="Cinematic Content Production"
+          fill
+          className="object-cover opacity-40 mix-blend-overlay"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-transparent" />
+      </div>
+
+      <div className="absolute inset-0 pointer-events-none">
+         <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-rose-900/20 blur-[150px] rounded-full mix-blend-screen" />
+         <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-orange-900/10 blur-[150px] rounded-full mix-blend-screen" />
       </div>
       
       <div className="max-w-7xl mx-auto relative z-10 w-full">
@@ -135,7 +145,7 @@ const Hero = () => {
           
           <div className="grid md:grid-cols-2 gap-12 items-start">
             <p className="text-lg md:text-xl text-slate-400 font-light leading-relaxed">
-              We create storytelling assets — video, photography, brand messaging, and campaign content — built to inspire and connect across digital platforms.
+              We create storytelling assets — video, photography, brand messaging, and campaign content — built to inspire and connect.
               <span className="block mt-4 text-white font-medium">Emotion + Clarity + Strategy.</span>
             </p>
             
