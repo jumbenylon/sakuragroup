@@ -115,11 +115,19 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#050505] overflow-hidden">
-      {/* Cinematic Ambient Background */}
-      <div className="absolute inset-0 bg-black">
-         <div className="absolute top-[-20%] left-[20%] w-[1000px] h-[600px] bg-amber-900/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
-         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30 pointer-events-none mix-blend-overlay" />
+      {/* 1. Add Image Background */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=1974&auto=format&fit=crop"
+          alt="Advertising and Media"
+          fill
+          className="object-cover opacity-30 mix-blend-overlay grayscale"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
       </div>
+
+      <div className="absolute top-[-20%] left-[20%] w-[1000px] h-[600px] bg-amber-900/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
       
       <div className="max-w-7xl mx-auto relative z-10 w-full">
         <motion.div style={{ opacity, y }}>
@@ -134,7 +142,7 @@ const Hero = () => {
           
           <div className="grid md:grid-cols-2 gap-12 items-start">
             <p className="text-lg md:text-xl text-slate-400 font-light leading-relaxed">
-              Advertising that moves people. PR that shapes perception. We design campaigns that inspire action, build trust, and connect brands with the communities they serve.
+              Advertising that moves people. PR that shapes perception. We design campaigns that inspire action and build trust.
               <span className="block mt-4 text-white font-medium">Culture-aware. Insight-driven. Reputation-focused.</span>
             </p>
             
