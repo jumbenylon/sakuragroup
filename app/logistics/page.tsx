@@ -38,9 +38,14 @@ const Hero = () => {
   return (
     <section className="relative min-h-[90vh] flex items-center px-6 pt-28 overflow-hidden bg-[#020617]">
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
-        <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-40 mix-blend-overlay">
-          <source src="https://storage.googleapis.com/sakura-web/logistics-secure.mp4" type="video/mp4" />
-        </video>
+        {/* FIX: Swapped dead video for high-res Unsplash Image */}
+        <Image 
+          src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop"
+          alt="Secure Logistics Fleet"
+          fill
+          className="object-cover opacity-30 mix-blend-overlay"
+          priority
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-[#020617]/70 to-[#020617]" />
         {/* Grid Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98105_1px,transparent_1px),linear-gradient(to_bottom,#10b98105_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
