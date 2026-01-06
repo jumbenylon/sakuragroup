@@ -1,31 +1,133 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { motion, useInView, AnimatePresence, useScroll, useTransform, useMotionTemplate, useMotionValue } from "framer-motion";
 import { 
-  motion, 
-  useScroll, 
-  useTransform, 
-  useMotionTemplate, 
-  useMotionValue 
-} from "framer-motion";
-import { 
-  ArrowRight, 
   MessageSquare, 
   Smartphone, 
-  Globe, 
+  ShieldCheck, 
+  ArrowRight, 
+  Check, 
+  ChevronRight,
+  Server,
   Code2, 
-  CheckCircle2,
-  Zap,
-  BarChart3,
+  Globe, 
+  MessageCircle,
+  Radio, 
+  Building2, 
+  Truck, 
+  GraduationCap,
   Users,
   Lock,
+  Zap,
   Send,
-  Menu // Added for potential mobile menu toggle if needed
+  BarChart3
 } from "lucide-react";
 
-// --- SHARED COMPONENTS ---
+// --- ASSETS ---
+const HERO_VIDEO = "https://storage.googleapis.com/sakura-web/sms/7188903_Business_Businesswoman_1920x1080.mp4"; 
+const CTA_BG = "https://storage.googleapis.com/sakura-web/sms/23230.jpg";
+
+// --- PRELOADER COMPONENT ---
+const TuchatiPreloader = ({ onComplete }: { onComplete: () => void }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
+      className="fixed inset-0 z-[200] bg-[#020617] flex items-center justify-center overflow-hidden"
+    >
+      <div className="relative z-10 text-center">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, ease: "circOut" }}
+          className="relative inline-block"
+        >
+          <h1 className="text-7xl md:text-9xl font-black italic tracking-tighter text-white uppercase">
+            Tuchati<span className="text-emerald-500">!</span>
+          </h1>
+          
+          {/* Signal Pulse Animation */}
+          <motion.div 
+            initial={{ scale: 1, opacity: 0.5 }}
+            animate={{ scale: 2, opacity: 0 }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "easeOut" }}
+            className="absolute -inset-8 bg-emerald-500/20 rounded-full blur-2xl -z-10"
+          />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mt-6 flex items-center justify-center gap-2"
+        >
+          <div className="flex gap-1">
+            <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+            <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+            <motion.div animate={{ scale: [1, 1.5, 1] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+          </div>
+          <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-500">Establishing Uplink</span>
+        </motion.div>
+      </div>
+
+      {/* Background Noise */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none" />
+    </motion.div>
+  );
+};
+
+// --- SUBNAV ---
+const AxisSubNav = () => {
+  const [visible, setVisible] = React.useState(false);
+  React.useEffect(() => {
+    const handler = () => setVisible(window.scrollY > 150);
+    window.addEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  return (
+    <motion.nav
+      initial={{ y: -20, opacity: 0 }}
+      animate={visible ? { y: 0, opacity: 1 } : { y: -20, opacity: 0 }}
+      className="fixed top-16 w-full z-[90] bg-[#020617]/90 backdrop-blur-xl border-b border-emerald-500/10 h-12 flex items-center pointer-events-none lg:pointer-events-auto"
+    >
+      <div className="max-w-7xl mx-auto w-full px-8 flex justify-between items-center">
+        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 italic flex items-center gap-2">
+          <MessageCircle size={12} className="text-emerald-500" />
+          Customers Like To Chat
+        </span>
+        
+        <div className="flex gap-8">
+          {[
+            { n: "SMS Core", l: "#sms" },
+            { n: "WhatsApp", l: "#whatsapp" },
+            { n: "Pricing", l: "/axis/pricing" },
+            { n: "Use Cases", l: "/axis/industries" },
+            { n: "Developers", l: "/axis/developers" }
+          ].map((item) => (
+            <Link key={item.n} href={item.l} className="text-[9px] font-bold uppercase tracking-widest text-white/40 hover:text-emerald-400 transition-colors pointer-events-auto">
+              {item.n}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </motion.nav>
+  );
+};
+
+const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+  >
+    {children}
+  </motion.div>
+);
 
 const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
   const mouseX = useMotionValue(0);
@@ -59,250 +161,302 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
   );
 };
 
-const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
-};
+export default function AxisPage() {
+  const [loading, setLoading] = useState(true);
 
-const AxisSubNav = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  
   useEffect(() => {
-    const handler = () => setIsScrolled(window.scrollY > 100);
-    window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
+    // Synthetic load time for "Tuchati!" experience
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <motion.nav
-      className={`sticky top-20 z-[90] w-full border-b border-white/5 transition-all duration-500 ${
-        isScrolled ? "bg-[#050a14] py-2 shadow-2xl" : "bg-transparent py-4"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 overflow-x-auto scrollbar-hide">
-        <div className="flex gap-8 min-w-max items-center">
-          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic mr-4 hidden md:block">
-            Axis Gateway
-          </span>
-          <Link href="#hero" className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Overview</Link>
-          <Link href="#sms" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">Bulk SMS</Link>
-          <Link href="#whatsapp" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">WhatsApp</Link>
-          <Link href="/axis/developers" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">Developers</Link>
-          <Link href="/axis/industries" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">Industries</Link>
-        </div>
-      </div>
-    </motion.nav>
-  );
-};
+    <main className="bg-[#020617] text-white selection:bg-emerald-500 font-sans min-h-screen">
+      
+      {/* THE TUCHATI PRELOADER */}
+      <AnimatePresence>
+        {loading && <TuchatiPreloader onComplete={() => setLoading(false)} />}
+      </AnimatePresence>
 
-// --- HERO SECTION WITH VIDEO ---
+      <AxisSubNav />
 
-const Hero = () => {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 400]);
-  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
-
-  return (
-    <section id="hero" className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#050a14]">
-      {/* VIDEO BACKGROUND */}
-      <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
-         <video 
+      {/* 1. HERO (FROM THE VERSION YOU LIKED) */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[#020617]/70 z-10" />
+          <video 
             autoPlay 
             loop 
             muted 
             playsInline 
-            className="w-full h-full object-cover opacity-40 mix-blend-screen"
-         >
-            {/* Tech Abstract Video */}
-            <source src="https://storage.googleapis.com/sakura-web/axis-hero.mp4" type="video/mp4" />
-         </video>
-         
-         {/* Fallback Image if video fails or loads slow */}
-         <Image 
-            src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop"
-            alt="Connectivity Background"
-            fill
-            className="object-cover opacity-20 -z-10"
-         />
+            className="w-full h-full object-cover opacity-60"
+          >
+            <source src={HERO_VIDEO} type="video/mp4" />
+          </video>
+        </div>
 
-         <div className="absolute inset-0 bg-gradient-to-t from-[#050a14] via-[#050a14]/80 to-transparent" />
-         <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98105_1px,transparent_1px),linear-gradient(to_bottom,#10b98105_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
-      </motion.div>
+        <div className="relative z-20 max-w-5xl space-y-8 pt-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.6 }} // Delayed to start after preloader
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/50 backdrop-blur-md"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[9px] font-mono uppercase tracking-widest text-emerald-400">Trusted Infrastructure • Dar es Salaam</span>
+          </motion.div>
 
-      <div className="relative z-10 max-w-6xl mx-auto w-full text-center">
-        <ScrollReveal>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-950/30 border border-emerald-500/20 rounded-full mb-8 backdrop-blur-md mx-auto">
-             <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-             <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Live in Tanzania</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-8 max-w-5xl mx-auto">
-            REACH EVERY<br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-600">PHONE INSTANTLY.</span>
-          </h1>
-          
-          <p className="text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-12 font-light">
-             The most reliable Bulk SMS and WhatsApp gateway in East Africa. 
-             Powering marketing campaigns, OTPs, and transaction alerts with 98% delivery rates.
-          </p>
-              
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/axis/portal" className="group relative px-10 py-5 bg-emerald-600 text-black font-bold text-xs uppercase tracking-[0.2em] rounded-sm overflow-hidden hover:bg-emerald-500 transition-colors shadow-[0_0_40px_rgba(16,185,129,0.3)]">
-                Start Sending SMS
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.7 }}
+            className="text-6xl md:text-8xl lg:text-[110px] font-black leading-[0.85] tracking-tighter uppercase italic text-white"
+          >
+            Talk to your<br/>
+            <span className="text-emerald-500">Customers.</span>
+          </motion.h1>
+
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.8 }}
+            className="text-xl md:text-2xl text-slate-200 font-light max-w-2xl mx-auto leading-relaxed"
+          >
+            The trusted way. Verified Sender ID SMS and structured WhatsApp engagement. 
+            Stop being ignored by unknown numbers. Start owning the conversation.
+          </motion.p>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.9 }}
+            className="flex flex-col sm:flex-row gap-6 justify-center pt-8"
+          >
+            <Link href="/axis/pricing" className="px-10 py-5 bg-emerald-600 text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all shadow-[0_0_50px_-10px_rgba(16,185,129,0.4)] rounded-sm">
+              View Rates (21 TZS)
             </Link>
-            <Link href="/contact" className="px-10 py-5 border border-white/20 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm transition-all backdrop-blur-sm">
-                Get WhatsApp API
+            <Link href="/axis/industries" className="px-10 py-5 border border-white/20 text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-white/10 transition-all rounded-sm">
+              View Use Cases
             </Link>
-          </div>
-        </ScrollReveal>
-      </div>
-    </section>
-  );
-};
+          </motion.div>
+        </div>
+      </section>
 
-// ... [Keep BulkSMS, WhatsApp, Audience, APISection, CTA as they were in the previous verified response] ...
-// Re-adding them here for completeness to ensure you have the full file.
-
-const BulkSMS = () => {
-  return (
-    <section id="sms" className="py-32 px-6 bg-[#050a14] border-t border-white/5 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-        <ScrollReveal>
-            <div className="relative aspect-square md:aspect-[4/3] bg-neutral-900 border border-white/10 rounded-xl overflow-hidden group">
-                <Image 
-                    src="https://images.unsplash.com/photo-1555421689-d68471e189f2?q=80&w=2070&auto=format&fit=crop"
-                    alt="Bulk SMS Campaign"
-                    fill
-                    className="object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-700"
-                />
-                <div className="absolute bottom-8 left-8 right-8 space-y-3">
-                    <div className="bg-white/90 backdrop-blur-md p-4 rounded-lg shadow-xl translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                        <div className="flex justify-between items-start mb-1">
-                            <span className="text-xs font-bold text-black uppercase">SAKURA</span>
-                            <span className="text-[10px] text-gray-500">now</span>
+      {/* 2. SMS DEEP DIVE (Commercial Version Style) */}
+      <section id="sms" className="py-32 px-6 bg-[#020617] border-y border-white/5 relative">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+            
+            {/* Visual Side: SMS Interface */}
+            <ScrollReveal>
+                <div className="relative aspect-square md:aspect-[4/3] bg-[#0f172a] border border-white/10 rounded-xl overflow-hidden group">
+                    <Image 
+                        src="https://images.unsplash.com/photo-1555421689-d68471e189f2?q=80&w=2070&auto=format&fit=crop"
+                        alt="Bulk SMS Campaign"
+                        fill
+                        className="object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-700 mix-blend-luminosity"
+                    />
+                    
+                    {/* Simulated Notification Overlay */}
+                    <div className="absolute bottom-8 left-8 right-8 space-y-3">
+                        <div className="bg-[#1e293b]/90 backdrop-blur-md p-4 rounded-lg shadow-xl translate-y-4 group-hover:translate-y-0 transition-transform duration-500 border border-white/10">
+                            <div className="flex justify-between items-start mb-1">
+                                <span className="text-xs font-bold text-emerald-400 uppercase">SAKURA</span>
+                                <span className="text-[10px] text-slate-400">now</span>
+                            </div>
+                            <p className="text-sm text-slate-200 font-medium">Flash Sale: Get 50% off your next order. Valid for 24hrs only! Click to redeem.</p>
                         </div>
-                        <p className="text-sm text-gray-800 font-medium">Flash Sale: Get 50% off your next order. Valid for 24hrs only!</p>
                     </div>
                 </div>
-            </div>
-        </ScrollReveal>
-        <ScrollReveal delay={0.2}>
-            <div className="inline-flex items-center gap-2 mb-6 text-emerald-500">
-                <Send size={20} />
-                <span className="font-mono text-xs uppercase tracking-widest">Axis Broadcast</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Bulk SMS that actually delivers.</h2>
-            <p className="text-slate-400 text-lg mb-8 leading-relaxed">
-                Reach thousands of customers in seconds. Our direct Tier-1 connections to Vodacom, Tigo, Airtel, and Halotel ensure your messages skip the queues.
-            </p>
-            <div className="space-y-6">
-                <div className="flex items-start gap-4"><div className="p-2 bg-emerald-500/10 rounded text-emerald-500 mt-1"><Users size={20} /></div><div><h3 className="text-white font-bold text-sm uppercase tracking-wide">Marketing Campaigns</h3><p className="text-slate-500 text-sm">Excel/CSV uploads.</p></div></div>
-                <div className="flex items-start gap-4"><div className="p-2 bg-emerald-500/10 rounded text-emerald-500 mt-1"><Lock size={20} /></div><div><h3 className="text-white font-bold text-sm uppercase tracking-wide">Secure OTPs</h3><p className="text-slate-500 text-sm">Priority routes.</p></div></div>
-            </div>
-        </ScrollReveal>
-      </div>
-    </section>
-  );
-};
+            </ScrollReveal>
 
-const WhatsApp = () => {
-  return (
-    <section id="whatsapp" className="py-32 px-6 bg-[#02040a]">
-      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center md:flex-row-reverse">
-        <ScrollReveal>
-            <div className="inline-flex items-center gap-2 mb-6 text-green-500">
-                <MessageSquare size={20} />
-                <span className="font-mono text-xs uppercase tracking-widest">Axis Conversational</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">WhatsApp Business API.</h2>
-            <p className="text-slate-400 text-lg mb-8 leading-relaxed">
-                Go beyond plain text. Send images, PDFs, locations, and interactive buttons directly to your customer&apos;s favorite app.
-            </p>
-            <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="p-4 bg-[#0a0f1e] border border-white/5 rounded-lg"><h4 className="text-white font-bold mb-1">Rich Media</h4><p className="text-xs text-slate-500">Invoices & brochures.</p></div>
-                <div className="p-4 bg-[#0a0f1e] border border-white/5 rounded-lg"><h4 className="text-white font-bold mb-1">Chatbots</h4><p className="text-xs text-slate-500">24/7 automated replies.</p></div>
-            </div>
-        </ScrollReveal>
-        <ScrollReveal delay={0.2}>
-            <div className="relative aspect-[4/5] bg-neutral-900 border border-white/10 rounded-2xl overflow-hidden group">
-                <Image src="https://images.unsplash.com/photo-1611606063065-ee7946f0787a?q=80&w=1974&auto=format&fit=crop" alt="WhatsApp Interaction" fill className="object-cover opacity-50 group-hover:opacity-70 transition-opacity" />
-                <div className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
-                    <div className="bg-[#1f2937] p-4 rounded-xl max-w-[80%] border border-white/5"><p className="text-xs text-green-400 font-bold mb-1">AXIS BOT</p><p className="text-sm text-slate-300">Your package #TZ-892 has arrived.</p></div>
+            {/* Text Side: Sales Copy */}
+            <ScrollReveal delay={0.2}>
+                <div className="inline-flex items-center gap-2 mb-6 text-emerald-500">
+                    <Send size={20} />
+                    <span className="font-mono text-xs uppercase tracking-widest">Axis Broadcast</span>
                 </div>
-            </div>
-        </ScrollReveal>
-      </div>
-    </section>
-  );
-};
-
-const Audience = () => {
-    return (
-        <section className="py-32 px-6 bg-[#050a14] border-y border-white/5">
-            <div className="max-w-7xl mx-auto">
-                <ScrollReveal><div className="text-center mb-16"><h2 className="text-3xl font-bold text-white mb-4">Who is Axis For?</h2></div></ScrollReveal>
-                <div className="grid md:grid-cols-3 gap-8">
-                    <ScrollReveal delay={0.1}><SpotlightCard className="p-8 h-full bg-[#0a0f1e]"><BarChart3 size={24} className="text-purple-500 mb-6" /><h3 className="text-xl font-bold text-white mb-2">Marketers</h3><p className="text-sm text-slate-400 mb-6">No coding required. Web portal access.</p><Link href="/axis/portal" className="text-purple-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">Try Portal <ArrowRight size={14} /></Link></SpotlightCard></ScrollReveal>
-                    <ScrollReveal delay={0.2}><SpotlightCard className="p-8 h-full bg-[#0a0f1e]"><Code2 size={24} className="text-emerald-500 mb-6" /><h3 className="text-xl font-bold text-white mb-2">Developers</h3><p className="text-sm text-slate-400 mb-6">REST APIs, Webhooks, SDKs.</p><Link href="/axis/developers" className="text-emerald-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">View Docs <ArrowRight size={14} /></Link></SpotlightCard></ScrollReveal>
-                    <ScrollReveal delay={0.3}><SpotlightCard className="p-8 h-full bg-[#0a0f1e]"><Users size={24} className="text-blue-500 mb-6" /><h3 className="text-xl font-bold text-white mb-2">Business Owners</h3><p className="text-sm text-slate-400 mb-6">Automate support & sales.</p><Link href="/contact" className="text-blue-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">Contact Sales <ArrowRight size={14} /></Link></SpotlightCard></ScrollReveal>
+                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Bulk SMS that actually delivers.</h2>
+                <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+                    Identity is the only currency. In a sea of spam, an unknown number is invisible. 
+                    Axis registers your <strong>Brand Name</strong> directly with TCRA so your customers know it's you—instantly.
+                </p>
+                
+                <div className="space-y-6">
+                    <div className="flex items-start gap-4">
+                        <div className="p-2 bg-emerald-500/10 rounded text-emerald-500 mt-1"><Users size={20} /></div>
+                        <div>
+                            <h3 className="text-white font-bold text-sm uppercase tracking-wide">Marketing Campaigns</h3>
+                            <p className="text-slate-500 text-sm">Upload contacts via Excel/CSV and blast promos instantly.</p>
+                        </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                        <div className="p-2 bg-emerald-500/10 rounded text-emerald-500 mt-1"><Lock size={20} /></div>
+                        <div>
+                            <h3 className="text-white font-bold text-sm uppercase tracking-wide">Secure OTPs</h3>
+                            <p className="text-slate-500 text-sm">Priority routes for authentication and banking alerts.</p>
+                        </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                        <div className="p-2 bg-emerald-500/10 rounded text-emerald-500 mt-1"><Zap size={20} /></div>
+                        <div>
+                            <h3 className="text-white font-bold text-sm uppercase tracking-wide">Sender IDs</h3>
+                            <p className="text-slate-500 text-sm">Send with your Brand Name (e.g. "SAKURA") not random numbers.</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
-    )
-}
+            </ScrollReveal>
 
-const APISection = () => {
-  return (
-    <section id="api" className="py-32 px-6 bg-[#020617]">
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-        <ScrollReveal>
-          <div className="inline-flex items-center gap-2 mb-6 text-emerald-500"><Code2 size={20} /><span className="font-mono text-xs uppercase tracking-widest">Developer Friendly</span></div>
-          <h2 className="text-4xl font-bold text-white mb-6">Integrate in Minutes.</h2>
-          <p className="text-slate-400 text-lg mb-8">Clean documentation, predictable REST endpoints, and SDKs.</p>
-          <Link href="/axis/developers" className="text-emerald-400 font-bold flex items-center gap-2 hover:text-white transition-colors uppercase text-xs tracking-widest">Read The Docs <ArrowRight size={14} /></Link>
-        </ScrollReveal>
-        <ScrollReveal delay={0.2}>
-          <div className="rounded-lg overflow-hidden bg-[#0a0a0a] border border-white/10 shadow-2xl font-mono text-sm relative group">
-             <div className="bg-white/5 px-4 py-3 flex items-center gap-2 border-b border-white/5"><div className="w-3 h-3 rounded-full bg-red-500" /><div className="w-3 h-3 rounded-full bg-yellow-500" /><div className="w-3 h-3 rounded-full bg-green-500" /></div>
-             <div className="p-6 text-slate-300 space-y-4"><p><span className="text-purple-400">const</span> axis = <span className="text-blue-400">require</span>(&apos;axis-sdk&apos;);</p><p><span className="text-purple-400">await</span> axis.sms.send(&#123; to: <span className="text-green-400">&apos;+255...&apos;</span>, message: <span className="text-green-400">&apos;OTP 4921&apos;</span> &#125;);</p></div>
+        </div>
+      </section>
+
+      {/* 3. WHATSAPP (Commercial Version Style) */}
+      <section id="whatsapp" className="py-32 px-6 bg-[#050b14] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-[#25D366]/5 blur-[120px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center md:flex-row-reverse">
+            {/* Text Side */}
+            <ScrollReveal>
+                <div className="inline-flex items-center gap-2 mb-6 text-green-500">
+                    <MessageSquare size={20} />
+                    <span className="font-mono text-xs uppercase tracking-widest">Axis Conversational</span>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">WhatsApp Business API.</h2>
+                <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+                    Tanzania runs on WhatsApp. Go beyond plain text. Send images, PDFs, locations, and interactive buttons directly to your customer's favorite app.
+                </p>
+                
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="p-4 bg-[#0a0f1e] border border-white/5 rounded-lg">
+                        <h4 className="text-white font-bold mb-1">Rich Media</h4>
+                        <p className="text-xs text-slate-500">Send invoices & brochures.</p>
+                    </div>
+                    <div className="p-4 bg-[#0a0f1e] border border-white/5 rounded-lg">
+                        <h4 className="text-white font-bold mb-1">Chatbots</h4>
+                        <p className="text-xs text-slate-500">24/7 automated replies.</p>
+                    </div>
+                    <div className="p-4 bg-[#0a0f1e] border border-white/5 rounded-lg">
+                        <h4 className="text-white font-bold mb-1">Green Tick</h4>
+                        <p className="text-xs text-slate-500">Verified business badge.</p>
+                    </div>
+                    <div className="p-4 bg-[#0a0f1e] border border-white/5 rounded-lg">
+                        <h4 className="text-white font-bold mb-1">Interactive</h4>
+                        <p className="text-xs text-slate-500">Buttons & list menus.</p>
+                    </div>
+                </div>
+                
+                <Link href="/contact" className="inline-flex items-center gap-2 text-[#25D366] text-xs font-black uppercase tracking-widest border-b border-[#25D366]/20 pb-1 hover:border-[#25D366] transition-colors mt-4">
+                  Get WhatsApp API Access <ChevronRight size={14} />
+                </Link>
+            </ScrollReveal>
+
+            {/* Visual Side */}
+            <ScrollReveal delay={0.2}>
+                <div className="relative aspect-[4/5] bg-[#0b141a] border border-white/10 rounded-2xl overflow-hidden group shadow-2xl">
+                    {/* Chat Background Pattern */}
+                    <div className="absolute inset-0 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] opacity-10 pointer-events-none" />
+                    
+                    <div className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
+                        {/* Bot Message */}
+                        <div className="bg-[#1f2937] p-4 rounded-tl-xl rounded-tr-xl rounded-br-xl max-w-[85%] border border-white/5 shadow-lg">
+                            <p className="text-xs text-green-400 font-bold mb-1">AXIS BOT</p>
+                            <p className="text-sm text-slate-300">Habari! Your loan application #LN-992 is approved. TZS 5M has been disbursed to your account.</p>
+                            <span className="text-[9px] text-slate-500 block mt-2 text-right">10:23 AM</span>
+                        </div>
+                        {/* User Reply */}
+                        <div className="bg-[#005c4b] p-4 rounded-tl-xl rounded-tr-xl rounded-bl-xl max-w-[80%] ml-auto text-right shadow-lg">
+                            <p className="text-sm text-white">Asante sana! Excellent service. 🙏</p>
+                            <div className="flex justify-end items-center gap-1 mt-1 text-emerald-300">
+                                <span className="text-[9px]">10:24 AM</span>
+                                <Check size={12} className="stroke-[3]" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ScrollReveal>
+        </div>
+      </section>
+
+      {/* 4. ECOSYSTEM LINKS (Grid Style from "Liked" Version) */}
+      <section className="py-32 px-6 bg-[#020617] border-t border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl font-black uppercase tracking-widest mb-4">Explore the Grid</h2>
+            <p className="text-emerald-500/60 font-mono text-xs uppercase tracking-widest">Select your protocol</p>
           </div>
-        </ScrollReveal>
-      </div>
-    </section>
-  );
-};
 
-const CTA = () => {
-  return (
-    <section className="py-40 px-6 bg-[#02040a] text-center border-t border-white/10 relative overflow-hidden">
-      <div className="max-w-4xl mx-auto relative z-10">
-        <ScrollReveal>
-          <h2 className="text-5xl md:text-7xl font-black text-white mb-8 leading-[0.85] tracking-tighter">START SENDING<br/>TODAY.</h2>
-          <div className="flex flex-col sm:flex-row justify-center gap-6"><Link href="/axis/login" className="px-12 py-5 bg-emerald-600 text-black font-bold text-xs uppercase tracking-[0.2em] rounded-sm hover:bg-emerald-500 transition-all shadow-2xl">Create Account</Link></div>
-        </ScrollReveal>
-      </div>
-    </section>
-  );
-};
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* AUDIENCE: MARKETERS (Use Cases) */}
+            <Link href="/axis/industries" className="group relative bg-[#0f172a] border border-white/5 p-10 hover:border-blue-500/50 transition-all duration-500 overflow-hidden">
+               <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:opacity-100 transition-opacity">
+                 <Globe size={40} className="text-blue-500" />
+               </div>
+               <h3 className="text-xl font-black uppercase italic mb-4 text-white">Sectors</h3>
+               <p className="text-sm text-slate-400 mb-8 leading-relaxed">
+                 Tailored workflows for SACCOs, Logistics, Education, and Retail.
+               </p>
+               <span className="text-[10px] font-mono font-bold uppercase text-blue-500 flex items-center gap-2">
+                 View Use Cases <ArrowRight size={12} />
+               </span>
+            </Link>
 
-export default function AxisPage() {
-  return (
-    <main className="min-h-screen bg-[#050a14] text-white selection:bg-emerald-500 selection:text-black font-sans">
-      <AxisSubNav />
-      <Hero />
-      <Audience />
-      <BulkSMS />
-      <WhatsApp />
-      <APISection />
-      <CTA />
+            {/* AUDIENCE: DEVELOPERS (Engine Room) */}
+            <Link href="/axis/developers" className="group relative bg-[#0f172a] border border-white/5 p-10 hover:border-purple-500/50 transition-all duration-500 overflow-hidden">
+               <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:opacity-100 transition-opacity">
+                 <Code2 size={40} className="text-purple-500" />
+               </div>
+               <h3 className="text-xl font-black uppercase italic mb-4 text-white">Engine Room</h3>
+               <p className="text-sm text-slate-400 mb-8 leading-relaxed">
+                 API Documentation, Node.js/PHP snippets, and sandbox access.
+               </p>
+               <span className="text-[10px] font-mono font-bold uppercase text-purple-500 flex items-center gap-2">
+                 Read Docs <ArrowRight size={12} />
+               </span>
+            </Link>
+
+            {/* AUDIENCE: BUSINESS (Pricing) */}
+            <Link href="/axis/pricing" className="group relative bg-[#0f172a] border border-white/5 p-10 hover:border-emerald-500/50 transition-all duration-500 overflow-hidden">
+               <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:opacity-100 transition-opacity">
+                 <ShieldCheck size={40} className="text-emerald-500" />
+               </div>
+               <h3 className="text-xl font-black uppercase italic mb-4 text-white">The Ledger</h3>
+               <p className="text-sm text-slate-400 mb-8 leading-relaxed">
+                 Transparent breakdown of SMS rates (21 TZS) and WhatsApp costs.
+               </p>
+               <span className="text-[10px] font-mono font-bold uppercase text-emerald-500 flex items-center gap-2">
+                 View Pricing <ArrowRight size={12} />
+               </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. FINAL CONVERSION */}
+      <section className="py-40 text-white text-center px-6 relative overflow-hidden">
+        <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#020617]/90 via-[#064e3b]/80 to-[#020617]/90 z-10" />
+            <Image 
+              src={CTA_BG} 
+              alt="Tanzania Business Communication" 
+              fill
+              className="object-cover"
+            />
+        </div>
+        
+        <div className="relative z-20 max-w-4xl mx-auto">
+          <h2 className="text-5xl md:text-7xl font-black italic uppercase leading-[0.85] mb-12">
+            Ready to<br/>Broadcast?
+          </h2>
+          <Link href="/contact" className="inline-flex items-center gap-4 px-16 py-8 bg-white text-black font-black text-xs uppercase tracking-[0.2em] rounded-sm hover:bg-emerald-500 hover:text-white transition-all shadow-2xl">
+            Provision Axis Node <ArrowRight size={16} />
+          </Link>
+          <p className="mt-8 text-[10px] font-mono uppercase tracking-widest opacity-80">
+            Instant Setup • Local Support • No Credit Card
+          </p>
+        </div>
+      </section>
+
     </main>
   );
 }
