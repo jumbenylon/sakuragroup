@@ -118,8 +118,21 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[80vh] flex items-center px-6 pt-32 bg-[#050505] overflow-hidden">
-      {/* Abstract Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+      {/* 1. Add Image Background */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop"
+          alt="Strategy and Direction"
+          fill
+          className="object-cover opacity-20 mix-blend-luminosity"
+          priority
+        />
+        {/* Gradient Overlay to ensure text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-[#050505]/90 to-[#050505]" />
+      </div>
+
+      {/* Abstract Grid (Keep this) */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] z-0" />
       
       <div className="max-w-7xl mx-auto relative z-10 w-full">
         <motion.div style={{ opacity }}>
