@@ -123,48 +123,17 @@ const Hero = () => {
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
   return (
-    <section id="hero" className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#030712]">
-      {/* Defensive Grid Background */}
+    <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#020617] overflow-hidden">
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <Image 
-            src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2000&auto=format&fit=crop"
-            alt="Cybersecurity Architecture"
+            src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=2070&auto=format&fit=crop"
+            alt="Cyber Security"
             fill
-            className="object-cover opacity-10 mix-blend-luminosity"
+            className="object-cover opacity-20 mix-blend-screen"
          />
-         <div className="absolute inset-0 bg-gradient-to-t from-[#030712] via-[#030712]/90 to-[#030712]" />
-         {/* Subtle Waveform Line */}
-         <div className="absolute top-1/2 left-0 right-0 h-px bg-violet-500/20 shadow-[0_0_20px_rgba(139,92,246,0.5)]" />
+         <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/90 to-transparent" />
       </motion.div>
-
-      <div className="relative z-10 max-w-6xl mx-auto w-full text-center">
-        <ScrollReveal>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900/50 border border-slate-700/50 rounded-full mb-8 backdrop-blur-md mx-auto">
-             <ShieldCheck size={14} className="text-violet-400" />
-             <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Zero-Tolerance Failure Policy</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-8xl lg:text-[7rem] font-black text-white leading-[0.95] tracking-tighter mb-8 max-w-5xl mx-auto">
-            PROTECTION YOU<br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-slate-500">
-                CAN DEPEND ON.
-            </span>
-          </h1>
-          
-          <p className="text-xl text-slate-400 leading-relaxed max-w-3xl mx-auto mb-12 font-light">
-             Every server, workload, and connection runs inside a hardened environment designed to protect uptime, data integrity, and operational continuity.
-          </p>
-              
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="#stack" className="group relative px-10 py-5 bg-white text-[#030712] font-bold text-xs uppercase tracking-[0.2em] rounded-sm overflow-hidden hover:bg-violet-200 transition-colors shadow-2xl">
-                View Security Stack
-            </Link>
-            <Link href="/contact" className="px-10 py-5 border border-white/20 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm transition-all backdrop-blur-sm">
-                Talk to Engineer
-            </Link>
-          </div>
-        </ScrollReveal>
-      </div>
+      {/* ... keep content ... */}
     </section>
   );
 };
