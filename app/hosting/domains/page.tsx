@@ -122,54 +122,17 @@ const Hero = () => {
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
   return (
-    <section id="hero" className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#030712]">
-      {/* Institutional Background */}
+    <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#020617] overflow-hidden">
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <Image 
-            src="https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=2000&auto=format&fit=crop"
-            alt="Digital Governance"
+            src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
+            alt="Global Domains"
             fill
-            className="object-cover opacity-20 mix-blend-screen grayscale"
+            className="object-cover opacity-30 mix-blend-screen"
          />
-         <div className="absolute inset-0 bg-gradient-to-t from-[#030712] via-[#030712]/90 to-[#030712]" />
-         <div className="absolute inset-0 bg-[linear-gradient(to_right,#7c3aed05_1px,transparent_1px),linear-gradient(to_bottom,#7c3aed05_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+         <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/90 to-transparent" />
       </motion.div>
-
-      <div className="relative z-10 max-w-5xl mx-auto w-full text-center">
-        <ScrollReveal>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-violet-950/20 border border-violet-500/20 rounded-full mb-8 backdrop-blur-md mx-auto">
-             <ShieldCheck size={14} className="text-violet-400" />
-             <span className="text-[10px] font-bold text-violet-300 uppercase tracking-widest">Accredited .TZ Registrar</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-8xl lg:text-[7rem] font-black text-white leading-[0.95] tracking-tighter mb-8">
-            YOUR DOMAIN.<br/>
-            YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-slate-400">AUTHORITY.</span>
-          </h1>
-          
-          <p className="text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto mb-12 font-light">
-             We manage mission-critical domains for businesses, institutions, and organizations that cannot afford mistakes, downtime, or administrative risk.
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-             {["Business-Grade Management", "Transfer-Safe Protocol", "Audit-Traceable"].map((badge, i) => (
-                <div key={i} className="flex items-center gap-2 px-3 py-1 border border-white/5 bg-white/5 rounded-full">
-                   <CheckCircle2 size={12} className="text-violet-500" />
-                   <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{badge}</span>
-                </div>
-             ))}
-          </div>
-              
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/contact" className="group relative px-10 py-5 bg-white text-[#030712] font-bold text-xs uppercase tracking-[0.2em] rounded-sm overflow-hidden hover:bg-violet-200 transition-colors shadow-2xl">
-                Register Domain
-            </Link>
-            <Link href="/contact" className="px-10 py-5 border border-white/20 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm transition-all backdrop-blur-sm">
-                Corporate Management
-            </Link>
-          </div>
-        </ScrollReveal>
-      </div>
+      {/* ... keep content ... */}
     </section>
   );
 };
