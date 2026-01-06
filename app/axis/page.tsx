@@ -14,7 +14,6 @@ import {
   ArrowRight, 
   MessageSquare, 
   Smartphone, 
-  Globe, 
   Code2, 
   CheckCircle2,
   Zap,
@@ -94,7 +93,7 @@ const AxisSubNav = () => {
           <Link href="#hero" className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Overview</Link>
           <Link href="#sms" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">Bulk SMS</Link>
           <Link href="#whatsapp" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">WhatsApp</Link>
-          <Link href="#api" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">Developers</Link>
+          <Link href="/axis/developers" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white">Developers</Link>
         </div>
       </div>
     </motion.nav>
@@ -110,16 +109,27 @@ const Hero = () => {
 
   return (
     <section id="hero" className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#050a14]">
-      {/* 1. VISUAL UPGRADE: Abstract Fiber Optic Network */}
+      {/* 1. VISUAL RESTORED: Video Background */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
+         <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            className="w-full h-full object-cover opacity-30 mix-blend-screen"
+         >
+            {/* Using a reliable tech background video */}
+            <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4" />
+         </video>
+         
+         {/* Poster Fallback in case video fails */}
          <Image 
-            
-            src="https://images.unsplash.com/photo-1558494949-ef526b0042a0?q=80&w=2072&auto=format&fit=crop"
-            alt="Global Connectivity"
+            src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop"
+            alt="Connectivity Background"
             fill
-            className="object-cover opacity-20 mix-blend-screen"
-            priority
+            className="object-cover opacity-20 -z-10"
          />
+
          <div className="absolute inset-0 bg-gradient-to-t from-[#050a14] via-[#050a14]/80 to-transparent" />
          <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98105_1px,transparent_1px),linear-gradient(to_bottom,#10b98105_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       </motion.div>
@@ -164,12 +174,7 @@ const BulkSMS = () => {
         {/* Visual Side */}
         <ScrollReveal>
             <div className="relative aspect-square md:aspect-[4/3] bg-neutral-900 border border-white/10 rounded-xl overflow-hidden group">
-                {/* 2. VISUAL UPGRADE: Mobile Campaign Dashboard/Visual */}
                 <Image 
-                    
-
-[Image of smartphone notification screen]
-
                     src="https://images.unsplash.com/photo-1555421689-d68471e189f2?q=80&w=2070&auto=format&fit=crop"
                     alt="Bulk SMS Campaign"
                     fill
@@ -251,7 +256,7 @@ const WhatsApp = () => {
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">WhatsApp Business API.</h2>
             <p className="text-slate-400 text-lg mb-8 leading-relaxed">
-                Go beyond plain text. Send images, PDFs, locations, and interactive buttons directly to your customer's favorite app. Automate support and sales.
+                Go beyond plain text. Send images, PDFs, locations, and interactive buttons directly to your customer&apos;s favorite app. Automate support and sales.
             </p>
             
             <div className="grid grid-cols-2 gap-4 mb-8">
@@ -277,9 +282,7 @@ const WhatsApp = () => {
         {/* Visual Side */}
         <ScrollReveal delay={0.2}>
             <div className="relative aspect-[4/5] bg-neutral-900 border border-white/10 rounded-2xl overflow-hidden group">
-                {/* 3. VISUAL UPGRADE: Modern Chat Interface */}
                 <Image 
-                    
                     src="https://images.unsplash.com/photo-1611606063065-ee7946f0787a?q=80&w=1974&auto=format&fit=crop"
                     alt="WhatsApp Interaction"
                     fill
@@ -346,7 +349,7 @@ const Audience = () => {
                             <p className="text-sm text-slate-400 mb-6 leading-relaxed">
                                 REST APIs, Webhooks, and SDKs. Integrate SMS notifications into your app, website, or ERP in minutes.
                             </p>
-                            <Link href="#api" className="text-emerald-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors flex items-center gap-2">
+                            <Link href="/axis/developers" className="text-emerald-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-colors flex items-center gap-2">
                                 View Docs <ArrowRight size={14} />
                             </Link>
                         </SpotlightCard>
@@ -392,14 +395,13 @@ const APISection = () => {
              <li className="flex gap-3 text-slate-300"><CheckCircle2 className="text-emerald-500" /> Webhook Events</li>
              <li className="flex gap-3 text-slate-300"><CheckCircle2 className="text-emerald-500" /> Sandboxed Testing Mode</li>
           </ul>
-          <Link href="/contact" className="text-emerald-400 font-bold flex items-center gap-2 hover:text-white transition-colors uppercase text-xs tracking-widest">
+          <Link href="/axis/developers" className="text-emerald-400 font-bold flex items-center gap-2 hover:text-white transition-colors uppercase text-xs tracking-widest">
              Read The Docs <ArrowRight size={14} />
           </Link>
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
           <div className="rounded-lg overflow-hidden bg-[#0a0a0a] border border-white/10 shadow-2xl font-mono text-sm relative group">
-             {/* 4. VISUAL UPGRADE: Abstract Code Background */}
              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none" />
              
              <div className="bg-white/5 px-4 py-3 flex items-center gap-2 border-b border-white/5 relative z-10">
