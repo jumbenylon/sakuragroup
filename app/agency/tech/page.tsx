@@ -115,7 +115,18 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#050505] overflow-hidden">
-      {/* Technical Grid Background */}
+      {/* 1. Add Image Background */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="https://images.unsplash.com/photo-1558494949-ef526b0042a0?q=80&w=2072&auto=format&fit=crop"
+          alt="Technology Infrastructure"
+          fill
+          className="object-cover opacity-20 mix-blend-color-dodge"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/90 to-transparent" />
+      </div>
+
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#06b6d410_1px,transparent_1px),linear-gradient(to_bottom,#06b6d410_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       
       <div className="max-w-7xl mx-auto relative z-10 w-full">
