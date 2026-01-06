@@ -173,15 +173,16 @@ const TanzaniaScope = () => (
            <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
            <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full h-full">
+                 {/* FIX: Replaced dead map PNG with abstract tech grid */}
                  <Image 
-                   src="https://storage.googleapis.com/sakura-web/tanzania-map-grid.png"
+                   src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
                    alt="Tanzania Logistics Map"
                    fill
                    className="object-cover opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-700"
                  />
                  {/* Map Markers Overlay - Simulated */}
-                 <div className="absolute top-[40%] right-[10%] w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
-                 <div className="absolute top-[40%] right-[10%] w-2 h-2 bg-emerald-500 rounded-full" />
+                 <div className="absolute top-[40%] right-[30%] w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+                 <div className="absolute top-[40%] right-[30%] w-2 h-2 bg-emerald-500 rounded-full" />
               </div>
            </div>
         </div>
