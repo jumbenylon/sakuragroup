@@ -120,7 +120,13 @@ const Hero = () => {
     <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#0B1120] overflow-hidden">
       {/* Technical Grid Background */}
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
-         <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-yellow-900/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
+        <Image 
+      src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop"
+      alt="Construction Site"
+      fill
+      className="object-cover opacity-20 mix-blend-overlay"
+    /> 
+        <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-yellow-900/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
          <div className="absolute inset-0 bg-[linear-gradient(to_right,#eab30805_1px,transparent_1px),linear-gradient(to_bottom,#eab30805_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       </motion.div>
 
