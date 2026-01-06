@@ -123,53 +123,17 @@ const Hero = () => {
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
   return (
-    <section id="hero" className="relative min-h-[90vh] flex items-center px-6 pt-32 pb-20 overflow-hidden bg-[#020617]">
-      {/* Executive Background */}
+    <section className="relative min-h-[85vh] flex items-center px-6 pt-32 bg-[#020617] overflow-hidden">
       <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
          <Image 
-            src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=2000&auto=format&fit=crop"
-            alt="Business Communication"
+            src="https://images.unsplash.com/photo-1557200134-90327ee9fafa?q=80&w=2070&auto=format&fit=crop"
+            alt="Professional Email"
             fill
-            className="object-cover opacity-20 mix-blend-screen grayscale"
+            className="object-cover opacity-20 mix-blend-screen"
          />
-         <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/90 to-[#020617]" />
-         <div className="absolute inset-0 bg-[linear-gradient(to_right,#4338ca05_1px,transparent_1px),linear-gradient(to_bottom,#4338ca05_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+         <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/90 to-transparent" />
       </motion.div>
-
-      <div className="relative z-10 max-w-5xl mx-auto w-full text-center">
-        <ScrollReveal>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-950/30 border border-indigo-500/20 rounded-full mb-8 backdrop-blur-md mx-auto">
-             <Briefcase size={14} className="text-indigo-400" />
-             <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">Business Identity Management</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-8xl lg:text-[7rem] font-black text-white leading-[0.95] tracking-tighter mb-8">
-            COMMUNICATION THAT<br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-slate-400">
-                CARRIES AUTHORITY.
-            </span>
-          </h1>
-          
-          <p className="text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto mb-12 font-light">
-             Branded, reliable, and securely managed email for Tanzanian organizations where trust, uptime, and governance matter.
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-6 mb-12 text-xs font-mono text-slate-400 uppercase tracking-widest">
-             <span className="flex items-center gap-2"><CheckCircle2 size={14} className="text-indigo-500" /> Outlook Compatible</span>
-             <span className="flex items-center gap-2"><CheckCircle2 size={14} className="text-indigo-500" /> Admin Controlled</span>
-             <span className="flex items-center gap-2"><CheckCircle2 size={14} className="text-indigo-500" /> 99.9% Uptime SLA</span>
-          </div>
-              
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="#plans" className="group relative px-10 py-5 bg-indigo-600 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm overflow-hidden hover:bg-indigo-500 transition-colors shadow-2xl">
-                Get Business Email
-            </Link>
-            <Link href="/contact" className="px-10 py-5 border border-white/20 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-[0.2em] rounded-sm transition-all backdrop-blur-sm">
-                Migrate Organization
-            </Link>
-          </div>
-        </ScrollReveal>
-      </div>
+      {/* ... keep content ... */}
     </section>
   );
 };
