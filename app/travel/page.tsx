@@ -4,7 +4,6 @@ import React from "react";
 import { TravelHero } from "@/components/travel/travel-hero";
 import { ExperienceGrid } from "@/components/travel/experience-grid";
 import { TravelSubNav } from "@/components/travel/travel-sub-nav";
-import { motion } from "framer-motion";
 
 export default function TravelPage() {
   return (
