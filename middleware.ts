@@ -5,48 +5,67 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const hostname = request.headers.get("host") || "";
+  
+  // 🟢 SECURE TOKEN CHECK (Does the user have a pass?)
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+  const isAuthenticated = !!token;
 
-  // 1. IDENTIFY SUBDOMAIN
-  // Localhost: "axis.localhost:3000" -> "axis"
-  // Production: "axis.sakuragroup.co.tz" -> "axis"
+  // Identify Environment
   const currentHost = process.env.NODE_ENV === "production"
     ? hostname.replace(".sakuragroup.co.tz", "")
     : hostname.replace(".localhost:3000", "");
 
-  // -----------------------------------------------------------
-  // ROUTE 1: AXIS PORTAL (axis.sakuragroup.co.tz)
-  // -----------------------------------------------------------
+  // ==============================================================
+  // 🏰 GATE 1: AXIS PORTAL (axis.sakuragroup.co.tz)
+  // ==============================================================
   if (currentHost === "axis") {
-    // 🔒 Security Check (Optional: You can enable this later if you want strict locking)
-    // const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
-    // if (!token && !url.pathname.startsWith("/login")) {
-    //    return NextResponse.redirect(new URL("/axis/login", request.url));
-    // }
+    
+    // 1. Redirect Root to Portal
+    if (url.pathname === "/") {
+      return NextResponse.redirect(new URL("/portal", request.url));
+    }
 
-    // REWRITE: Show content from /app/axis folder
-    // User sees: axis.sakuragroup.co.tz/portal
-    // Server delivers: app/axis/portal/page.tsx
-    // We append `/axis` to the path internally so Next.js finds the file.
+    // 2. Protect the Portal (The VIP Room)
+    if (url.pathname.startsWith("/portal")) {
+       if (!isAuthenticated) {
+          // JOURNEY FIX: Send them to login, but remember where they wanted to go
+          const loginUrl = new URL("/login", request.url);
+          loginUrl.searchParams.set("callbackUrl", url.pathname); 
+          return NextResponse.redirect(loginUrl);
+       }
+       // Rewrite URL to internal folder
+       return NextResponse.rewrite(new URL(`/axis${url.pathname}`, request.url));
+    }
+
+    // 3. Manage Login Page (The Entry Door)
+    if (url.pathname.startsWith("/login")) {
+       // JOURNEY FIX: If already logged in, don't show login page. Go to dashboard.
+       if (isAuthenticated) {
+          return NextResponse.redirect(new URL("/portal", request.url));
+       }
+       return NextResponse.rewrite(new URL("/axis/login", request.url));
+    }
+
+    // 4. Allow Public Assets / NextAuth API
+    // (Everything else just rewrites to the axis folder)
     return NextResponse.rewrite(new URL(`/axis${url.pathname}`, request.url));
   }
 
-  // -----------------------------------------------------------
-  // ROUTE 2: PAYMENTS (pay.sakuragroup.co.tz)
-  // -----------------------------------------------------------
+  // ==============================================================
+  // 💳 GATE 2: PAYMENTS (pay.sakuragroup.co.tz)
+  // ==============================================================
   if (currentHost === "pay") {
-    // REWRITE: Show content from /app/pay folder
     return NextResponse.rewrite(new URL(`/pay${url.pathname}`, request.url));
   }
 
-  // -----------------------------------------------------------
-  // ROUTE 3: MAIN WEBSITE (sakuragroup.co.tz)
-  // -----------------------------------------------------------
-  // Prevent direct access to "app/axis" folder via main domain
+  // ==============================================================
+  // 🌍 GATE 3: PUBLIC SITE (sakuragroup.co.tz)
+  // ==============================================================
+  // Block direct access to internal folders
   if (url.pathname.startsWith("/axis") || url.pathname.startsWith("/pay")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
   
-  // Default: Serve the Marketing site (app/(marketing))
   return NextResponse.next();
 }
 
