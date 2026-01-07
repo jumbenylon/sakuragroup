@@ -10,7 +10,8 @@ const LOGO_SAKURA = "https://storage.googleapis.com/sakura-web/sakuragroup-logo-
 
 export default function SignupPage() {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ email: "", password: "", org: "", phone: "" }); // Added phone
+  // Fixed: Added 'phone' to the initial state so the input works
+  const [form, setForm] = useState({ email: "", password: "", org: "", phone: "" });
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
   const [error, setError] = useState("");
@@ -47,7 +48,7 @@ export default function SignupPage() {
 
   return (
     <main className="min-h-screen bg-[#020202] flex flex-col md:flex-row overflow-hidden font-sans">
-      {/* LEFT: BRAND VISION (Mimics Axis Hero) */}
+      {/* LEFT: BRAND VISION */}
       <section className="hidden md:flex md:w-5/12 bg-[#080808] p-20 flex-col justify-between border-r border-white/5 relative">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
         
@@ -110,12 +111,14 @@ export default function SignupPage() {
                         placeholder="e.g. Sakura Group Ltd"
                         className="w-full bg-transparent border-b border-white/10 py-4 text-white text-sm outline-none focus:border-pink-600 transition-all placeholder:text-slate-800"
                         onChange={e => setForm({...form, org: e.target.value})}
+                        value={form.org}
                         onKeyDown={e => e.key === 'Enter' && nextStep()}
                       />
                     </div>
                   )}
 
                   {step === 2 && (
+                    <>
                     <div className="space-y-2">
                       <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Corporate Email Address</label>
                       <input 
@@ -124,21 +127,22 @@ export default function SignupPage() {
                         placeholder="name@company.co.tz"
                         className="w-full bg-transparent border-b border-white/10 py-4 text-white text-sm outline-none focus:border-pink-600 transition-all placeholder:text-slate-800"
                         onChange={e => setForm({...form, email: e.target.value})}
+                        value={form.email}
+                      />
+                    </div>
+                    {/* FIXED: Added Phone Input */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Administrator Phone</label>
+                      <input 
+                        type="tel"
+                        placeholder="+255 700 000 000"
+                        className="w-full bg-transparent border-b border-white/10 py-4 text-white text-sm outline-none focus:border-pink-600 transition-all placeholder:text-slate-800"
+                        onChange={e => setForm({...form, phone: e.target.value})}
+                        value={form.phone}
                         onKeyDown={e => e.key === 'Enter' && nextStep()}
                       />
                     </div>
-                    {/* 👇 NEW PHONE INPUT 👇 */}
-                    <div className="space-y-2 mt-6">
-                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Administrator Phone</label>
-                    <input 
-                    type="tel"
-                    placeholder="+255 700 000 000"
-                    className="w-full bg-transparent border-b border-white/10 py-4 text-white text-sm outline-none focus:border-pink-600 transition-all placeholder:text-slate-800"
-                    onChange={e => setForm({...form, phone: e.target.value})}
-                    value={form.phone}
-                    onKeyDown={e => e.key === 'Enter' && nextStep()}
-                      />
-                  </div>
+                    </>
                   )}
 
                   {step === 3 && (
@@ -150,6 +154,7 @@ export default function SignupPage() {
                         placeholder="••••••••"
                         className="w-full bg-transparent border-b border-white/10 py-4 text-white text-sm outline-none focus:border-pink-600 transition-all placeholder:text-slate-800"
                         onChange={e => setForm({...form, password: e.target.value})}
+                        value={form.password}
                         onKeyDown={e => e.key === 'Enter' && handleFinalSubmit()}
                       />
                     </div>
