@@ -17,11 +17,16 @@ import {
   CheckSquare, 
   LifeBuoy, 
   ArrowRight, 
-  PieChart,
-  Workflow
+  QrCode,
+  Workflow,
+  Briefcase,
+  Calculator,
+  Landmark,
+  Cloud,
+  ServerOff
 } from "lucide-react";
 
-// --- SHARED COMPONENTS (Reuse these to keep consistency) ---
+// --- SHARED COMPONENTS ---
 
 const ScrollReveal = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
   <motion.div
@@ -79,31 +84,34 @@ const Hero = () => {
       <div className="absolute inset-0 z-0">
         <Image 
           src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop"
-          alt="Sakura CRM Dashboard"
+          alt="Sakura ERP Dashboard"
           fill
           className="object-cover opacity-20 mix-blend-luminosity"
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-transparent" />
-        {/* Grid Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10 w-full text-center md:text-left">
         <motion.div style={{ opacity, y }}>
-          <span className="inline-block py-1 px-3 border border-emerald-500/30 bg-emerald-500/10 rounded-full text-[10px] font-mono uppercase tracking-widest text-emerald-500 mb-8">
-            Business OS v4.0
-          </span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 border border-emerald-500/30 bg-emerald-500/10 rounded-full mb-8 backdrop-blur-md">
+            <Cloud size={14} className="text-emerald-400" />
+            <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400">
+              Cloud Hosted • No Device Needed
+            </span>
+          </div>
           
           <h1 className="text-5xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-8 max-w-5xl">
-            THE BRAIN OF<br/>
-            YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400">BUSINESS.</span>
+            RUN YOUR BUSINESS<br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400">NOT YOUR SERVERS.</span>
           </h1>
 
           <div className="grid md:grid-cols-2 gap-12 items-start">
              <p className="text-lg md:text-xl text-slate-400 font-light leading-relaxed">
-               Stop juggling Excel, WhatsApp, and invoices. Manage your leads, projects, finances, and support tickets in 
-               <span className="text-white font-medium"> one secure, localized dashboard.</span>
+               A complete ERP system for Tanzanian business. 
+               Handle <strong>TRA VFD Receipts</strong>, Payroll, Finance, and HR in one secure cloud dashboard. 
+               <span className="text-white font-medium block mt-2">Zero hardware cost. 99.9% Uptime.</span>
              </p>
              
              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -126,22 +134,21 @@ const Features = () => (
         <div className="max-w-7xl mx-auto">
             <ScrollReveal>
                 <div className="mb-20">
-                    <h2 className="text-3xl font-bold text-white mb-4">Why Sakura CRM?</h2>
+                    <h2 className="text-3xl font-bold text-white mb-4">The ERP Suite</h2>
                     <p className="text-slate-400 max-w-2xl">
-                        A fully white-labeled solution tailored for Tanzanian operations. 
-                        Multi-currency support (TZS/USD), automated recurring invoices, and contract management.
+                        Why pay for 5 different apps? Get one system that handles everything from hiring staff to filing tax returns.
                     </p>
                 </div>
             </ScrollReveal>
 
             <div className="grid md:grid-cols-3 gap-8">
                 {[
-                    { title: "Lead to Cash", icon: LayoutDashboard, desc: "Track a customer from first contact to final payment. Visualize your sales funnel." },
-                    { title: "Smart Invoicing", icon: CreditCard, desc: "Send professional estimates and invoices. Auto-reminders for overdue payments." },
-                    { title: "Project Command", icon: CheckSquare, desc: "Assign tasks, track billable hours, and share milestones with clients." },
-                    { title: "Support Desk", icon: LifeBuoy, desc: "Built-in ticketing system. Never lose a customer complaint in email threads again." },
-                    { title: "Customer Portal", icon: Users, desc: "Give clients a login to view their own invoices, contracts, and project status." },
-                    { title: "Contract Signing", icon: Workflow, desc: "Digital e-signatures for contracts. Legally binding and paperless." },
+                    { title: "TRA VFD Ready", icon: QrCode, desc: "Issue fiscal receipts directly from your dashboard. No expensive EFD machine required. (Integration is an add-on)." },
+                    { title: "HR & Payroll", icon: Users, desc: "Manage employee contracts, attendance, leave requests, and auto-generate monthly payslips." },
+                    { title: "Finance & Accounting", icon: Calculator, desc: "Track expenses, profit/loss, and balance sheets. Tax-ready reports at the click of a button." },
+                    { title: "Banking", icon: Landmark, desc: "Reconcile bank accounts and track cash flow in real-time. Multi-currency (TZS/USD)." },
+                    { title: "Sales CRM", icon: LayoutDashboard, desc: "Visual pipeline for leads. Convert proposals to invoices instantly." },
+                    { title: "Cloud Stability", icon: ServerOff, desc: "We host it. We secure it. You just log in. No servers to buy or maintain." },
                 ].map((item, i) => (
                     <ScrollReveal key={i} delay={i * 0.1}>
                         <SpotlightCard className="p-8 h-full bg-[#0a0a0a]">
@@ -156,44 +163,111 @@ const Features = () => (
     </section>
 );
 
+const Pricing = () => (
+    <section className="py-24 px-6 bg-[#020202] border-t border-white/5">
+        <div className="max-w-7xl mx-auto">
+            <ScrollReveal>
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl font-bold text-white mb-6">Simple Pricing.</h2>
+                    <p className="text-slate-400">Enterprise power at a startup price.</p>
+                </div>
+            </ScrollReveal>
+
+            <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                {/* One-Time Card */}
+                <ScrollReveal>
+                    <div className="h-full p-10 bg-[#0a0a0a] border border-white/10 rounded-2xl relative overflow-hidden flex flex-col">
+                        <h3 className="text-xl font-bold text-white mb-2">System Installation</h3>
+                        <p className="text-slate-400 text-sm mb-6">One-time setup fee.</p>
+                        <div className="flex items-baseline gap-2 mb-8">
+                            <span className="text-sm text-slate-500">TZS</span>
+                            <span className="text-5xl font-black text-white tracking-tighter">149,000</span>
+                        </div>
+                        <ul className="space-y-4 mb-8 flex-1">
+                            <li className="flex gap-3 text-sm text-slate-300"><CheckSquare size={16} className="text-emerald-500" /> Database Configuration</li>
+                            <li className="flex gap-3 text-sm text-slate-300"><CheckSquare size={16} className="text-emerald-500" /> Brand Customization (White Label)</li>
+                            <li className="flex gap-3 text-sm text-slate-300"><CheckSquare size={16} className="text-emerald-500" /> Initial Staff Training</li>
+                            <li className="flex gap-3 text-sm text-slate-300"><CheckSquare size={16} className="text-emerald-500" /> Secure Cloud Deployment</li>
+                        </ul>
+                    </div>
+                </ScrollReveal>
+
+                {/* Subscription Card */}
+                <ScrollReveal delay={0.1}>
+                    <div className="h-full p-10 bg-gradient-to-br from-[#0f1f18] to-[#0a0a0a] border border-emerald-500/30 rounded-2xl relative overflow-hidden flex flex-col relative group">
+                        <div className="absolute top-0 right-0 p-3 bg-emerald-600 text-black font-bold text-[10px] uppercase tracking-widest">
+                            Most Popular
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Monthly Subscription</h3>
+                        <p className="text-slate-400 text-sm mb-6">Full ERP Access.</p>
+                        <div className="flex items-baseline gap-2 mb-8">
+                            <span className="text-sm text-slate-500">TZS</span>
+                            <span className="text-5xl font-black text-white tracking-tighter">49,000</span>
+                            <span className="text-slate-500">/ mo</span>
+                        </div>
+                        <ul className="space-y-4 mb-8 flex-1">
+                            <li className="flex gap-3 text-sm text-white"><CheckSquare size={16} className="text-emerald-400" /> <strong>Unlimited</strong> Users & Leads</li>
+                            <li className="flex gap-3 text-sm text-white"><CheckSquare size={16} className="text-emerald-400" /> HR, Payroll & Accounting Modules</li>
+                            <li className="flex gap-3 text-sm text-white"><CheckSquare size={16} className="text-emerald-400" /> Automated Backups & Security</li>
+                            <li className="flex gap-3 text-sm text-white"><CheckSquare size={16} className="text-emerald-400" /> 24/7 Local Support</li>
+                        </ul>
+                        <Link href="/contact" className="w-full py-4 bg-white text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-emerald-500 hover:text-white transition-all rounded-sm text-center shadow-xl">
+                            Start Subscription
+                        </Link>
+                    </div>
+                </ScrollReveal>
+            </div>
+
+            <ScrollReveal delay={0.2}>
+                <div className="mt-12 p-6 bg-[#0a0a0a] border border-white/5 rounded-xl max-w-4xl mx-auto text-center">
+                    <p className="text-sm text-slate-400">
+                        <span className="text-emerald-500 font-bold uppercase tracking-widest mr-2">Premium Integrations:</span>
+                        VFD/EFD Integration, Bulk SMS (Axis), and WhatsApp Bots are charged separately based on volume.
+                    </p>
+                </div>
+            </ScrollReveal>
+        </div>
+    </section>
+);
+
 const VisualShowcase = () => (
-    <section className="py-24 px-6 bg-[#020202] overflow-hidden">
+    <section className="py-24 px-6 bg-[#050505] overflow-hidden">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
             <ScrollReveal>
                 <div className="relative aspect-[16/10] bg-[#111] rounded-lg border border-white/10 overflow-hidden shadow-2xl group">
                     <Image 
                         src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop" 
-                        alt="CRM Interface"
+                        alt="ERP Interface"
                         fill
                         className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
                     />
                     {/* Floating Stats */}
                     <div className="absolute top-8 right-8 bg-black/80 backdrop-blur-md p-4 rounded border border-emerald-500/30">
-                        <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Revenue This Month</p>
-                        <p className="text-2xl font-mono font-bold text-emerald-400">TZS 14.5M</p>
+                        <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Receipts Issued</p>
+                        <p className="text-2xl font-mono font-bold text-emerald-400">1,204 VFD</p>
                     </div>
                 </div>
             </ScrollReveal>
             
             <ScrollReveal delay={0.2}>
-                <h2 className="text-4xl font-bold text-white mb-6">Stop Chasing Payments.</h2>
+                <h2 className="text-4xl font-bold text-white mb-6">Payroll & HR, Solved.</h2>
                 <div className="space-y-6">
                     <div className="flex gap-4">
                         <div className="w-12 h-12 rounded-full bg-emerald-900/20 flex items-center justify-center flex-shrink-0 text-emerald-500">
-                            <PieChart size={24} />
+                            <Users size={24} />
                         </div>
                         <div>
-                            <h3 className="text-white font-bold mb-1">Automated Dunning</h3>
-                            <p className="text-slate-400 text-sm">The system automatically follows up on unpaid invoices via Email and SMS (Axis Integrated).</p>
+                            <h3 className="text-white font-bold mb-1">Staff Management</h3>
+                            <p className="text-slate-400 text-sm">Keep track of attendance, leave days, and employment contracts in one secure vault.</p>
                         </div>
                     </div>
                     <div className="flex gap-4">
                         <div className="w-12 h-12 rounded-full bg-blue-900/20 flex items-center justify-center flex-shrink-0 text-blue-500">
-                            <Users size={24} />
+                            <Workflow size={24} />
                         </div>
                         <div>
-                            <h3 className="text-white font-bold mb-1">Staff Productivity</h3>
-                            <p className="text-slate-400 text-sm">See exactly who is working on what. Track time on tasks and generate productivity reports.</p>
+                            <h3 className="text-white font-bold mb-1">Automated Payslips</h3>
+                            <p className="text-slate-400 text-sm">Generate monthly payslips and tax reports automatically. Reduce manual HR work by 90%.</p>
                         </div>
                     </div>
                 </div>
@@ -207,20 +281,8 @@ export default function CRMPage() {
     <main className="min-h-screen bg-[#050505] text-white selection:bg-emerald-500 font-sans">
       <Hero />
       <Features />
+      <Pricing />
       <VisualShowcase />
-      
-      {/* CTA Section */}
-      <section className="py-40 text-center px-6 border-t border-white/5 bg-[#050505]">
-          <div className="max-w-3xl mx-auto">
-              <h2 className="text-5xl font-black text-white mb-8 tracking-tighter">ORGANIZE THE CHAOS.</h2>
-              <p className="text-slate-400 mb-12 text-lg">
-                  Join 50+ Tanzanian companies using Sakura CRM to streamline their operations.
-              </p>
-              <Link href="/contact" className="px-12 py-5 bg-white text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-emerald-500 hover:text-white transition-all rounded-sm shadow-2xl">
-                  Get Your License
-              </Link>
-          </div>
-      </section>
     </main>
   );
 }
