@@ -10,7 +10,7 @@ const LOGO_SAKURA = "https://storage.googleapis.com/sakura-web/sakuragroup-logo-
 
 export default function SignupPage() {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ email: "", password: "", org: "" });
+  const [form, setForm] = useState({ email: "", password: "", org: "", phone: "" }); // Added phone
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
   const [error, setError] = useState("");
@@ -127,6 +127,18 @@ export default function SignupPage() {
                         onKeyDown={e => e.key === 'Enter' && nextStep()}
                       />
                     </div>
+                    {/* 👇 NEW PHONE INPUT 👇 */}
+                    <div className="space-y-2 mt-6">
+                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Administrator Phone</label>
+                    <input 
+                    type="tel"
+                    placeholder="+255 700 000 000"
+                    className="w-full bg-transparent border-b border-white/10 py-4 text-white text-sm outline-none focus:border-pink-600 transition-all placeholder:text-slate-800"
+                    onChange={e => setForm({...form, phone: e.target.value})}
+                    value={form.phone}
+                    onKeyDown={e => e.key === 'Enter' && nextStep()}
+                      />
+                  </div>
                   )}
 
                   {step === 3 && (
