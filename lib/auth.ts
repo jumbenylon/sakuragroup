@@ -9,23 +9,12 @@ export const authOptions: NextAuthOptions = {
   pages: { signIn: "/axis/login" },
   
   secret: process.env.NEXTAUTH_SECRET,
-  // In NextAuth v4, useSecureCookies is set automatically based on NEXTAUTH_URL, 
-  // but we can explicitly define our cookie policy for production stability.
-  
-  cookies: {
-    sessionToken: {
-      name: process.env.NODE_ENV === "production" 
-        ? `__Secure-next-auth.session-token` 
-        : `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === "production",
-        domain: '.sakuragroup.co.tz' 
-      },
-    },
-  },
+
+  // ---------------------------------------------------------
+  // DELETED: Custom Cookie Config
+  // Reason: It was blocking login on Cloud Run URLs.
+  // NextAuth will now automatically secure cookies for whatever domain you are on.
+  // ---------------------------------------------------------
 
   providers: [
     GoogleProvider({
@@ -49,6 +38,7 @@ export const authOptions: NextAuthOptions = {
 
         if (!user || !user.password) return null;
 
+        // Verify using Argon2
         const isValid = await verify(user.password, credentials.password);
         if (!isValid) return null;
 
