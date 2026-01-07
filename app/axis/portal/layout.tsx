@@ -24,14 +24,16 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   
+  // 🟢 1. User Identity (Bypassed for Dev/Testing)
   const [user, setUser] = useState<UserProfile | null>({
       name: "System Admin",
       organization: "Sakura Group",
-      email: "admin@sakuragroup.co.tz",
+      email: "admin@sakuragroup.co.tz", // Must match your DB admin email
       balance: 0,
       role: "ADMIN"
   });
 
+  // 🟢 2. Real Balance Sync (Fetches from API)
   useEffect(() => {
     async function syncBalance() {
       try {
@@ -51,12 +53,17 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     router.push("/login");
   };
 
+  // 🟢 3. Sidebar Menu (Includes Sovereign Link)
   const menu = [
     { name: "Overview", icon: LayoutDashboard, path: "/portal" },
     { name: "Compose", icon: PenTool, path: "/portal/compose" },
     { name: "Audience", icon: Users, path: "/portal/contacts" },
     { name: "Campaigns", icon: History, path: "/portal/campaigns" },
     { name: "Billing", icon: CreditCard, path: "/portal/billing" },
+    
+    // 👑 The God Mode Link
+    { name: "Sovereign", icon: ShieldCheck, path: "/portal/admin" },
+    
     { name: "System", icon: Settings, path: "/portal/settings" },
   ];
 
