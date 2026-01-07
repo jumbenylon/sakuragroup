@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import image from "next/image";
 import Link from "next/link";
 import { 
   motion, 
