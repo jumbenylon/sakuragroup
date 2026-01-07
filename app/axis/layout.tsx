@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 /**
- * Axis Root Layout (Production v5.5)
- * Logic: Enterprise SEO Metadata + Global Shell.
- * Fix: Removed AxisSidebar and Client logic to stop ReferenceErrors.
+ * Axis Root Layout (Production v5.5 - RECOVERY)
+ * Fix: Removed AxisSidebar import/usage to stop 500 status ReferenceErrors.
+ * Ethos: Radical Simplicity. Full-width for Auth & Pricing.
  */
 
 export const metadata: Metadata = {
@@ -44,9 +44,10 @@ export default function AxisLayout({
 }) {
   return (
     <div className="min-h-screen bg-white font-sans antialiased selection:bg-emerald-500/20">
-      {/* Senior Note: No Sidebar here. 
-          Login, Signup, and Pricing are full-width for maximum conversion.
-          The Sidebar is explicitly called in /axis/portal/layout.tsx
+      {/* 🟢 SENIOR LOGIC: 
+          We removed the Sidebar from this root level because it crashes 
+          public pages (Login/Signup/Pricing) when the user is unauthenticated.
+          The Sidebar is now handled exclusively in app/axis/portal/layout.tsx
       */}
       {children}
     </div>
