@@ -5,6 +5,12 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   try {
+    const authHeader = req.headers.get('x-admin-secret');
+  // You must provide this secret when calling the URL, e.g. via Postman or Curl
+  // If no secret matches, reject the request.
+  if (authHeader !== process.env.ADMIN_SECRET_KEY) { 
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
     const { getPrisma } = await import('@/lib/prisma');
     const prisma = getPrisma();
 
