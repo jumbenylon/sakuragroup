@@ -5,21 +5,17 @@ import { getPrisma } from "@/lib/prisma";
 import { verify } from "@node-rs/argon2";
 
 export const authOptions: NextAuthOptions = {
-  // 1. Cloud Run & Security Settings
-  debug: process.env.NODE_ENV === "development", // Enable debug logs in dev
+  // 1. Production Strategy
   session: { strategy: "jwt" },
-  pages: { signIn: "/axis/login" }, // This directs unauthenticated users to your login page
+  pages: { 
+    signIn: "/login", // We direct them to the subdomain login, not the main site
+    error: "/login" 
+  }, 
   secret: process.env.NEXTAUTH_SECRET,
-  
-  // 🟢 CRITICAL FOR CLOUD RUN
-  // This tells NextAuth to trust the HTTPS proxy provided by Cloud Run/Vercel
-  trustHost: true,
+  trustHost: true, // Critical for Cloud Run / Vercel proxies
 
-  // -----------------------------------------------------------------
-  // 🟢 CRITICAL FOR SUBDOMAINS (axis.sakuragroup.co.tz + pay...)
-  // We explicitly set the domain to '.sakuragroup.co.tz' so the
-  // cookie is shared across all subdomains.
-  // -----------------------------------------------------------------
+  // 🟢 2. UNIVERSAL COOKIE (The Magic)
+  // This allows the login to persist across axis., pay., and root.
   cookies: {
     sessionToken: {
       name: `__Secure-next-auth.session-token`,
@@ -27,12 +23,13 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true, // Always true for HTTPS
+        secure: true,
         domain: process.env.NODE_ENV === "production" ? '.sakuragroup.co.tz' : undefined
       }
     }
   },
 
+  // 3. Providers (The Keys)
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -40,7 +37,7 @@ export const authOptions: NextAuthOptions = {
       allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
-      name: "Sakura Axis",
+      name: "Sakura Identity",
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" }
@@ -55,12 +52,11 @@ export const authOptions: NextAuthOptions = {
 
         if (!user || !user.password) return null;
 
-        // Verify Password using Argon2
+        // Verify Password
         try {
            const isValid = await verify(user.password, credentials.password);
            if (!isValid) return null;
         } catch (e) {
-           console.error("Argon2 Verification Failed:", e);
            return null;
         }
 
@@ -72,24 +68,22 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
+  
+  // 4. Callbacks (Attaching the Rank)
   callbacks: {
     async jwt({ token, user }) {
-      // Initial sign in
       if (user) {
         token.id = user.id;
         token.role = user.role;
-        token.status = user.status;
-        token.balance = user.balance;
+        token.org = user.organization;
       }
       return token;
     },
     async session({ session, token }) {
-      // Pass token data to the client session
       if (session.user) {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
-        (session.user as any).status = token.status;
-        (session.user as any).balance = token.balance;
+        (session.user as any).organization = token.org;
       }
       return session;
     }
