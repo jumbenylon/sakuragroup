@@ -1,35 +1,46 @@
 import { NextResponse } from "next/server";
+import { getAuthSession } from "@/lib/session"; // 🟢 The New Lock
 
-export const dynamic = 'force-dynamic'; // Prevent caching
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    // 1. Get Master Credentials from Environment Variables
-    // (Ensure BEEM_API_KEY and BEEM_SECRET_KEY are in your .env file)
-    const apiKey = process.env.BEEM_API_KEY;
-    const secretKey = process.env.BEEM_SECRET_KEY;
+    // 1. 🟢 SECURITY CHECK
+    // Verify the user is actually logged in
+    const user = await getAuthSession();
 
-    if (!apiKey || !secretKey) {
-      console.error("BEEM CREDENTIALS MISSING");
-      // Fallback for UI testing if keys are missing
-      return NextResponse.json({ success: true, balance: 0, source: "NO_KEYS_CONFIGURED" });
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Connect to Beem (Real API Call)
-    // We use Basic Auth (API Key + Secret Key)
+    // 2. 🟢 CREDENTIAL LOGIC
+    // If the user is an ADMIN, we allow using the System Env Keys.
+    // (Later, we can make this check user.apiKey from the DB)
+    let apiKey = user.apiKey; // Assuming you added this to schema, or null
+    let secretKey = user.apiSecret;
+
+    if (user.role === "ADMIN") {
+        // Fallback to Master Keys for Admins
+        apiKey = apiKey || process.env.BEEM_API_KEY;
+        secretKey = secretKey || process.env.BEEM_SECRET_KEY;
+    }
+
+    if (!apiKey || !secretKey) {
+       return NextResponse.json({ success: true, balance: 0, source: "NO_KEYS" });
+    }
+
+    // 3. 🟢 BEEM API CALL
     const response = await fetch("https://apisms.beem.africa/public/v1/vendors/balance", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Basic " + Buffer.from(`${apiKey}:${secretKey}`).toString("base64"),
       },
-      // Short timeout to prevent hanging
       signal: AbortSignal.timeout(5000) 
     });
 
     const data = await response.json();
 
-    // 3. Process Response
     if (data?.data?.credit_balance !== undefined) {
       return NextResponse.json({ 
         success: true, 
@@ -37,12 +48,11 @@ export async function GET() {
         source: "BEEM_LIVE" 
       });
     } else {
-      console.error("Beem Balance Error:", data);
       return NextResponse.json({ success: false, balance: 0, error: "Beem API Error" });
     }
 
   } catch (error) {
-    console.error("Balance API Crash:", error);
-    return NextResponse.json({ error: "System failure" }, { status: 500 });
+    console.error("Balance API Error:", error);
+    return NextResponse.json({ error: "Server Error" }, { status: 500 });
   }
 }
