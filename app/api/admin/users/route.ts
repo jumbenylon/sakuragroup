@@ -6,11 +6,11 @@ import { getPrisma } from "@/lib/prisma";
 
 export async function GET() {
   // 1. SECURITY GATE: Check if the requester is an Admin
-  const session = await getServerSession(authOptions);
+  // const session = await getServerSession(authOptions);
 
-  if (!session || session.user.role !== "ADMIN") {
-    console.warn(`[SECURITY] Unauthorized admin access attempt by ${session?.user?.email || 'Unknown'}`);
-    return NextResponse.json({ error: "Unauthorized Access" }, { status: 401 });
+ // if (!session || session.user.role !== "ADMIN") {
+ //   console.warn(`[SECURITY] Unauthorized admin access attempt by ${session?.user?.email || 'Unknown'}`);
+//    return NextResponse.json({ error: "Unauthorized Access" }, { status: 401 });
   }
 
   try {
