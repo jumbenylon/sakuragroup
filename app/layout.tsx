@@ -5,7 +5,12 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sakura Group",
+  // 🟢 SENIOR FIX: This resolves the Playwright warnings and SEO resolution errors
+  metadataBase: new URL("https://sakuragroup.co.tz"),
+  title: {
+    default: "Sakura Group",
+    template: "%s | Sakura Group"
+  },
   description: "Technology & Infrastructure",
 };
 
