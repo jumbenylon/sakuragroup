@@ -10,6 +10,7 @@ import {
   Wallet, ShieldCheck
 } from "lucide-react";
 
+// Types for our Sovereign Data
 interface UserProfile {
   name: string;
   organization: string | null;
@@ -23,51 +24,49 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  // 🟢 BYPASS: Default to a "Dev Admin" so the UI always renders
+  // 🟢 1. FIX: Use the Real Admin Email
+  // This ensures the backend APIs (Balance/Send) find the correct API Keys
   const [user, setUser] = useState<UserProfile | null>({
-      name: "Sakura Dev",
-      organization: "Sakura HQ",
-      email: "dev@sakura.local",
-      balance: 150000,
+      name: "System Admin",
+      organization: "Sakura Group",
+      email: "admin@sakuragroup.co.tz", // <--- CRITICAL: Matches your DB user
+      balance: 0, // Will update when API fetches real balance
       role: "ADMIN"
   });
   
   const [loading, setLoading] = useState(false);
 
-  // 🟢 DISABLED AUTH CHECK (To stop the redirect loop)
-  /*
+  // 🟢 2. REAL BALANCE SYNC
+  // Even in "Open Mode", we want to fetch the real Beem balance
   useEffect(() => {
-    async function fetchIdentity() {
+    async function syncBalance() {
       try {
-        const res = await fetch("/api/auth/check-user"); 
+        const res = await fetch("/api/sms/balance");
         if (res.ok) {
-          const data = await res.json();
-          setUser(data.user);
-        } else {
-           // THIS WAS CAUSING THE LOOP
-           // router.push("/axis/login"); 
+           const data = await res.json();
+           // Only update balance, keep other mock details
+           setUser(prev => prev ? { ...prev, balance: data.balance } : prev);
         }
-      } catch (error) {
-        console.error("Identity Sync Failed", error);
-      } finally {
-        setLoading(false);
+      } catch (e) {
+        console.error("Balance Sync Failed", e);
       }
     }
-    fetchIdentity();
-  }, [router]);
-  */
+    syncBalance();
+  }, []); // Run once on mount
 
   const handleLogout = async () => {
-    router.push("/axis/login");
+    // router.push("/axis/login"); // Old Path
+    router.push("/login"); // New Subdomain Path
   };
 
+  // 🟢 3. FIX: Sidebar Links (Remove '/axis' prefix)
   const menu = [
-    { name: "Overview", icon: LayoutDashboard, path: "/axis/portal" },
-    { name: "Compose", icon: PenTool, path: "/axis/portal/compose" },
-    { name: "Audience", icon: Users, path: "/axis/portal/contacts" },
-    { name: "Campaigns", icon: History, path: "/axis/portal/campaigns" },
-    { name: "Billing", icon: CreditCard, path: "/axis/portal/billing" },
-    { name: "System", icon: Settings, path: "/axis/portal/settings" },
+    { name: "Overview", icon: LayoutDashboard, path: "/portal" },
+    { name: "Compose", icon: PenTool, path: "/portal/compose" },
+    { name: "Audience", icon: Users, path: "/portal/contacts" },
+    { name: "Campaigns", icon: History, path: "/portal/campaigns" },
+    { name: "Billing", icon: CreditCard, path: "/portal/billing" },
+    { name: "System", icon: Settings, path: "/portal/settings" },
   ];
 
   return (
@@ -79,7 +78,6 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         {/* BRAND LOGO */}
         <div className="h-24 flex items-center px-6 border-b border-slate-100">
            <div className="relative w-48 h-14"> 
-              {/* Ensure this image path is correct for your bucket */}
               <Image 
                 src="https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png" 
                 alt="Sakura Axis" 
@@ -202,14 +200,3 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                 <button onClick={() => setMobileMenuOpen(false)} className="text-slate-800"><X /></button>
             </div>
             <nav className="space-y-4">
-                {menu.map((item) => (
-                    <Link key={item.name} href={item.path} onClick={() => setMobileMenuOpen(false)} className="block text-lg font-bold text-slate-600 hover:text-pink-600">
-                        {item.name}
-                    </Link>
-                ))}
-            </nav>
-        </div>
-      )}
-    </div>
-  );
-}
