@@ -5,20 +5,38 @@ import { getPrisma } from "@/lib/prisma";
 import { verify } from "@node-rs/argon2";
 
 export const authOptions: NextAuthOptions = {
+  // 1. Cloud Run & Security Settings
+  debug: process.env.NODE_ENV === "development", // Enable debug logs in dev
   session: { strategy: "jwt" },
-  pages: { signIn: "/axis/login" },
-  
+  pages: { signIn: "/axis/login" }, // This directs unauthenticated users to your login page
   secret: process.env.NEXTAUTH_SECRET,
+  
+  // 🟢 CRITICAL FOR CLOUD RUN
+  // This tells NextAuth to trust the HTTPS proxy provided by Cloud Run/Vercel
+  trustHost: true,
 
   // -----------------------------------------------------------------
-  // REMOVED: The entire 'cookies' block.
-  // We are letting NextAuth automatically determine the domain.
+  // 🟢 CRITICAL FOR SUBDOMAINS (axis.sakuragroup.co.tz + pay...)
+  // We explicitly set the domain to '.sakuragroup.co.tz' so the
+  // cookie is shared across all subdomains.
   // -----------------------------------------------------------------
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: true, // Always true for HTTPS
+        domain: process.env.NODE_ENV === "production" ? '.sakuragroup.co.tz' : undefined
+      }
+    }
+  },
 
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
@@ -37,9 +55,14 @@ export const authOptions: NextAuthOptions = {
 
         if (!user || !user.password) return null;
 
-        const isValid = await verify(user.password, credentials.password);
-        
-        if (!isValid) return null;
+        // Verify Password using Argon2
+        try {
+           const isValid = await verify(user.password, credentials.password);
+           if (!isValid) return null;
+        } catch (e) {
+           console.error("Argon2 Verification Failed:", e);
+           return null;
+        }
 
         if (user.status !== "ACTIVE") {
           throw new Error("ACCOUNT_PENDING_APPROVAL");
@@ -51,6 +74,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // Initial sign in
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -60,6 +84,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
+      // Pass token data to the client session
       if (session.user) {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
