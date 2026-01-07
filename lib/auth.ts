@@ -1,20 +1,16 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { getPrisma } from "@/lib/prisma"; 
+import { getPrisma } from "@/lib/prisma";
+import { verify } from "@node-rs/argon2";
 
 export const authOptions: NextAuthOptions = {
-  // 1. Production Strategy
   session: { strategy: "jwt" },
-  pages: { 
-    signIn: "/login", // We direct them to the subdomain login, not the main site
-    error: "/login" 
-  }, 
+  pages: { signIn: "/login", error: "/login" },
   secret: process.env.NEXTAUTH_SECRET,
-  trustHost: true, // Critical for Cloud Run / Vercel proxies
-
-  // 🟢 2. UNIVERSAL COOKIE (The Magic)
-  // This allows the login to persist across axis., pay., and root.
+  trustHost: true, // Vital for Codespaces
+  
+  // 🟢 1. COOKIES (Keeps you logged in everywhere)
   cookies: {
     sessionToken: {
       name: `__Secure-next-auth.session-token`,
@@ -22,54 +18,43 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true,
+        secure: true, // Always true for HTTPS/Codespaces
         domain: process.env.NODE_ENV === "production" ? '.sakuragroup.co.tz' : undefined
       }
     }
   },
 
-  // 3. Providers (The Keys)
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       allowDangerousEmailAccountLinking: true,
     }),
+    
+    // 🟢 2. PASSWORD LOGIN (Restored)
     CredentialsProvider({
-      name: "Sakura OTP",
+      name: "Sakura Identity",
       credentials: {
         email: { label: "Email", type: "text" },
-        otp: { label: "Code", type: "text" } // 🟢 Changed from 'password' to 'otp'
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.otp) return null;
+        if (!credentials?.email || !credentials?.password) return null;
 
         const prisma = getPrisma();
         const user = await prisma.user.findUnique({
           where: { email: credentials.email }
         });
 
-        // 🟢 OTP LOGIC STARTS HERE
-        if (!user || !user.otp || !user.otpExpires) {
-            // No user, or no code was ever requested
-            return null;
-        }
+        if (!user || !user.password) return null;
 
-        // 1. Check if OTP matches
-        if (user.otp !== credentials.otp) {
-            throw new Error("INVALID_CODE");
+        // Verify Password
+        try {
+           const isValid = await verify(user.password, credentials.password);
+           if (!isValid) return null;
+        } catch (e) {
+           return null;
         }
-
-        // 2. Check if expired (Current time > Expiration time)
-        if (new Date() > user.otpExpires) {
-            throw new Error("CODE_EXPIRED");
-        }
-
-        // 3. Success! Clear the OTP so it can't be reused.
-        await prisma.user.update({
-            where: { id: user.id },
-            data: { otp: null, otpExpires: null }
-        });
 
         if (user.status !== "ACTIVE") {
           throw new Error("ACCOUNT_PENDING_APPROVAL");
@@ -80,7 +65,6 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   
-  // 4. Callbacks (Attaching the Rank)
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
