@@ -10,7 +10,6 @@ import {
   Wallet, ShieldCheck
 } from "lucide-react";
 
-// Types for our Sovereign Data
 interface UserProfile {
   name: string;
   organization: string | null;
@@ -23,28 +22,22 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   
-  // 🟢 1. FIX: Use the Real Admin Email
-  // This ensures the backend APIs (Balance/Send) find the correct API Keys
   const [user, setUser] = useState<UserProfile | null>({
       name: "System Admin",
       organization: "Sakura Group",
-      email: "admin@sakuragroup.co.tz", // <--- CRITICAL: Matches your DB user
-      balance: 0, // Will update when API fetches real balance
+      email: "admin@sakuragroup.co.tz",
+      balance: 0,
       role: "ADMIN"
   });
-  
-  const [loading, setLoading] = useState(false);
 
-  // 🟢 2. REAL BALANCE SYNC
-  // Even in "Open Mode", we want to fetch the real Beem balance
   useEffect(() => {
     async function syncBalance() {
       try {
         const res = await fetch("/api/sms/balance");
         if (res.ok) {
            const data = await res.json();
-           // Only update balance, keep other mock details
            setUser(prev => prev ? { ...prev, balance: data.balance } : prev);
         }
       } catch (e) {
@@ -52,14 +45,12 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       }
     }
     syncBalance();
-  }, []); // Run once on mount
+  }, []);
 
   const handleLogout = async () => {
-    // router.push("/axis/login"); // Old Path
-    router.push("/login"); // New Subdomain Path
+    router.push("/login");
   };
 
-  // 🟢 3. FIX: Sidebar Links (Remove '/axis' prefix)
   const menu = [
     { name: "Overview", icon: LayoutDashboard, path: "/portal" },
     { name: "Compose", icon: PenTool, path: "/portal/compose" },
@@ -200,3 +191,14 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                 <button onClick={() => setMobileMenuOpen(false)} className="text-slate-800"><X /></button>
             </div>
             <nav className="space-y-4">
+                {menu.map((item) => (
+                    <Link key={item.name} href={item.path} onClick={() => setMobileMenuOpen(false)} className="block text-lg font-bold text-slate-600 hover:text-pink-600">
+                        {item.name}
+                    </Link>
+                ))}
+            </nav>
+        </div>
+      )}
+    </div>
+  );
+}
