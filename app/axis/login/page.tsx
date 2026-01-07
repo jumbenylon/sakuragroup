@@ -3,7 +3,8 @@
 import React, { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Lock, Mail, Loader2, ArrowRight } from "lucide-react";
+import { Lock, Mail, Loader2, ArrowRight, Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 
 function LoginForm() {
   const router = useRouter();
@@ -12,6 +13,7 @@ function LoginForm() {
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // 🟢 State for toggle
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -65,20 +67,36 @@ function LoginForm() {
             />
           </div>
         </div>
+        
         <div>
-           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Key</label>
+           <div className="flex justify-between items-center mb-1">
+             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Key</label>
+             {/* 🟢 Forgot Password Link */}
+             <Link href="/axis/forgot-password" className="text-[10px] font-bold text-pink-600 hover:text-pink-700">
+               Forgot Password?
+             </Link>
+           </div>
            <div className="relative">
              <Lock className="absolute left-4 top-3.5 text-slate-300" size={16} />
              <input 
-               type="password" 
+               type={showPassword ? "text" : "password"} // 🟢 Toggle Type
                value={password}
                onChange={(e) => setPassword(e.target.value)}
-               className="w-full pl-11 p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-500"
+               className="w-full pl-11 pr-10 p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-500"
                placeholder="••••••••"
                required
              />
+             {/* 🟢 Toggle Button */}
+             <button
+               type="button"
+               onClick={() => setShowPassword(!showPassword)}
+               className="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600"
+             >
+               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+             </button>
            </div>
         </div>
+
         <button 
           type="submit" 
           disabled={loading}
