@@ -1,105 +1,161 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
-import { ShieldCheck, Lock, ChevronRight, AlertTriangle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ArrowLeft, 
+  Mail, 
+  Lock, 
+  Eye, 
+  EyeOff, 
+  ArrowRight, 
+  ShieldCheck, 
+  Activity 
+} from "lucide-react";
 
 export default function AxisLoginPage() {
-  const [code, setCode] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Fake login handler for UI demo
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch("/api/auth/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
-      });
-
-      if (res.ok) {
-        router.push("/axis/portal");
-      } else {
-        setError("ACCESS DENIED: INVALID CREDENTIALS");
-      }
-    } catch (err) {
-      setError("SYSTEM ERROR: HANDSHAKE FAILED");
-    } finally {
-      setLoading(false);
-    }
+    setIsLoading(true);
+    // Simulate API call
+    setTimeout(() => setIsLoading(false), 2000);
   };
 
   return (
-    <main className="min-h-screen bg-[#020202] text-white font-mono flex flex-col items-center justify-center p-6 selection:bg-pink-600/30">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-[#020617] font-sans">
       
-      {/* SECURITY HEADER */}
-      <div className="w-full max-w-md mb-8 flex items-center justify-between text-[10px] text-slate-600 uppercase tracking-widest">
-         <span>Secure Gateway v2.4</span>
-         <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-rose-600 rounded-full animate-pulse" />
-            <span>UNAUTHORIZED ACCESS PROHIBITED</span>
-         </div>
-      </div>
-
-      {/* LOGIN CARD */}
-      <div className="w-full max-w-md bg-[#050505] border border-white/10 p-8 shadow-2xl relative overflow-hidden group">
-        
-        {/* SCANNER LINE ANIMATION */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-pink-600 to-transparent opacity-50 animate-scan" />
-
-        <div className="flex justify-center mb-8">
-             <div className="relative w-32 h-16">
-                <Image 
-                    src="https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png" 
-                    alt="Axis" 
-                    fill
-                    className="object-contain"
-                />
-             </div>
+      {/* LEFT SIDE: THE VISUAL (Only visible on Desktop) */}
+      <div className="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden border-r border-white/5">
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop" 
+            alt="Axis Infrastructure" 
+            fill 
+            className="object-cover opacity-30 mix-blend-luminosity"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#020617] via-[#020617]/90 to-[#064e3b]/40" />
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                    <Lock size={10} /> Enter Access Code
-                </label>
-                <input 
-                    type="password" 
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full bg-[#0a0a0a] border border-white/10 focus:border-pink-600 p-4 text-center text-xl tracking-[0.5em] text-white outline-none transition-colors placeholder:text-slate-800"
-                    autoFocus
-                />
+        <div className="relative z-10">
+          <Link href="/" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-8">
+            <ArrowLeft size={16} /> Back to Sakura Group
+          </Link>
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-emerald-500/30 bg-emerald-500/10 rounded-full backdrop-blur-md">
+            <Activity size={14} className="text-emerald-400" />
+            <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400">System Status: Operational</span>
+          </div>
+        </div>
+
+        <div className="relative z-10 max-w-lg">
+          <blockquote className="text-2xl font-light text-slate-200 mb-6 leading-relaxed">
+            "Identity is the new currency. When you speak through Axis, the market listens."
+          </blockquote>
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+              <ShieldCheck size={20} className="text-emerald-500" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white uppercase tracking-wide">End-to-End Encryption</p>
+              <p className="text-xs text-slate-500">256-bit SSL Secured Connection</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE: THE FORM */}
+      <div className="flex flex-col justify-center px-6 sm:px-12 lg:px-24 py-12 relative">
+        <div className="max-w-md w-full mx-auto space-y-8">
+          
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase">
+              Welcome <span className="text-emerald-500">Back.</span>
+            </h1>
+            <p className="text-slate-400">Enter your credentials to access the Axis Portal.</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-4">
+              {/* Email Input */}
+              <div className="space-y-2">
+                <label className="text-xs font-mono uppercase tracking-widest text-slate-500">Business Email</label>
+                <div className="relative group">
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 pl-4 text-slate-500 group-focus-within:text-emerald-500 transition-colors">
+                    <Mail size={18} />
+                  </div>
+                  <input 
+                    type="email" 
+                    placeholder="name@company.com" 
+                    required
+                    className="w-full bg-[#0a0f1e] border border-white/10 rounded px-12 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-mono uppercase tracking-widest text-slate-500">Password</label>
+                  <Link href="/axis/reset-password" className="text-xs text-emerald-500 hover:text-emerald-400 transition-colors">
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative group">
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 pl-4 text-slate-500 group-focus-within:text-emerald-500 transition-colors">
+                    <Lock size={18} />
+                  </div>
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    placeholder="••••••••" 
+                    required
+                    className="w-full bg-[#0a0f1e] border border-white/10 rounded px-12 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 pr-4 text-slate-500 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {error && (
-                <div className="flex items-center gap-2 text-rose-500 text-xs justify-center bg-rose-950/10 p-2 border border-rose-900/20">
-                    <AlertTriangle size={12} /> {error}
-                </div>
-            )}
-
             <button 
-                disabled={loading}
-                className="w-full bg-white text-black hover:bg-slate-200 font-bold uppercase tracking-widest py-4 text-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              type="submit" 
+              disabled={isLoading}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                {loading ? "Authenticating..." : <>Initialize Session <ChevronRight size={14} /></>}
+              {isLoading ? (
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>Sign In <ArrowRight size={16} /></>
+              )}
             </button>
-        </form>
+          </form>
 
-        <div className="mt-8 pt-6 border-t border-white/5 text-center">
-            <p className="text-[9px] text-slate-600 leading-relaxed">
-                This system is monitored. All access attempts are logged. <br/>
-                IP Address: <span className="text-slate-400">HIDDEN</span>
+          <div className="pt-6 text-center border-t border-white/5">
+            <p className="text-sm text-slate-500">
+              Don't have an Axis Node ID?{' '}
+              <Link href="/contact" className="text-white hover:text-emerald-500 font-bold transition-colors">
+                Request Access
+              </Link>
+            </p>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-6 left-0 right-0 text-center">
+            <p className="text-[10px] text-slate-600 font-mono uppercase">
+                &copy; 2026 Sakura Group. All Systems Secure.
             </p>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
