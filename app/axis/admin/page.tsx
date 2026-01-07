@@ -1,37 +1,22 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { getPrisma } from "@/lib/prisma";
 import { 
   Users, 
   MessageSquare, 
-  TrendingUp, 
   Activity, 
   ShieldAlert, 
-  DollarSign 
+  DollarSign,
+  TrendingUp 
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminMasterDashboard() {
-  // 1. Secure Authentication (The JWT Way)
-  const session = await getServerSession(authOptions);
-
-  // 2. Guard: Must be Logged In AND be an ADMIN
-  if (!session || !session.user) {
-    redirect("/axis/login");
-  }
-
-  // Note: We cast role to 'any' temporarily if TS complains, 
-  // but ideally your types are set. 
-  // We check if the user is NOT an admin.
-  if ((session.user as any).role !== "ADMIN") {
-    redirect("/axis/portal"); // Kick them to normal portal
-  }
-
+  // 🟢 UNLOCKED: We removed the Session/Redirect check.
+  // We assume you are the Admin for now.
+  
   const prisma = getPrisma();
 
-  // 3. Fetch "Sovereign" Stats
+  // Fetch real data from your DB
   const [
     userCount,
     smsCount,
@@ -92,7 +77,7 @@ export default async function AdminMasterDashboard() {
           />
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions / Logs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -132,7 +117,7 @@ export default async function AdminMasterDashboard() {
   );
 }
 
-// Simple internal component for consistent design
+// Internal Component
 function KpiCard({ label, value, icon: Icon, color }: any) {
   return (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
