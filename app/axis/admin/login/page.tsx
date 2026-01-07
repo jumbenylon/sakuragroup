@@ -1,159 +1,102 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { 
-  ShieldAlert, 
-  Lock, 
-  Key, 
-  Fingerprint, 
-  ArrowRight, 
-  AlertTriangle,
-  Terminal
-} from "lucide-react";
+import React, { useState, Suspense } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Lock, Mail, Loader2, ArrowRight } from "lucide-react";
 
-export default function AdminLoginPage() {
-  const [step, setStep] = useState(1); // 1 = Creds, 2 = MFA
+function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/portal";
+  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Fake auth sequence
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulate checking DB
-    setTimeout(() => {
-        setLoading(false);
-        setStep(2); // Move to MFA step
-    }, 1500);
+    setError("");
+
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (res?.ok) {
+      router.push(callbackUrl);
+    } else {
+      setLoading(false);
+      setError("Invalid credentials");
+    }
   };
 
-  const handleMFA = (e: React.FormEvent) => {
-      e.preventDefault();
-      setLoading(true);
-      // Simulate verification
-      setTimeout(() => {
-          window.location.href = "/axis/admin/dashboard"; // Redirect
-      }, 2000);
-  }
-
   return (
-    <div className="min-h-screen bg-[#000000] font-mono text-slate-300 grid md:grid-cols-[1fr_500px] overflow-hidden">
-      
-      {/* LEFT: SYSTEM LOGS (Visual Fluff) */}
-      <div className="relative hidden md:flex flex-col justify-end p-12 border-r border-white/10 bg-[#020202]">
-        <div className="absolute inset-0 z-0 opacity-20">
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+    <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-slate-100 relative overflow-hidden">
+      <div className="text-center mb-8 relative z-10">
+        <div className="inline-flex p-3 bg-pink-50 rounded-xl mb-4 text-pink-600">
+           <Lock size={24} />
         </div>
-        
-        {/* Fake Terminal Output */}
-        <div className="relative z-10 space-y-2 text-[10px] opacity-50 select-none pointer-events-none">
-            <p className="text-emerald-500">root@sakura-core:~# init_sequence --admin</p>
-            <p>> Establishing secure handshake...</p>
-            <p>> [OK] TLS 1.3 Connection Verified</p>
-            <p>> [OK] IP Address Whitelisted</p>
-            <p>> [CHECK] Biometric signature... PENDING</p>
-            <p className="animate-pulse">> Waiting for credentials...</p>
-        </div>
-
-        <div className="mt-12">
-            <h2 className="text-2xl font-bold text-white uppercase tracking-tighter mb-2 flex items-center gap-2">
-                <ShieldAlert className="text-red-500" /> Restricted Area
-            </h2>
-            <p className="text-xs text-slate-500 max-w-sm">
-                Unauthorized access to this system is a criminal offense under the Tanzania Cybercrimes Act, 2015. 
-                All IP addresses are logged and monitored.
-            </p>
-        </div>
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Axis Gateway</h1>
+        <p className="text-sm text-slate-500 mt-2">Enter your Sovereign credentials.</p>
       </div>
 
-      {/* RIGHT: THE FORM */}
-      <div className="flex flex-col justify-center p-8 md:p-16 relative">
-         <div className="max-w-xs w-full mx-auto">
-            
-            {/* Header */}
-            <div className="mb-12 text-center">
-                <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Terminal size={24} className="text-white" />
-                </div>
-                <h1 className="text-xl font-bold text-white uppercase tracking-widest">Root Access</h1>
-                <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest mt-2 flex items-center justify-center gap-1">
-                    <AlertTriangle size={10} /> Level 5 Clearance
-                </p>
-            </div>
+      {error && (
+        <div className="mb-6 p-3 bg-red-50 text-red-600 text-xs font-bold rounded flex items-center gap-2 justify-center">
+          {error}
+        </div>
+      )}
 
-            {/* STEP 1: CREDENTIALS */}
-            {step === 1 && (
-                <form onSubmit={handleLogin} className="space-y-6">
-                    <div className="space-y-1">
-                        <label className="text-[10px] uppercase tracking-widest text-slate-500">Admin ID</label>
-                        <div className="flex items-center border-b border-white/20 focus-within:border-white transition-colors py-2">
-                            <Lock size={14} className="mr-3 text-slate-500" />
-                            <input 
-                                type="text" 
-                                className="bg-transparent border-none outline-none text-sm text-white w-full placeholder:text-slate-700 font-sans"
-                                placeholder="root_admin"
-                                required
-                            />
-                        </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                        <label className="text-[10px] uppercase tracking-widest text-slate-500">Access Key</label>
-                        <div className="flex items-center border-b border-white/20 focus-within:border-white transition-colors py-2">
-                            <Key size={14} className="mr-3 text-slate-500" />
-                            <input 
-                                type="password" 
-                                className="bg-transparent border-none outline-none text-sm text-white w-full placeholder:text-slate-700 font-sans"
-                                placeholder="••••••••••••••"
-                                required
-                            />
-                        </div>
-                    </div>
+      <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+        <div>
+          <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Identity</label>
+          <div className="relative">
+            <Mail className="absolute left-4 top-3.5 text-slate-300" size={16} />
+            <input 
+              type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full pl-11 p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              placeholder="admin@sakuragroup.co.tz"
+              required
+            />
+          </div>
+        </div>
+        <div>
+           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Key</label>
+           <div className="relative">
+             <Lock className="absolute left-4 top-3.5 text-slate-300" size={16} />
+             <input 
+               type="password" 
+               value={password}
+               onChange={(e) => setPassword(e.target.value)}
+               className="w-full pl-11 p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-500"
+               placeholder="••••••••"
+               required
+             />
+           </div>
+        </div>
+        <button 
+          type="submit" 
+          disabled={loading}
+          className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-widest rounded-lg shadow-lg flex justify-center items-center gap-2 transition-all disabled:opacity-70"
+        >
+          {loading ? <Loader2 size={16} className="animate-spin"/> : <>Access Portal <ArrowRight size={16} /></>}
+        </button>
+      </form>
+    </div>
+  );
+}
 
-                    <button disabled={loading} className="w-full bg-white text-black h-12 text-xs font-bold uppercase tracking-widest hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 mt-8">
-                        {loading ? "Verifying..." : <>Authenticate <ArrowRight size={14} /></>}
-                    </button>
-                </form>
-            )}
-
-            {/* STEP 2: MFA / 2FA */}
-            {step === 2 && (
-                <form onSubmit={handleMFA} className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                    <div className="text-center mb-6">
-                        <Fingerprint size={48} className="text-emerald-500 mx-auto mb-4 animate-pulse" />
-                        <p className="text-xs text-white">Enter 2FA Token</p>
-                    </div>
-
-                    <div className="flex gap-2 justify-center">
-                        {[1, 2, 3, 4, 5, 6].map((i) => (
-                            <input 
-                                key={i}
-                                type="text"
-                                maxLength={1}
-                                className="w-10 h-12 bg-white/5 border border-white/10 text-center text-white font-bold rounded focus:border-emerald-500 focus:outline-none"
-                            />
-                        ))}
-                    </div>
-
-                    <button disabled={loading} className="w-full bg-emerald-600 text-white h-12 text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2 mt-8 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                        {loading ? "Decrypting..." : "Verify Token"}
-                    </button>
-                    
-                    <button type="button" onClick={() => setStep(1)} className="w-full text-[10px] text-slate-500 hover:text-white uppercase tracking-widest mt-4">
-                        Cancel Verification
-                    </button>
-                </form>
-            )}
-         </div>
-
-         <div className="absolute bottom-8 left-0 right-0 text-center">
-             <Link href="/" className="text-[10px] text-slate-700 hover:text-slate-500 transition-colors">
-                 Exit to Safe Mode
-             </Link>
-         </div>
-      </div>
+export default function LoginPage() {
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4">
+      <Suspense fallback={<div>Loading...</div>}>
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }
