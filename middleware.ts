@@ -5,70 +5,54 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const hostname = request.headers.get("host") || "";
-  
-  // 🟢 SECURE TOKEN CHECK (Does the user have a pass?)
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
   const isAuthenticated = !!token;
 
-  // Identify Environment
-  const currentHost = process.env.NODE_ENV === "production"
-    ? hostname.replace(".sakuragroup.co.tz", "")
-    : hostname.replace(".localhost:3000", "");
+  // 🔎 DETECT ENVIRONMENT
+  // If we are on "axis" subdomain OR inside a Codespace/Localhost
+  const isAxis = hostname.startsWith("axis.") || hostname.includes("github.dev") || hostname.includes("localhost");
 
   // ==============================================================
-  // 🏰 GATE 1: AXIS PORTAL (axis.sakuragroup.co.tz)
+  // 🏰 GATE 1: AXIS PORTAL (The App)
   // ==============================================================
-  if (currentHost === "axis") {
+  if (isAxis) {
     
-    // 1. Redirect Root to Portal
+    // 1. Handle Root -> Portal
     if (url.pathname === "/") {
       return NextResponse.redirect(new URL("/portal", request.url));
     }
 
-    // 2. Protect the Portal (The VIP Room)
+    // 2. Protect Portal Routes
     if (url.pathname.startsWith("/portal")) {
        if (!isAuthenticated) {
-          // JOURNEY FIX: Send them to login, but remember where they wanted to go
           const loginUrl = new URL("/login", request.url);
           loginUrl.searchParams.set("callbackUrl", url.pathname); 
           return NextResponse.redirect(loginUrl);
        }
-       // Rewrite URL to internal folder
        return NextResponse.rewrite(new URL(`/axis${url.pathname}`, request.url));
     }
 
-    // 3. Manage Login Page (The Entry Door)
+    // 3. Handle Login Page
     if (url.pathname.startsWith("/login")) {
-       // JOURNEY FIX: If already logged in, don't show login page. Go to dashboard.
        if (isAuthenticated) {
           return NextResponse.redirect(new URL("/portal", request.url));
        }
        return NextResponse.rewrite(new URL("/axis/login", request.url));
     }
 
-    // 4. Allow Public Assets / NextAuth API
-    // (Everything else just rewrites to the axis folder)
+    // 4. Rewrite all other assets
+    // If it's an API route, let it pass through naturally
+    if (url.pathname.startsWith("/api/")) {
+        return NextResponse.next();
+    }
+
     return NextResponse.rewrite(new URL(`/axis${url.pathname}`, request.url));
   }
 
-  // ==============================================================
-  // 💳 GATE 2: PAYMENTS (pay.sakuragroup.co.tz)
-  // ==============================================================
-  if (currentHost === "pay") {
-    return NextResponse.rewrite(new URL(`/pay${url.pathname}`, request.url));
-  }
-
-  // ==============================================================
-  // 🌍 GATE 3: PUBLIC SITE (sakuragroup.co.tz)
-  // ==============================================================
-  // Block direct access to internal folders
-  if (url.pathname.startsWith("/axis") || url.pathname.startsWith("/pay")) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-  
+  // Fallback for everything else
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api/|_next/|_static/|[\\w-]+\\.\\w+).*)"],
+  matcher: ["/((?!_next/|_static/|[\\w-]+\\.\\w+).*)"],
 };
