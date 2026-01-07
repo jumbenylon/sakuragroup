@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import AxisSidebar from "@/components/layout/AxisSidebar";
 
 // 1. Metadata: Preserving your Enterprise SEO Configuration
 export const metadata: Metadata = {
