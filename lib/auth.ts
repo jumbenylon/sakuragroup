@@ -2,7 +2,6 @@ import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getPrisma } from "@/lib/prisma"; 
-import { verify } from "@node-rs/argon2";
 
 export const authOptions: NextAuthOptions = {
   // 1. Production Strategy
@@ -37,28 +36,40 @@ export const authOptions: NextAuthOptions = {
       allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
-      name: "Sakura Identity",
+      name: "Sakura OTP",
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" }
+        otp: { label: "Code", type: "text" } // 🟢 Changed from 'password' to 'otp'
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.otp) return null;
 
         const prisma = getPrisma();
         const user = await prisma.user.findUnique({
           where: { email: credentials.email }
         });
 
-        if (!user || !user.password) return null;
-
-        // Verify Password
-        try {
-           const isValid = await verify(user.password, credentials.password);
-           if (!isValid) return null;
-        } catch (e) {
-           return null;
+        // 🟢 OTP LOGIC STARTS HERE
+        if (!user || !user.otp || !user.otpExpires) {
+            // No user, or no code was ever requested
+            return null;
         }
+
+        // 1. Check if OTP matches
+        if (user.otp !== credentials.otp) {
+            throw new Error("INVALID_CODE");
+        }
+
+        // 2. Check if expired (Current time > Expiration time)
+        if (new Date() > user.otpExpires) {
+            throw new Error("CODE_EXPIRED");
+        }
+
+        // 3. Success! Clear the OTP so it can't be reused.
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { otp: null, otpExpires: null }
+        });
 
         if (user.status !== "ACTIVE") {
           throw new Error("ACCOUNT_PENDING_APPROVAL");
