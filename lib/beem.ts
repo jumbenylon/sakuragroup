@@ -1,8 +1,14 @@
 import https from "https";
 import axios from "axios";
 
-// TYPES
-interface BeemResponse {
+/**
+ * AXIS CORE: BEEM AFRICA ADAPTER (v6.0)
+ * Purpose: Direct carrier connectivity for sakurahost.co.tz
+ * Logic: Handles SMS transmission and Admin Balance Synchronization.
+ */
+
+// --- TYPES ---
+interface BeemSMSResponse {
   successful: boolean;
   request_id: number;
   code: number;
@@ -12,83 +18,104 @@ interface BeemResponse {
   duplicates: number;
 }
 
+interface BeemBalanceResponse {
+  successful: boolean;
+  data?: {
+    credit_balance: string;
+  };
+}
+
 interface SendParams {
   recipients: string[]; 
   message: string;
   sourceId?: string;
 }
 
-// CONFIG
-const BEEM_URL = "https://apisms.beem.africa/v1/send";
+// --- CONFIG ---
+const SMS_URL = "https://apisms.beem.africa/v1/send";
+const BALANCE_URL = "https://api.beem.africa/public/v1/vendors/balance";
 
-/**
- * SAKURA CORE: BEEM SMS ADAPTER
- * Handles authorization headers and payload formatting for Beem Africa.
- */
-export async function sendBeemSMS({ recipients, message, sourceId }: SendParams) {
+const getAuthHeader = () => {
   const apiKey = process.env.BEEM_API_KEY;
   const secretKey = process.env.BEEM_SECRET_KEY;
-  const defaultSource = process.env.BEEM_SOURCE_ID;
 
   if (!apiKey || !secretKey) {
-    console.error("CRITICAL: Beem API keys are missing from environment variables.");
-    return { success: false, error: "Server Config Error: Missing API Keys" };
+    throw new Error("CRITICAL: Beem API keys missing for sakurahost.co.tz");
   }
 
-  // Auth Header
-  const auth = Buffer.from(`${apiKey}:${secretKey}`).toString("base64");
+  return Buffer.from(`${apiKey}:${secretKey}`).toString("base64");
+};
 
-  // Format recipients
-  const formattedRecipients = recipients.map((phone, index) => ({
-    recipient_id: index + 1,
-    dest_addr: phone.replace("+", ""),
-  }));
-
-  const payload = {
-    source_addr: sourceId || defaultSource || "INFO", // Fallback if env missing
-    schedule_time: "",
-    encoding: 0,
-    message: message,
-    recipients: formattedRecipients,
-  };
-
+/**
+ * 1. SEND SMS
+ * Logic: Standardized transmission with logical code validation.
+ */
+export async function sendBeemSMS({ recipients, message, sourceId }: SendParams) {
   try {
-    const { data } = await axios.post<BeemResponse>(BEEM_URL, payload, {
+    const auth = getAuthHeader();
+    const defaultSource = process.env.BEEM_SOURCE_ID || "INFO";
+
+    const payload = {
+      source_addr: sourceId || defaultSource,
+      schedule_time: "",
+      encoding: 0,
+      message: message,
+      recipients: recipients.map((phone, index) => ({
+        recipient_id: index + 1,
+        dest_addr: phone.replace("+", ""),
+      })),
+    };
+
+    const { data } = await axios.post<BeemSMSResponse>(SMS_URL, payload, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Basic ${auth}`,
       },
-      // Keep SSL bypass for robustness on some servers
       httpsAgent: new https.Agent({ rejectUnauthorized: false }),
     });
 
-    // --- THE FIX: INSPECT THE INTERNAL CODE ---
-    // Beem Codes:
-    // 100: Sent Successfully
-    // 101: Scheduled Successfully
-    // 102: Queued Successfully
-    // Any other code (e.g., 105, 106) is a FAILURE, even if HTTP is 200.
-    const validCodes = [100, 101, 102];
+    // Valid Beem Codes: 100 (Sent), 101 (Scheduled), 102 (Queued)
+    const successCodes = [100, 101, 102];
+    if (!successCodes.includes(data.code)) {
+      return { success: false, error: `Gateway Error: ${data.message}`, code: data.code };
+    }
 
-    if (!validCodes.includes(data.code)) {
-      console.error("BEEM LOGICAL ERROR:", data);
-      return {
-        success: false,
-        error: `Gateway Error (${data.code}): ${data.message}`,
-        data: data // Pass data back so you can see details in debug console
+    return { success: true, data };
+  } catch (error: any) {
+    return { 
+      success: false, 
+      error: error.response?.data?.message || error.message || "Network Error" 
+    };
+  }
+}
+
+/**
+ * 2. GET INFRASTRUCTURE BALANCE
+ * Purpose: Pulls the actual TZS wallet for admin@sakurahost.co.tz.
+ * Logic: Direct hit to vendor balance endpoint.
+ */
+export async function getBeemBalance() {
+  try {
+    const auth = getAuthHeader();
+
+    const { data } = await axios.get<BeemBalanceResponse>(BALANCE_URL, {
+      headers: {
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/json",
+      },
+      httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+    });
+
+    if (data.successful && data.data) {
+      return { 
+        success: true, 
+        balance: parseFloat(data.data.credit_balance) 
       };
     }
 
-    return {
-      success: true,
-      data: data,
-    };
-
+    return { success: false, balance: 0 };
   } catch (error: any) {
-    console.error("BEEM NETWORK ERROR:", error.response?.data || error.message);
-    return {
-      success: false,
-      error: error.response?.data?.message || error.message || "Network Error connecting to Beem",
-    };
+    console.error("BALANCE_SYNC_FAILED:", error.message);
+    return { success: false, balance: 0 };
   }
 }
