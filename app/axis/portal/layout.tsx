@@ -30,7 +30,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       organization: "Sakura Group",
       email: "admin@sakuragroup.co.tz", // Must match your DB admin email
       balance: 0,
-      role: "USER"
+      role: "ADMIN"
   });
 
   // 🟢 2. Real Balance Sync (Fetches from API)
