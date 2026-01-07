@@ -1,28 +1,45 @@
 const { PrismaClient } = require('@prisma/client')
+const { hash } = require('@node-rs/argon2')
+
 const prisma = new PrismaClient()
 
 async function main() {
   const email = 'admin@sakuragroup.co.tz'
+  const passwordRaw = 'Sakura2025!' // 👈 THIS IS YOUR PASSWORD
+  
+  console.log(`Hashing password for ${email}...`)
+  
+  // Hash the password securely
+  const passwordHash = await hash(passwordRaw, {
+    memoryCost: 19456,
+    timeCost: 2,
+    outputLen: 32,
+    parallelism: 1
+  });
 
-  console.log(`Checking for ${email}...`)
-
+  console.log(`Updating Database...`)
+  
   const user = await prisma.user.upsert({
     where: { email },
     update: { 
         status: 'ACTIVE', 
-        role: 'ADMIN' 
+        role: 'ADMIN',
+        password: passwordHash // Update password if user exists
     },
     create: {
       email,
       name: 'Sovereign Admin',
       role: 'ADMIN',
-      status: 'ACTIVE', // Critical for login
+      status: 'ACTIVE', 
       organization: 'Sakura HQ',
-      balance: 50000 // Give yourself some starting cash
+      balance: 50000,
+      password: passwordHash
     },
   })
-
-  console.log('✅ SUCCESS: Admin User Created:', user)
+  
+  console.log('✅ SUCCESS: Login with:')
+  console.log('   Email: admin@sakuragroup.co.tz')
+  console.log('   Pass:  Sakura2025!')
 }
 
 main()
