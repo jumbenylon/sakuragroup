@@ -1,30 +1,37 @@
 import { PrismaClient } from '@prisma/client';
 
 /**
- * Axis by Sakura - Sovereign Prisma Engine (v2.10)
- * Hardened for Build-Time Resilience & Legacy Compatibility
+ * Axis by Sakura - Sovereign Prisma Engine (v3.0)
+ * Hardened for Concurrent Automated Testing & Hot-Reload Persistence
  */
 
-let prisma: PrismaClient | undefined;
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 export function getPrisma() {
   // Build-time circuit breaker
   if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL_NOT_SET: Infrastructure is in build-mode or env vars are missing.');
+    // We return a mock-ready client or throw only in runtime to prevent build-phase crashes
+    if (process.env.NEXT_PHASE === 'phase-production-build') {
+      return {} as PrismaClient;
+    }
+    throw new Error('DATABASE_URL_NOT_SET: Infrastructure missing critical connection string.');
   }
 
-  // Singleton pattern: Ensure only one client instance exists
-  if (!prisma) {
-    prisma = new PrismaClient({
+  // Persistent Singleton Pattern
+  // In development, we attach Prisma to the 'global' object so it survives Hot Reloads.
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = new PrismaClient({
       log: process.env.NODE_ENV === 'development'
-        ? ['query', 'error', 'warn']
+        ? ['error', 'warn'] // Removed 'query' to keep the Playwright logs readable
         : ['error'],
+      errorFormat: 'pretty',
     });
   }
 
-  return prisma;
+  return globalForPrisma.prisma;
 }
 
-// Default Export for legacy compatibility
-const safeExport = process.env.DATABASE_URL ? getPrisma() : (undefined as unknown as PrismaClient);
-export default safeExport;
+// Ensure Prisma connects once and stays active
+const prisma = getPrisma();
+
+export default prisma;
