@@ -1,4 +1,3 @@
-cat <<'EOF' > playwright.config.ts
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
@@ -24,4 +23,3 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
   },
 });
-EOF
