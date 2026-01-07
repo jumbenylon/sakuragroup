@@ -1,156 +1,231 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Users, Search, Plus, Upload, Filter, MoreHorizontal, Download, Loader2 } from "lucide-react";
+import { Users, Search, Plus, Trash2, Loader2, UserPlus, Phone, Tag } from "lucide-react";
 
-// Types for Real Data
 interface Contact {
   id: string;
   name: string;
   phone: string;
-  groups: string[];
+  group: string;
   createdAt: string;
 }
 
 export default function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  // Modal State
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+  const [newGroup, setNewGroup] = useState("General");
+  const [submitting, setSubmitting] = useState(false);
 
-  // [INTEGRATION] Fetch Real Contacts
-  // You need to create: app/api/contacts/route.ts
-  useEffect(() => {
-    async function fetchContacts() {
-      try {
-        const res = await fetch("/api/contacts?limit=50");
-        if (res.ok) {
-          const data = await res.json();
-          setContacts(data.contacts || []); 
-        } else {
-          // Fallback for demo if API isn't ready
-          setContacts([]);
-        }
-      } catch (error) {
-        console.error("Contacts Sync Failed", error);
-      } finally {
+  // 1. Fetch Contacts
+  const fetchContacts = async () => {
+    try {
+        const res = await fetch("/api/contacts");
+        const data = await res.json();
+        if (data.success) setContacts(data.contacts);
+    } catch (e) {
+        console.error("Failed to load contacts");
+    } finally {
         setLoading(false);
-      }
     }
+  };
+
+  useEffect(() => {
     fetchContacts();
   }, []);
 
+  // 2. Add Contact
+  const handleAdd = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setSubmitting(true);
+      try {
+          const res = await fetch("/api/contacts", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name: newName, phone: newPhone, group: newGroup })
+          });
+          if (res.ok) {
+              await fetchContacts(); // Refresh list
+              setIsAddOpen(false);
+              setNewName(""); setNewPhone("");
+          }
+      } catch (e) {
+          alert("Failed to add contact");
+      } finally {
+          setSubmitting(false);
+      }
+  };
+
+  // 3. Delete Contact
+  const handleDelete = async (id: string) => {
+      if(!confirm("Are you sure you want to delete this contact?")) return;
+      try {
+          await fetch("/api/contacts", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id })
+          });
+          setContacts(contacts.filter(c => c.id !== id));
+      } catch (e) {
+          alert("Delete failed");
+      }
+  };
+
+  // Filter Logic
+  const filteredContacts = contacts.filter(c => 
+      c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      c.phone.includes(searchTerm) ||
+      c.group.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto">
+    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-slate-200">
-         <div>
-            <h1 className="text-2xl font-bold text-slate-800 uppercase tracking-tight">Audience Manager</h1>
-            <p className="text-xs text-slate-500 mt-1 flex items-center gap-2">
-              Manage your verified recipients and segments.
-            </p>
-         </div>
-         <div className="flex gap-3">
-             <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-600 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 hover:text-slate-900 transition-colors rounded-sm shadow-sm">
-                 <Upload size={14} /> Import CSV
-             </button>
-             <button className="flex items-center gap-2 px-4 py-2 bg-pink-600 text-white text-xs font-bold uppercase tracking-widest hover:bg-pink-700 transition-colors rounded-sm shadow-md shadow-pink-200">
-                 <Plus size={14} /> New Contact
-             </button>
-         </div>
+      {/* HEADER */}
+      <div className="flex justify-between items-end border-b border-slate-200 pb-6">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Audience Manager</h1>
+          <p className="text-slate-500 text-sm">Manage your subscriber database and segments.</p>
+        </div>
+        <button 
+           onClick={() => setIsAddOpen(true)}
+           className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-widest rounded-lg shadow-lg flex items-center gap-2 transition-all"
+        >
+           <Plus size={16} /> Add Contact
+        </button>
       </div>
 
-      {/* Stats Cards (Light Mode) */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[
-            { label: "Total Contacts", val: loading ? "..." : contacts.length.toLocaleString(), color: "text-slate-800" },
-            { label: "Active Groups", val: "3", color: "text-slate-800" },
-            { label: "Opt-Outs", val: "0", color: "text-slate-400" },
-            { label: "Growth (30d)", val: "+0%", color: "text-emerald-600" }
-          ].map((stat, i) => (
-              <div key={i} className="bg-white border border-slate-200 p-6 rounded-lg shadow-sm hover:border-pink-200 transition-colors">
-                  <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">{stat.label}</div>
-                  <div className={`text-2xl font-mono font-bold ${stat.color}`}>{stat.val}</div>
+      {/* SEARCH BAR */}
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+          <Search className="text-slate-400" size={20} />
+          <input 
+            type="text" 
+            placeholder="Search by name, phone, or group..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 bg-transparent font-bold text-slate-700 outline-none placeholder:font-normal"
+          />
+      </div>
+
+      {/* CONTACTS TABLE */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          {loading ? (
+             <div className="p-12 flex justify-center text-slate-400 font-bold text-xs gap-2">
+                 <Loader2 className="animate-spin" size={16} /> Loading Database...
+             </div>
+          ) : filteredContacts.length === 0 ? (
+             <div className="p-12 text-center text-slate-400">
+                 <Users size={48} className="mx-auto mb-4 opacity-20" />
+                 <p className="font-bold text-sm">No contacts found.</p>
+                 <p className="text-xs mt-1">Add your first subscriber to get started.</p>
+             </div>
+          ) : (
+             <table className="w-full text-left">
+                 <thead className="bg-slate-50 border-b border-slate-200">
+                     <tr>
+                         <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Name</th>
+                         <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone</th>
+                         <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Group</th>
+                         <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                     </tr>
+                 </thead>
+                 <tbody className="divide-y divide-slate-100">
+                     {filteredContacts.map(contact => (
+                         <tr key={contact.id} className="hover:bg-slate-50 transition-colors">
+                             <td className="p-4 text-sm font-bold text-slate-700 flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">
+                                    {contact.name.substring(0,1).toUpperCase()}
+                                </div>
+                                {contact.name}
+                             </td>
+                             <td className="p-4 text-sm font-mono text-slate-500">{contact.phone}</td>
+                             <td className="p-4">
+                                <span className="px-2 py-1 bg-slate-100 text-slate-500 rounded text-[10px] font-bold uppercase tracking-wide">
+                                    {contact.group}
+                                </span>
+                             </td>
+                             <td className="p-4 text-right">
+                                <button 
+                                  onClick={() => handleDelete(contact.id)}
+                                  className="p-2 text-slate-400 hover:text-red-600 transition-colors"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                             </td>
+                         </tr>
+                     ))}
+                 </tbody>
+             </table>
+          )}
+      </div>
+
+      {/* ADD CONTACT MODAL */}
+      {isAddOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md animate-in fade-in zoom-in duration-300">
+                  <h2 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
+                      <UserPlus className="text-pink-600" /> New Subscriber
+                  </h2>
+                  <form onSubmit={handleAdd} className="space-y-4">
+                      <div>
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
+                          <input 
+                             required
+                             value={newName}
+                             onChange={e => setNewName(e.target.value)}
+                             className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-800 outline-none focus:ring-2 focus:ring-pink-500 mt-1"
+                          />
+                      </div>
+                      <div>
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phone Number (255...)</label>
+                          <input 
+                             required
+                             value={newPhone}
+                             onChange={e => setNewPhone(e.target.value)}
+                             placeholder="2557..."
+                             className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg font-mono text-sm text-slate-800 outline-none focus:ring-2 focus:ring-pink-500 mt-1"
+                          />
+                      </div>
+                      <div>
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Group Tag</label>
+                          <select 
+                             value={newGroup}
+                             onChange={e => setNewGroup(e.target.value)}
+                             className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-800 outline-none mt-1"
+                          >
+                             <option value="General">General</option>
+                             <option value="VIP">VIP</option>
+                             <option value="Staff">Staff</option>
+                          </select>
+                      </div>
+
+                      <div className="pt-4 flex gap-3">
+                          <button 
+                            type="button" 
+                            onClick={() => setIsAddOpen(false)}
+                            className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs uppercase tracking-widest rounded-lg"
+                          >
+                             Cancel
+                          </button>
+                          <button 
+                            type="submit" 
+                            disabled={submitting}
+                            className="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-widest rounded-lg flex justify-center items-center gap-2"
+                          >
+                             {submitting ? <Loader2 className="animate-spin" size={16}/> : "Save Contact"}
+                          </button>
+                      </div>
+                  </form>
               </div>
-          ))}
-      </div>
+          </div>
+      )}
 
-      {/* Table Shell (Light Mode) */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-         <div className="p-4 border-b border-slate-100 flex gap-4 bg-slate-50/50">
-             <div className="relative flex-1 max-w-md">
-                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-                 <input 
-                    type="text" 
-                    placeholder="Search name or phone..." 
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-white border border-slate-200 pl-10 pr-4 py-2 text-xs text-slate-800 outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 rounded-sm transition-all placeholder:text-slate-400" 
-                 />
-             </div>
-             <div className="flex gap-2 ml-auto">
-               <button className="px-3 py-2 border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:border-slate-300 rounded-sm transition-colors">
-                 <Filter size={14} />
-               </button>
-               <button className="px-3 py-2 border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:border-slate-300 rounded-sm transition-colors">
-                 <Download size={14} />
-               </button>
-             </div>
-         </div>
-         
-         <div className="overflow-x-auto">
-           <table className="w-full text-left text-xs">
-               <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-widest border-b border-slate-200">
-                   <tr>
-                       <th className="p-4 w-1/4">Name</th>
-                       <th className="p-4 w-1/4">Phone</th>
-                       <th className="p-4 w-1/4">Groups</th>
-                       <th className="p-4 w-1/4">Date Added</th>
-                       <th className="p-4 text-right">Action</th>
-                   </tr>
-               </thead>
-               <tbody className="divide-y divide-slate-100 text-slate-600">
-                   {loading ? (
-                     <tr>
-                       <td colSpan={5} className="p-8 text-center text-slate-400 flex justify-center items-center gap-2">
-                         <Loader2 size={16} className="animate-spin"/> Loading Directory...
-                       </td>
-                     </tr>
-                   ) : contacts.length === 0 ? (
-                     <tr>
-                       <td colSpan={5} className="p-12 text-center">
-                         <div className="flex flex-col items-center gap-3">
-                           <div className="p-4 bg-slate-50 rounded-full text-slate-300">
-                             <Users size={24} />
-                           </div>
-                           <div className="text-slate-500 font-medium">No contacts found</div>
-                           <button className="text-pink-600 hover:underline font-bold">Add your first contact</button>
-                         </div>
-                       </td>
-                     </tr>
-                   ) : (
-                     contacts.map((contact, i) => (
-                       <tr key={i} className="hover:bg-slate-50 transition-colors group">
-                           <td className="p-4 font-bold text-slate-800">{contact.name}</td>
-                           <td className="p-4 font-mono text-slate-600">{contact.phone}</td>
-                           <td className="p-4">
-                             <span className="px-2 py-1 bg-pink-50 text-pink-600 border border-pink-100 rounded text-[9px] font-bold uppercase">
-                               General
-                             </span>
-                           </td>
-                           <td className="p-4 text-slate-400">{new Date(contact.createdAt).toLocaleDateString()}</td>
-                           <td className="p-4 text-right">
-                             <button className="text-slate-400 hover:text-pink-600 transition-colors">
-                               <MoreHorizontal size={16} />
-                             </button>
-                           </td>
-                       </tr>
-                     ))
-                   )}
-               </tbody>
-           </table>
-         </div>
-      </div>
     </div>
   );
 }
