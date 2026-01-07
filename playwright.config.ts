@@ -1,26 +1,21 @@
-import { defineConfig, devices } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
-export default defineConfig({
-  testDir: './e2e',
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
-  use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
-    video: 'on-first-retry',
-  },
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-  ],
+test.describe('Sakura Portal - Customer Critical Path', () => {
+
+  test('Customer can build a Strong Profile', async ({ page }) => {
+    // Navigate and check for 404
+    const response = await page.goto('/axis/portal/settings');
+    expect(response?.status()).toBe(200);
+
+    // Use accessible locators instead of IDs [Best Practice]
+    await page.getByLabel(/full name/i).fill('Jumbenylon Admin');
+    await page.getByLabel(/organization/i).fill('Sakura Group Ltd');
+    
+    // Click Save and handle potential dialogs
+    page.on('dialog', dialog => dialog.accept());
+    await page.getByRole('button', { name: /save/i }).click();
+
+    // Verify UI feedback
+    await expect(page.getByText(/successfully/i)).toBeVisible();
+  });
 });
