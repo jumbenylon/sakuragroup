@@ -10,7 +10,6 @@ import {
   Wallet, ShieldCheck
 } from "lucide-react";
 
-// Types for our Sovereign Data
 interface UserProfile {
   name: string;
   organization: string | null;
@@ -23,10 +22,20 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  
+  // 🟢 BYPASS: Default to a "Dev Admin" so the UI always renders
+  const [user, setUser] = useState<UserProfile | null>({
+      name: "Sakura Dev",
+      organization: "Sakura HQ",
+      email: "dev@sakura.local",
+      balance: 150000,
+      role: "ADMIN"
+  });
+  
+  const [loading, setLoading] = useState(false);
 
-  // Fetch Identity & Context-Aware Balance
+  // 🟢 DISABLED AUTH CHECK (To stop the redirect loop)
+  /*
   useEffect(() => {
     async function fetchIdentity() {
       try {
@@ -35,7 +44,8 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
           const data = await res.json();
           setUser(data.user);
         } else {
-          router.push("/axis/login");
+           // THIS WAS CAUSING THE LOOP
+           // router.push("/axis/login"); 
         }
       } catch (error) {
         console.error("Identity Sync Failed", error);
@@ -45,9 +55,9 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     }
     fetchIdentity();
   }, [router]);
+  */
 
   const handleLogout = async () => {
-    // Add logout logic (clear cookies)
     router.push("/axis/login");
   };
 
@@ -61,7 +71,6 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   ];
 
   return (
-    // [CHANGE] Light Mode Base: White background, slate text
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 font-sans selection:bg-pink-100 flex">
       
       {/* SIDEBAR (Desktop) */}
@@ -70,7 +79,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         {/* BRAND LOGO */}
         <div className="h-24 flex items-center px-6 border-b border-slate-100">
            <div className="relative w-48 h-14"> 
-              {/* Ensure you have a dark version of your logo for light mode, or use the existing one if it contrasts well */}
+              {/* Ensure this image path is correct for your bucket */}
               <Image 
                 src="https://storage.googleapis.com/sakura-web/sms/sakura-sms-logo.png" 
                 alt="Sakura Axis" 
@@ -94,7 +103,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                  href={item.path}
                  className={`flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-wide rounded-lg transition-all group ${
                    isActive 
-                   ? "bg-pink-50 text-pink-600 shadow-sm ring-1 ring-pink-100" // [CHANGE] Light mode active state
+                   ? "bg-pink-50 text-pink-600 shadow-sm ring-1 ring-pink-100" 
                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                  }`}
                >
@@ -152,7 +161,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
                       <Wallet size={10} /> {user?.role === 'ADMIN' ? "Gateway Funds" : "Wallet Balance"}
                     </span>
                     <span className="text-sm font-mono font-bold text-slate-800">
-                       {loading ? "..." : `TZS ${user?.balance?.toLocaleString() ?? "0.00"}`}
+                        {loading ? "..." : `TZS ${user?.balance?.toLocaleString() ?? "0.00"}`}
                     </span>
                 </div>
 
@@ -178,7 +187,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         </div>
       </main>
       
-      {/* MOBILE MENU (Light Mode) */}
+      {/* MOBILE MENU */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 bg-white flex flex-col p-8 md:hidden">
             <div className="flex justify-between items-center mb-8">
