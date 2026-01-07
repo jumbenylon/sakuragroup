@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 
-// 1. Metadata: Preserving your Enterprise SEO Configuration
+/**
+ * Axis Root Layout (Production v5.5)
+ * Logic: Enterprise SEO Metadata + Global Shell.
+ * Fix: Removed AxisSidebar and Client logic to stop ReferenceErrors.
+ */
+
 export const metadata: Metadata = {
   title: "Bulk SMS Tanzania & WhatsApp API Gateway | Axis by Sakura",
   description: "The most reliable Bulk SMS and WhatsApp API provider in Tanzania. Direct connections to Vodacom, Tigo, Airtel & Halotel. Send marketing SMS, OTPs, and alerts with 98% delivery rates. Start for 21 TZS.",
@@ -34,28 +37,18 @@ export const metadata: Metadata = {
   },
 };
 
-// 2. Functional Portal Shell
-export default async function AxisLayout({
+export default function AxisLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Fetch session at the layout level to pass user data to the Sidebar
-  const session = await getServerSession(authOptions);
-
   return (
-    <div className="flex min-h-screen bg-white">
-      {/* Sidebar: Locked to the left, hidden on small screens for mobile-first purity */}
-      <div className="hidden md:block">
-        <AxisSidebar user={session?.user || null} />
-      </div>
-
-      {/* Main Content: Scrollable area with soft background for premium focus */}
-      <main className="flex-1 bg-slate-50/40 overflow-y-auto">
-        <div className="p-4 md:p-10 max-w-7xl mx-auto">
-          {children}
-        </div>
-      </main>
+    <div className="min-h-screen bg-white font-sans antialiased selection:bg-emerald-500/20">
+      {/* Senior Note: No Sidebar here. 
+          Login, Signup, and Pricing are full-width for maximum conversion.
+          The Sidebar is explicitly called in /axis/portal/layout.tsx
+      */}
+      {children}
     </div>
   );
 }
