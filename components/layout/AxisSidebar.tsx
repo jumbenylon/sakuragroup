@@ -8,22 +8,13 @@ import {
   Send, 
   Settings, 
   ShieldCheck, 
-  Activity,
-  Zap
+  Zap 
 } from "lucide-react";
 
-interface AxisSidebarProps {
-  user: {
-    name?: string;
-    organization?: string;
-    phoneNumber?: string;
-  } | null;
-}
-
-export default function AxisSidebar({ user }: AxisSidebarProps) {
+export default function AxisSidebar({ user }: { user: any }) {
   const pathname = usePathname();
 
-  // Logic: Calculating "Node Strength" based on your Profile API fields
+  // Calculate "Node Strength" based on profile completion
   const calculateStrength = () => {
     let score = 0;
     if (user?.name) score += 30;
@@ -36,13 +27,12 @@ export default function AxisSidebar({ user }: AxisSidebarProps) {
 
   const menuItems = [
     { name: "Dashboard", href: "/axis/portal", icon: LayoutDashboard },
-    { name: "Messages", href: "/axis/portal/messages", icon: Send },
+    { name: "Messages", href: "/axis/portal/compose", icon: Send },
     { name: "Identity", href: "/axis/portal/settings", icon: Settings },
   ];
 
   return (
     <aside className="w-64 bg-white border-r border-slate-100 flex flex-col h-screen sticky top-0">
-      {/* Brand Identity */}
       <div className="p-8">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
@@ -54,28 +44,23 @@ export default function AxisSidebar({ user }: AxisSidebarProps) {
         </div>
       </div>
 
-      {/* Navigation Ecosystem */}
       <nav className="flex-1 px-4 space-y-1">
-        {menuItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                isActive 
-                ? "bg-slate-900 text-white shadow-md shadow-slate-200" 
-                : "text-slate-400 hover:text-black hover:bg-slate-50"
-              }`}
-            >
-              <item.icon size={14} />
-              {item.name}
-            </Link>
-          );
-        })}
+        {menuItems.map((item) => (
+          <Link
+            key={item.name}
+            href={item.href}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              pathname === item.href 
+              ? "bg-slate-900 text-white shadow-md shadow-slate-200" 
+              : "text-slate-400 hover:text-black hover:bg-slate-50"
+            }`}
+          >
+            <item.icon size={14} />
+            {item.name}
+          </Link>
+        ))}
       </nav>
 
-      {/* Node Strength Widget - Tesla Inspired */}
       <div className="p-5 m-4 bg-slate-50 rounded-2xl border border-slate-100">
         <div className="flex justify-between items-center mb-3">
           <div className="flex items-center gap-2">
@@ -90,11 +75,6 @@ export default function AxisSidebar({ user }: AxisSidebarProps) {
             style={{ width: `${strength}%` }}
           />
         </div>
-        {strength < 100 && (
-          <p className="text-[8px] text-slate-400 mt-3 leading-relaxed italic">
-            Your node is restricted. Complete profile setup to unlock enterprise routes.
-          </p>
-        )}
       </div>
     </aside>
   );
