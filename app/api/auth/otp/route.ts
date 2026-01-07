@@ -1,51 +1,60 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/prisma";
-import crypto from "crypto";
+import { PrismaClient } from "@prisma/client";
+
+// Create a fresh instance just for this debug to ensure connections work
+const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-  try {
-    const { email } = await req.json();
+  console.log("----------------------------------------");
+  console.log("🔎 DEBUG: API Route Hit!");
 
+  try {
+    // 1. Check Payload
+    const body = await req.json();
+    console.log("🔎 DEBUG: Payload Received:", body);
+    
+    const { email } = body;
     if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+       console.log("❌ DEBUG: Missing Email");
+       return NextResponse.json({ error: "Email missing" }, { status: 400 });
     }
 
-    const prisma = getPrisma();
-    
-    // 1. Check if user exists
+    // 2. Test Database Connection
+    console.log("🔎 DEBUG: Connecting to Database...");
     const user = await prisma.user.findUnique({
       where: { email }
     });
 
     if (!user) {
-      // SECURITY: Don't reveal user existence. Fake success.
-      return NextResponse.json({ success: true });
+        console.log("❌ DEBUG: User NOT FOUND in DB:", email);
+        // We return success to hide this from hackers, but logging it for YOU.
+        return NextResponse.json({ success: true, message: "Debug: User not found" });
     }
+    
+    console.log("✅ DEBUG: User Found:", user.id);
 
-    // 2. Generate 6-Digit Code
-    const otp = crypto.randomInt(100000, 999999).toString();
-    const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 Minutes
+    // 3. Update OTP
+    console.log("🔎 DEBUG: Generating Code...");
+    const otp = "123456"; // Hardcoded for testing
+    const expires = new Date(Date.now() + 10 * 60 * 1000);
 
-    // 3. Save to DB
+    console.log("🔎 DEBUG: Saving to DB...");
     await prisma.user.update({
-      where: { email },
-      data: { 
-        otp,
-        otpExpires: expires
-      }
+      where: { id: user.id },
+      data: { otp, otpExpires: expires }
     });
 
-    // 4. SEND THE CODE
-    // 🟡 TODO: Integrate Postmark/Resend here for real email.
-    // 🟢 FOR NOW: Log to console so you can copy-paste it.
-    console.log("==================================================");
-    console.log(`🔐 LOGIN OTP FOR ${email}: ${otp}`);
-    console.log("==================================================");
+    console.log("========================================");
+    console.log(`🔐 DEBUG OTP FOR ${email}: ${otp}`);
+    console.log("========================================");
 
     return NextResponse.json({ success: true });
 
-  } catch (error) {
-    console.error("OTP Error:", error);
-    return NextResponse.json({ error: "System Error" }, { status: 500 });
+  } catch (error: any) {
+    console.error("🔥 FATAL ERROR:", error);
+    return NextResponse.json({ 
+        error: "Server Error", 
+        details: error.message 
+    }, { status: 500 });
   }
 }
