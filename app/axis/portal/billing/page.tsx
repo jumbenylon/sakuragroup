@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState, useEffect } from "react";
+import React, { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { 
   Copy, 
@@ -9,15 +9,13 @@ import {
   ShieldCheck, 
   QrCode, 
   Loader2,
-  Wallet,
-  Info
+  Wallet
 } from "lucide-react";
 import Image from "next/image";
 
 /**
- * Axis Sovereign Billing Node (v14.0 FINAL)
- * Design: High-Contrast Industrial Grayscale.
- * Feature: Dynamic instructions, QR visualizer, and Verification protocol.
+ * Axis Pro Billing (v15.0)
+ * Geometry: Refined Industrial (Reduced Curves)
  */
 
 const METHODS = [
@@ -61,15 +59,12 @@ const METHODS = [
 
 function BillingContent() {
   const searchParams = useSearchParams();
-  
-  // States
   const [activeKey, setActiveKey] = useState('mpesa');
   const [copied, setCopied] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [amountInput, setAmountInput] = useState(searchParams.get("amount") || "");
   const [refInput, setRefInput] = useState("");
 
-  // Derived Values
   const selected = METHODS.find(m => m.key === activeKey) || METHODS[0];
   const tier = searchParams.get("tier");
   const qty = searchParams.get("qty");
@@ -80,181 +75,120 @@ function BillingContent() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const executeHandshake = async () => {
-    if (!amountInput || !refInput) return alert("Please complete verification fields.");
-    
+  const handleVerify = () => {
+    if (!amountInput || !refInput) return;
     setIsVerifying(true);
-    // Real Stuff: Connect to /api/billing/verify
     setTimeout(() => {
       setIsVerifying(false);
-      alert("Verification protocol initiated. Reference ID queued for Admin approval.");
-      setRefInput("");
+      alert("Submission successful. Ref: " + refInput);
     }, 1500);
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-12 animate-in fade-in duration-1000">
+    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
       
-      {/* 0. TELEMETRY HEADER */}
-      <div className="flex justify-between items-end">
-         <div className="bg-[#0B1222] text-white px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
-            <ShieldCheck size={12} className="text-sky-400" /> SAKURAPAY SECURE NODE
+      {/* HEADER */}
+      <div className="flex justify-between items-center border-b border-slate-100 pb-6">
+         <div className="bg-slate-900 text-white px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+            <ShieldCheck size={12} className="text-sky-400" /> SAKURAPAY SECURE
          </div>
          <div className="text-right">
-            <p className="text-[10px] font-black uppercase text-slate-300 tracking-widest italic mb-1">Node Balance</p>
-            <p className="text-4xl font-black text-slate-900 tracking-tighter italic">24,500 <small className="text-xs uppercase text-slate-300 not-italic font-bold">TZS</small></p>
+            <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Balance</p>
+            <p className="text-3xl font-black text-slate-900 tracking-tighter italic">24,500 <small className="text-xs uppercase text-slate-300 font-bold not-italic">TZS</small></p>
          </div>
       </div>
 
-      <h1 className="text-6xl font-black tracking-tighter text-slate-900 italic -mt-6">Add Funds.</h1>
+      <h1 className="text-5xl font-black tracking-tighter text-slate-900 italic">Add Funds.</h1>
 
-      {/* 🟢 PACKAGE NOTIFICATION */}
+      {/* PACKAGE BANNER */}
       {tier && (
-        <div className="bg-emerald-50 border border-emerald-100 p-8 rounded-[2.5rem] flex justify-between items-center animate-in slide-in-from-top-4">
-           <div className="flex items-center gap-6">
-              <div className="w-14 h-14 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-200">
-                 <Wallet size={28} />
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase text-emerald-600 tracking-widest italic">Capacity Handshake</p>
-                <h4 className="text-xl font-black text-slate-900 tracking-tighter uppercase">{tier} Package — {Number(qty).toLocaleString()} SMS</h4>
-              </div>
+        <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl flex items-center gap-4">
+           <Wallet className="text-emerald-500" size={24} />
+           <div>
+              <p className="text-[9px] font-black uppercase text-emerald-600 tracking-widest italic">Tier Selection</p>
+              <h4 className="text-lg font-black text-slate-900 uppercase tracking-tight">{tier} — {Number(qty).toLocaleString()} SMS</h4>
            </div>
         </div>
       )}
 
-      {/* 01 — DYNAMIC SELECTOR */}
-      <section className="space-y-6">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 italic">01 — Select Payment Route</h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* 01 — PROVIDERS */}
+      <section className="space-y-4">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 italic">01 — Selection</h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {METHODS.map((m) => (
-            <button 
-              key={m.key} 
-              onClick={() => setActiveKey(m.key)}
-              className={`p-10 rounded-[3rem] border transition-all flex flex-col items-center gap-6 group ${
-                activeKey === m.key 
-                ? 'border-slate-900 bg-[#0B1222] text-white shadow-2xl scale-105' 
-                : 'border-slate-50 bg-white hover:border-slate-200 shadow-sm'
-              }`}
-            >
-              <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-inner bg-white p-2">
-                <Image 
-                  src={m.img} 
-                  alt={m.name} 
-                  fill 
-                  className={`object-contain transition-all ${activeKey === m.key ? 'grayscale-0' : 'grayscale group-hover:grayscale-0'}`} 
-                />
+            <button key={m.key} onClick={() => setActiveKey(m.key)}
+              className={`p-6 rounded-2xl border transition-all flex items-center gap-4 ${
+                activeKey === m.key ? 'border-slate-900 bg-slate-900 text-white shadow-lg' : 'border-slate-100 bg-white hover:border-slate-200'
+              }`}>
+              <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-white">
+                <Image src={m.img} alt={m.name} fill className="object-contain p-1" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">{m.name}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">{m.name}</span>
             </button>
           ))}
         </div>
       </section>
 
-      {/* 02 & 03 — WORKFLOW GRID */}
-      <div className="grid lg:grid-cols-5 gap-10 items-stretch">
+      {/* 02 & 03 — MAIN WORKFLOW */}
+      <div className="grid lg:grid-cols-12 gap-6">
         
-        {/* INSTRUCTIONS AREA */}
-        <div className="lg:col-span-3 bg-white border border-slate-50 rounded-[4rem] p-16 space-y-12 shadow-sm relative overflow-hidden">
-          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 italic">02 — Execution Steps</h4>
-          
-          <div className="grid md:grid-cols-2 gap-16 relative z-10">
-            <div className="space-y-12">
-              <ul className="space-y-6">
-                {selected.steps.map((step, i) => (
-                  <li key={i} className="flex gap-4 items-center text-xs text-slate-600 font-bold italic tracking-tight animate-in slide-in-from-left duration-500" style={{ animationDelay: `${i * 100}ms` }}>
-                    <span className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-black shrink-0">{i + 1}</span>
-                    {step}
-                  </li>
-                ))}
-              </ul>
-              <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 flex items-center justify-between">
-                <div>
-                  <p className="text-[9px] font-black text-slate-400 uppercase mb-1 tracking-widest">{selected.label}</p>
-                  <p className="text-3xl font-black tracking-tighter text-slate-900">{selected.acc}</p>
-                </div>
-                <button 
-                  onClick={() => handleCopy(selected.acc)}
-                  className="p-5 bg-white rounded-2xl shadow-sm hover:bg-slate-900 hover:text-white transition-all active:scale-95"
-                >
-                  {copied ? <CheckCircle size={20} className="text-emerald-500" /> : <Copy size={20} />}
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-6 flex flex-col items-center justify-center">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-slate-200">
-                    <QrCode size={14} /> Scan to Dispatch
-                </div>
-                <div className="aspect-square w-full bg-white rounded-[3rem] border border-slate-100 p-12 shadow-inner relative flex items-center justify-center overflow-hidden">
-                   <Image 
-                     src={selected.qr} 
-                     alt="Merchant QR" 
-                     width={240} 
-                     height={240} 
-                     className="object-contain animate-in fade-in zoom-in duration-700 grayscale hover:grayscale-0 transition-all duration-1000" 
-                   />
-                </div>
+        {/* INSTRUCTIONS */}
+        <div className="lg:col-span-8 bg-white border border-slate-100 rounded-2xl p-8 space-y-8 shadow-sm">
+          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 italic">02 — Instructions</h4>
+          <div className="grid md:grid-cols-2 gap-10">
+            <ul className="space-y-4">
+              {selected.steps.map((step, i) => (
+                <li key={i} className="flex gap-3 items-center text-xs text-slate-600 font-bold italic tracking-tight">
+                  <span className="w-5 h-5 rounded bg-slate-100 text-slate-900 flex items-center justify-center text-[9px] font-black shrink-0">{i+1}</span>
+                  {step}
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-col items-center gap-4">
+               <div className="p-4 bg-white border border-slate-50 rounded-2xl shadow-inner w-full flex items-center justify-center">
+                  <Image src={selected.qr} alt="QR" width={160} height={160} className="object-contain" />
+               </div>
+               <div className="w-full bg-slate-50 p-4 rounded-xl flex items-center justify-between border border-slate-100">
+                  <div>
+                    <p className="text-[8px] font-black text-slate-400 uppercase mb-0.5">{selected.label}</p>
+                    <p className="text-xl font-black text-slate-900">{selected.acc}</p>
+                  </div>
+                  <button onClick={() => handleCopy(selected.acc)} className="p-3 bg-white rounded-lg shadow-sm hover:bg-slate-900 hover:text-white transition-all">
+                    {copied ? <CheckCircle size={16} className="text-emerald-500" /> : <Copy size={16} />}
+                  </button>
+               </div>
             </div>
           </div>
-          <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-slate-50 rounded-full opacity-50" />
         </div>
 
-        {/* VERIFICATION AREA */}
-        <div className="lg:col-span-2 bg-[#0B1222] text-white rounded-[4rem] p-16 space-y-12 shadow-2xl relative overflow-hidden flex flex-col justify-between">
-          <div className="space-y-12 relative z-10">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 italic">03 — Verification</h4>
-            <div className="space-y-8">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase text-slate-500 ml-2 tracking-widest">Amount Paid (TZS)</label>
-                <input 
-                  type="number"
-                  value={amountInput}
-                  onChange={(e) => setAmountInput(e.target.value)}
-                  className="w-full p-6 bg-white/5 border border-white/10 rounded-3xl text-2xl font-black text-white outline-none focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-700" 
-                  placeholder="0.00" 
-                />
+        {/* VERIFICATION */}
+        <div className="lg:col-span-4 bg-slate-900 text-white rounded-2xl p-8 space-y-8 flex flex-col justify-between shadow-xl">
+           <div className="space-y-6">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 italic">03 — Verification</h4>
+              <div className="space-y-4">
+                 <div className="space-y-1.5">
+                    <label className="text-[9px] font-black uppercase text-slate-500 ml-1">Amount</label>
+                    <input value={amountInput} onChange={(e) => setAmountInput(e.target.value)} className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-lg font-black text-white outline-none focus:ring-1 focus:ring-sky-500 transition-all" />
+                 </div>
+                 <div className="space-y-1.5">
+                    <label className="text-[9px] font-black uppercase text-slate-500 ml-1">Reference ID</label>
+                    <input value={refInput} onChange={(e) => setRefInput(e.target.value)} className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-xs font-black uppercase tracking-widest text-white outline-none focus:ring-1 focus:ring-sky-500" placeholder="EX: 9K203X..." />
+                 </div>
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase text-slate-500 ml-2 tracking-widest">Reference ID</label>
-                <input 
-                  type="text"
-                  value={refInput}
-                  onChange={(e) => setRefInput(e.target.value)}
-                  className="w-full p-6 bg-white/5 border border-white/10 rounded-3xl text-xs font-black uppercase tracking-[0.2em] text-white outline-none focus:ring-1 focus:ring-sky-500 placeholder:text-slate-700" 
-                  placeholder="EX: 9K203X..." 
-                />
-              </div>
-            </div>
-          </div>
-          
-          <div className="space-y-4 relative z-10">
-            <button 
-              onClick={executeHandshake}
-              disabled={isVerifying}
-              className="w-full py-8 bg-white text-slate-900 text-[11px] font-black uppercase tracking-[0.5em] rounded-[2rem] hover:bg-sky-400 transition-all shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
-            >
-              {isVerifying ? <Loader2 className="animate-spin" size={18} /> : <>Verify Handshake <ArrowRight size={18} /></>}
-            </button>
-            <p className="text-[9px] text-center text-slate-500 font-bold italic">Identity protocol requires roughly 15 minutes for approval.</p>
-          </div>
-
-          <div className="absolute top-0 right-0 w-80 h-80 bg-sky-500/10 blur-[120px] pointer-events-none" />
+           </div>
+           <button onClick={handleVerify} disabled={isVerifying} className="w-full py-5 bg-white text-slate-900 text-[10px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-sky-400 transition-all shadow-lg flex items-center justify-center gap-2">
+              {isVerifying ? <Loader2 className="animate-spin" size={14} /> : <>Verify Handshake <ArrowRight size={14} /></>}
+           </button>
         </div>
+
       </div>
     </div>
   );
 }
 
-// 🟢 Suspense Wrapper for Build Safety
 export default function AxisBillingPage() {
   return (
-    <Suspense fallback={
-      <div className="h-[70vh] flex flex-col items-center justify-center gap-6">
-        <Loader2 className="animate-spin text-slate-200" size={48} />
-        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em] italic">Synchronizing Payment Node...</p>
-      </div>
-    }>
+    <Suspense fallback={<div className="h-[60vh] flex items-center justify-center"><Loader2 className="animate-spin text-slate-200" size={32} /></div>}>
       <BillingContent />
     </Suspense>
   );
