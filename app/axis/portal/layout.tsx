@@ -37,7 +37,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     {
       group: "SMS",
       items: [
-        { name: "Send Campaign", icon: Send, path: "/portal/sms/send" },
+        { name: "Send Campaign", icon: Send, path: "/portal/send" },
         { name: "Sender Names", icon: Terminal, path: "/portal/sender-ids" },
         { name: "Campaign Reports", icon: History, path: "/portal/sms/reports" },
         { name: "Scheduled", icon: Lock, path: "#", locked: true },
