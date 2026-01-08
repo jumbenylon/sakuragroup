@@ -34,13 +34,13 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const strength = calculateStrength();
 
   const menu = [
-    { name: "Overview", icon: LayoutDashboard, path: "/axis/portal" },
-    { name: "Compose", icon: PenTool, path: "/axis/portal/compose" },
-    { name: "Audience", icon: Users, path: "/axis/portal/contacts" },
-    { name: "Campaigns", icon: History, path: "/axis/portal/campaigns" },
-    { name: "Billing", icon: CreditCard, path: "/axis/portal/billing" },
-    { name: "Sovereign", icon: ShieldCheck, path: "/axis/portal/admin" },
-    { name: "System", icon: Settings, path: "/axis/portal/settings" },
+    { name: "Overview", icon: LayoutDashboard, path: "/portal" },
+    { name: "Compose", icon: PenTool, path: "/portal/compose" },
+    { name: "Audience", icon: Users, path: "/portal/contacts" },
+    { name: "Campaigns", icon: History, path: "/portal/campaigns" },
+    { name: "Billing", icon: CreditCard, path: "/portal/billing" },
+    { name: "Sovereign", icon: ShieldCheck, path: "/portal/admin" },
+    { name: "System", icon: Settings, path: "/portal/settings" },
   ];
 
   return (
