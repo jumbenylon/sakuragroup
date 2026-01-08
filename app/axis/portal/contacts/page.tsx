@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Users, Search, Plus, Trash2, Loader2, UserPlus, Phone, Tag } from "lucide-react";
+import { 
+  Users, Search, Plus, Trash2, Loader2, UserPlus, 
+  Database, Filter, FileUp, MoreVertical, CheckCircle,
+  ShieldCheck, ArrowUpRight
+} from "lucide-react";
+import Link from "next/link";
 
 interface Contact {
   id: string;
@@ -15,6 +20,7 @@ export default function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState<'all' | 'segments'>('all');
   
   // Modal State
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -23,61 +29,50 @@ export default function ContactsPage() {
   const [newGroup, setNewGroup] = useState("General");
   const [submitting, setSubmitting] = useState(false);
 
-  // 1. Fetch Contacts
   const fetchContacts = async () => {
     try {
         const res = await fetch("/api/contacts");
         const data = await res.json();
         if (data.success) setContacts(data.contacts);
     } catch (e) {
-        console.error("Failed to load contacts");
+        console.error("Infrastructure Sync Failed");
     } finally {
         setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchContacts();
-  }, []);
+  useEffect(() => { fetchContacts(); }, []);
 
-  // 2. Add Contact
+  // Handshake Normalization: 07... -> 2557...
+  const normalizePhone = (num: string) => {
+    let clean = num.replace(/\D/g, '');
+    if (clean.startsWith('0')) clean = '255' + clean.substring(1);
+    return clean;
+  };
+
   const handleAdd = async (e: React.FormEvent) => {
       e.preventDefault();
       setSubmitting(true);
+      const phone = normalizePhone(newPhone);
+      
       try {
           const res = await fetch("/api/contacts", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ name: newName, phone: newPhone, group: newGroup })
+              body: JSON.stringify({ name: newName, phone, group: newGroup })
           });
           if (res.ok) {
-              await fetchContacts(); // Refresh list
+              await fetchContacts();
               setIsAddOpen(false);
               setNewName(""); setNewPhone("");
           }
       } catch (e) {
-          alert("Failed to add contact");
+          alert("Gateway Rejection");
       } finally {
           setSubmitting(false);
       }
   };
 
-  // 3. Delete Contact
-  const handleDelete = async (id: string) => {
-      if(!confirm("Are you sure you want to delete this contact?")) return;
-      try {
-          await fetch("/api/contacts", {
-              method: "DELETE",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ id })
-          });
-          setContacts(contacts.filter(c => c.id !== id));
-      } catch (e) {
-          alert("Delete failed");
-      }
-  };
-
-  // Filter Logic
   const filteredContacts = contacts.filter(c => 
       c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       c.phone.includes(searchTerm) ||
@@ -85,147 +80,168 @@ export default function ContactsPage() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in duration-1000">
       
-      {/* HEADER */}
-      <div className="flex justify-between items-end border-b border-slate-200 pb-6">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">Audience Manager</h1>
-          <p className="text-slate-500 text-sm">Manage your subscriber database and segments.</p>
-        </div>
-        <button 
-           onClick={() => setIsAddOpen(true)}
-           className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-widest rounded-lg shadow-lg flex items-center gap-2 transition-all"
-        >
-           <Plus size={16} /> Add Contact
-        </button>
+      {/* 1. MASTER KPI GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatCard label="Total Nodes" value={contacts.length.toLocaleString()} icon={Users} color="text-slate-900" />
+        <StatCard label="Active Segments" value="12" icon={Database} color="text-slate-400" />
+        <StatCard label="Growth Rate" value="+14%" icon={ArrowUpRight} color="text-emerald-500" />
       </div>
 
-      {/* SEARCH BAR */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
-          <Search className="text-slate-400" size={20} />
+      {/* 2. HEADER & ACTIONS */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-slate-100 pb-8">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-black tracking-tighter text-slate-900 italic">Audience.</h1>
+          <p className="text-sm text-slate-400 font-medium">Manage your industrial subscriber database.</p>
+        </div>
+        
+        <div className="flex gap-3 w-full md:w-auto">
+          <Link 
+            href="/portal/contacts/import"
+            className="flex-1 md:flex-none px-6 py-4 bg-white border border-slate-200 text-slate-900 font-black text-[10px] uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
+          >
+            <FileUp size={14} /> Bulk Handshake
+          </Link>
+          <button 
+             onClick={() => setIsAddOpen(true)}
+             className="flex-1 md:flex-none px-8 py-4 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 hover:bg-black transition-all shadow-xl shadow-slate-200"
+          >
+            <Plus size={14} /> Create Node
+          </button>
+        </div>
+      </header>
+
+      {/* 3. SEARCH & NAVIGATION */}
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="flex gap-8 border-b border-slate-100 w-full md:w-auto">
+          <button 
+            onClick={() => setActiveTab('all')}
+            className={`pb-4 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'all' ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-300 hover:text-slate-500'}`}
+          >
+            Database
+          </button>
+          <button 
+            onClick={() => setActiveTab('segments')}
+            className={`pb-4 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'segments' ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-300 hover:text-slate-500'}`}
+          >
+            Segments
+          </button>
+        </div>
+
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
           <input 
             type="text" 
-            placeholder="Search by name, phone, or group..." 
+            placeholder="Search Identity..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 bg-transparent font-bold text-slate-700 outline-none placeholder:font-normal"
+            className="w-full pl-12 pr-6 py-4 bg-white border border-slate-100 rounded-[2rem] text-[11px] font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-slate-900/5 shadow-sm transition-all"
           />
+        </div>
       </div>
 
-      {/* CONTACTS TABLE */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          {loading ? (
-             <div className="p-12 flex justify-center text-slate-400 font-bold text-xs gap-2">
-                 <Loader2 className="animate-spin" size={16} /> Loading Database...
-             </div>
-          ) : filteredContacts.length === 0 ? (
-             <div className="p-12 text-center text-slate-400">
-                 <Users size={48} className="mx-auto mb-4 opacity-20" />
-                 <p className="font-bold text-sm">No contacts found.</p>
-                 <p className="text-xs mt-1">Add your first subscriber to get started.</p>
-             </div>
-          ) : (
-             <table className="w-full text-left">
-                 <thead className="bg-slate-50 border-b border-slate-200">
-                     <tr>
-                         <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Name</th>
-                         <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone</th>
-                         <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Group</th>
-                         <th className="p-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
-                     </tr>
-                 </thead>
-                 <tbody className="divide-y divide-slate-100">
-                     {filteredContacts.map(contact => (
-                         <tr key={contact.id} className="hover:bg-slate-50 transition-colors">
-                             <td className="p-4 text-sm font-bold text-slate-700 flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xs font-bold">
-                                    {contact.name.substring(0,1).toUpperCase()}
+      {/* 4. DATA TABLE */}
+      <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        {loading ? (
+            <div className="p-24 flex flex-col items-center gap-4">
+                <Loader2 className="animate-spin text-slate-200" size={32} />
+                <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Syncing Audience Metadata...</p>
+            </div>
+        ) : filteredContacts.length === 0 ? (
+            <div className="p-24 text-center space-y-4">
+                <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto text-slate-200 border border-slate-50">
+                   <Users size={32} />
+                </div>
+                <div className="space-y-1">
+                  <p className="font-black text-slate-900 uppercase text-xs">No Nodes Found</p>
+                  <p className="text-[10px] text-slate-400 font-bold italic">Initialize your first subscriber to begin.</p>
+                </div>
+            </div>
+        ) : (
+            <table className="w-full text-left">
+                <thead className="bg-slate-50/50 border-b border-slate-100">
+                    <tr>
+                        <th className="p-8 text-[9px] font-black text-slate-400 uppercase tracking-widest italic">Identity</th>
+                        <th className="p-8 text-[9px] font-black text-slate-400 uppercase tracking-widest italic">Phone Handler</th>
+                        <th className="p-8 text-[9px] font-black text-slate-400 uppercase tracking-widest italic">Segment</th>
+                        <th className="p-8 text-[9px] font-black text-slate-400 uppercase tracking-widest italic text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                    {filteredContacts.map(contact => (
+                        <tr key={contact.id} className="hover:bg-slate-50/50 transition-all group">
+                            <td className="p-8">
+                                <div className="flex items-center gap-4">
+                                  <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center text-[10px] font-black italic shadow-lg shadow-slate-200">
+                                      {contact.name.substring(0,2).toUpperCase()}
+                                  </div>
+                                  <div>
+                                    <p className="text-[13px] font-black text-slate-900 tracking-tight">{contact.name}</p>
+                                    <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Added {new Date(contact.createdAt).toLocaleDateString()}</p>
+                                  </div>
                                 </div>
-                                {contact.name}
-                             </td>
-                             <td className="p-4 text-sm font-mono text-slate-500">{contact.phone}</td>
-                             <td className="p-4">
-                                <span className="px-2 py-1 bg-slate-100 text-slate-500 rounded text-[10px] font-bold uppercase tracking-wide">
+                            </td>
+                            <td className="p-8 text-xs font-black font-mono text-slate-400 tracking-widest">{contact.phone}</td>
+                            <td className="p-8">
+                                <span className="px-3 py-1 bg-slate-100 text-slate-500 rounded-lg text-[9px] font-black uppercase tracking-widest border border-slate-200">
                                     {contact.group}
                                 </span>
-                             </td>
-                             <td className="p-4 text-right">
-                                <button 
-                                  onClick={() => handleDelete(contact.id)}
-                                  className="p-2 text-slate-400 hover:text-red-600 transition-colors"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                             </td>
-                         </tr>
-                     ))}
-                 </tbody>
-             </table>
-          )}
+                            </td>
+                            <td className="p-8 text-right">
+                               <button className="p-3 text-slate-200 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
+                                  <Trash2 size={16} />
+                               </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        )}
       </div>
 
-      {/* ADD CONTACT MODAL */}
+      {/* 5. ADD MODAL */}
       {isAddOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-              <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md animate-in fade-in zoom-in duration-300">
-                  <h2 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
-                      <UserPlus className="text-pink-600" /> New Subscriber
-                  </h2>
-                  <form onSubmit={handleAdd} className="space-y-4">
-                      <div>
-                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
-                          <input 
-                             required
-                             value={newName}
-                             onChange={e => setNewName(e.target.value)}
-                             className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-800 outline-none focus:ring-2 focus:ring-pink-500 mt-1"
-                          />
-                      </div>
-                      <div>
-                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phone Number (255...)</label>
-                          <input 
-                             required
-                             value={newPhone}
-                             onChange={e => setNewPhone(e.target.value)}
-                             placeholder="2557..."
-                             className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg font-mono text-sm text-slate-800 outline-none focus:ring-2 focus:ring-pink-500 mt-1"
-                          />
-                      </div>
-                      <div>
-                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Group Tag</label>
-                          <select 
-                             value={newGroup}
-                             onChange={e => setNewGroup(e.target.value)}
-                             className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg font-bold text-slate-800 outline-none mt-1"
-                          >
-                             <option value="General">General</option>
-                             <option value="VIP">VIP</option>
-                             <option value="Staff">Staff</option>
-                          </select>
-                      </div>
-
-                      <div className="pt-4 flex gap-3">
-                          <button 
-                            type="button" 
-                            onClick={() => setIsAddOpen(false)}
-                            className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs uppercase tracking-widest rounded-lg"
-                          >
-                             Cancel
-                          </button>
-                          <button 
-                            type="submit" 
-                            disabled={submitting}
-                            className="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-widest rounded-lg flex justify-center items-center gap-2"
-                          >
-                             {submitting ? <Loader2 className="animate-spin" size={16}/> : "Save Contact"}
-                          </button>
-                      </div>
-                  </form>
-              </div>
-          </div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4">
+            <div className="bg-white rounded-[3rem] shadow-2xl p-12 w-full max-w-sm space-y-10 animate-in zoom-in-95 duration-300">
+                <div className="text-center space-y-2">
+                  <h2 className="text-2xl font-black text-slate-900 italic tracking-tighter">New Node.</h2>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Initialize Single Entry</p>
+                </div>
+                
+                <form onSubmit={handleAdd} className="space-y-6">
+                    <div className="space-y-2">
+                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Name</label>
+                        <input required value={newName} onChange={e => setNewName(e.target.value)}
+                           className="w-full p-5 bg-slate-50 border-none rounded-2xl text-[11px] font-black uppercase tracking-widest outline-none focus:ring-1 focus:ring-slate-900" />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Phone (TZ)</label>
+                        <input required value={newPhone} onChange={e => setNewPhone(e.target.value)} placeholder="07XX..."
+                           className="w-full p-5 bg-slate-50 border-none rounded-2xl text-sm font-black text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 font-mono" />
+                    </div>
+                    <button disabled={submitting} className="w-full py-6 bg-slate-900 text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-black transition-all">
+                        {submitting ? <Loader2 className="animate-spin mx-auto" size={18} /> : "Finalize Handshake"}
+                    </button>
+                    <button type="button" onClick={() => setIsAddOpen(false)} className="w-full text-[10px] font-black text-slate-300 uppercase tracking-widest hover:text-slate-500 transition-colors">Abort</button>
+                </form>
+            </div>
+        </div>
       )}
+    </div>
+  );
+}
 
+function StatCard({ label, value, icon: Icon, color }: any) {
+  return (
+    <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between group hover:border-slate-900 transition-all">
+      <div>
+        <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1 italic">{label}</p>
+        <h2 className="text-3xl font-black text-slate-900 tracking-tighter italic">{value}</h2>
+      </div>
+      <div className={`p-4 bg-slate-50 rounded-2xl ${color} transition-all group-hover:bg-slate-900 group-hover:text-white`}>
+        <Icon size={20} />
+      </div>
     </div>
   );
 }
