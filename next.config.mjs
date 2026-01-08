@@ -1,10 +1,33 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 1. URL FLATTENING: Removes /axis/ from public visibility
+  async rewrites() {
+    return [
+      {
+        source: '/portal/:path*',
+        destination: '/axis/portal/:path*',
+      },
+      {
+        source: '/login',
+        destination: '/axis/login',
+      },
+      {
+        source: '/signup',
+        destination: '/axis/signup',
+      },
+      {
+        source: '/pricing',
+        destination: '/axis/pricing',
+      }
+    ];
+  },
+
+  // 2. EXPERIMENTAL: Argon2 Hardening for Auth
   experimental: {
     serverComponentsExternalPackages: ["@node-rs/argon2"],
   },
 
-  // HARDENING: Critical for Google Cloud Run (Docker) stability
+  // 3. HARDENING: Cloud Run Stability
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -12,15 +35,16 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // PERFORMANCE: Surgical Speed Optimizations
+  // 4. PERFORMANCE: Surgical Speed Optimizations
   output: "standalone",
   reactStrictMode: true,
   poweredByHeader: false,
-  compress: true, // Speeds up data transfer
+  compress: true, 
 
+  // 5. ASSETS: High-Efficiency Image Configuration
   images: {
-    formats: ["image/avif", "image/webp"], // Premium high-efficiency formats
-    minimumCacheTTL: 3600, // Caches assets for 1 hour to kill repeat lag
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 3600,
     remotePatterns: [
       {
         protocol: "https",
