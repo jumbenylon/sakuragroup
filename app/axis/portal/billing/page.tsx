@@ -32,7 +32,7 @@ const METHODS = [
     name: 'CRDB BANK', 
     acc: '11863551', 
     key: 'crdb', 
-    label: 'ACCOUNT NO.',
+    label: 'LIPA NAMBA.',
     img: 'https://storage.googleapis.com/sakura-web/sakurapay/crdb.jpg', 
     qr: 'https://storage.googleapis.com/sakura-web/sakurapay/crdb-qr.jpg',
     steps: ["Dial *150*03#", "Select 5 (Payments)", "Select 2 (Bank Account)", "Enter Account: 11863551", "Enter Amount", "Confirm with PIN."]
@@ -41,7 +41,7 @@ const METHODS = [
     name: 'MIXX BY YAS', 
     acc: '17142889', 
     key: 'mixx', 
-    label: 'MERCHANT ID',
+    label: 'LIPA NAMBA',
     img: 'https://storage.googleapis.com/sakura-web/sakurapay/mixx.jpg', 
     qr: 'https://storage.googleapis.com/sakura-web/sakurapay/mixx-qr.jpg',
     steps: ["Open MIXX App", "Select 'Pay Merchant'", "Scan QR or enter ID: 17142889", "Enter Amount", "Authorize Transaction."]
@@ -50,7 +50,7 @@ const METHODS = [
     name: 'SELCOM PAY', 
     acc: '61051199', 
     key: 'selcom', 
-    label: 'PAYBILL',
+    label: 'LIPA NAMBA',
     img: 'https://storage.googleapis.com/sakura-web/sakurapay/selcom.jpg', 
     qr: 'https://storage.googleapis.com/sakura-web/sakurapay/selcom-qr.jpg',
     steps: ["Dial *150*01#", "Select 4 (Paybill)", "Select 5 (Selcom Pay)", "Enter Number: 61051199", "Enter Amount & PIN."]
@@ -113,7 +113,7 @@ function BillingContent() {
 
       {/* 01 — PROVIDERS */}
       <section className="space-y-4">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 italic">01 — Selection</h3>
+        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300 italic">01 — CHAGUA MTANDAO WA KUFANYIA MALIPO</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {METHODS.map((m) => (
             <button key={m.key} onClick={() => setActiveKey(m.key)}
@@ -177,7 +177,7 @@ function BillingContent() {
               </div>
            </div>
            <button onClick={handleVerify} disabled={isVerifying} className="w-full py-5 bg-white text-slate-900 text-[10px] font-black uppercase tracking-[0.4em] rounded-xl hover:bg-sky-400 transition-all shadow-lg flex items-center justify-center gap-2">
-              {isVerifying ? <Loader2 className="animate-spin" size={14} /> : <>Verify Handshake <ArrowRight size={14} /></>}
+              {isVerifying ? <Loader2 className="animate-spin" size={14} /> : <>Verify Payment <ArrowRight size={14} /></>}
            </button>
         </div>
 
