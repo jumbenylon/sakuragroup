@@ -1,5 +1,5 @@
-// SAKURAPAY SOVEREIGN LEDGER v1.0
-// Designed for pay.sakuragroup.co.tz
+// SAKURAPAY INDEPENDENT LEDGER v1.0
+// Logic: Standalone Payment Aggregation Node
 
 generator client {
   provider = "prisma-client-js"
@@ -10,31 +10,32 @@ datasource db {
   url      = env("SAKURAPAY_DATABASE_URL")
 }
 
-model MerchantNode {
+model Merchant {
   id              String    @id @default(cuid())
   organization    String    // e.g., "Axis Messaging"
   apiSecret       String    @unique @default(cuid()) 
-  webhookUrl      String?   // The destination for automated sessions
+  webhookUrl      String?   // Destination for verified payment signals
   
-  // MERCHANT PLUG-INS
-  mpesaPaybill    String?   // Lipa Namba
-  tigoMerchantId  String?
+  // MERCHANT PLUG-INS (The "Middle Gateway" connections)
+  mpesaPaybill    String?   // Merchant's Lipa Namba
   crdbAccount     String?
+  selcomId        String?
   
   status          String    @default("ACTIVE")
-  handshakes      Handshake[]
+  payments        Payment[]
   createdAt       DateTime  @default(now())
 }
 
-model Handshake {
+model Payment {
   id              String    @id @default(cuid())
-  reference       String    @unique // M-Pesa / Bank Reference
-  amount          Float
-  senderPhone     String?
-  status          String    @default("PENDING") // PENDING, VERIFIED
-  
   merchantId      String
-  merchant        MerchantNode @relation(fields: [merchantId], references: [id])
+  merchant        Merchant  @relation(fields: [merchantId], references: [id])
+  
+  reference       String    @unique // The M-Pesa / Bank Ref ID
+  amount          Float
+  sender          String?   // Payer's phone (255...)
+  provider        String    // MPESA, CRDB, etc.
+  status          String    @default("PENDING") // PENDING, VERIFIED
   
   webhookSent     Boolean   @default(false)
   verifiedAt      DateTime?
