@@ -42,7 +42,7 @@ export default function DashboardHome() {
                 </div>
             </div>
             <Link 
-                href="/axis/portal/compose" 
+                href="/portal/compose" 
                 className="px-8 py-4 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs uppercase tracking-widest rounded-lg shadow-lg shadow-pink-200 transition-all flex items-center gap-2"
             >
                 <PenTool size={16} /> New Campaign
