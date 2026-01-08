@@ -39,7 +39,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       items: [
         { name: "Send Campaign", icon: Send, path: "/portal/send" },
         { name: "Sender Names", icon: Terminal, path: "/portal/sender-ids" },
-        { name: "Campaign Reports", icon: History, path: "/portal/sms/reports" },
+        { name: "Campaign Reports", icon: History, path: "/portal/reports" },
         { name: "Scheduled", icon: Lock, path: "#", locked: true },
         { name: "Templates", icon: BookOpen, path: "#", locked: true },
       ]
