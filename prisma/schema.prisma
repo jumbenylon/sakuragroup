@@ -1,5 +1,5 @@
-// This is your Master Schema.
-// Overwrite prisma/schema.prisma with this content.
+// SAKURA AXIS INFRASTRUCTURE SCHEMA v12.0
+// Logic: Sovereign Node Management, Credit-Based Tiering, and Multi-Channel Logs.
 
 generator client {
   provider = "prisma-client-js"
@@ -11,41 +11,44 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  password      String?
-  otp           String?   // Stores the 6-digit code
-  otpExpires    DateTime? // When the code becomes invalid
+  id             String    @id @default(cuid())
+  email          String    @unique
+  password       String?
+  otp            String?   // Infrastructure Handshake Code
+  otpExpires     DateTime? 
   
-  // Identity
-  name          String?
-  organization  String?
-  phoneNumber   String?
+  // Identity Context
+  name           String?
+  organization   String?
+  phoneNumber    String?
   
-  role          Role      @default(USER)
-  status        String    @default("PENDING")
-  balance       Float     @default(0)
-  smsRate       Float     @default(28)
+  role           Role      @default(USER)
+  status         String    @default("PENDING")
   
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  // 🟢 CREDIT-BASED LEDGER
+  creditBalance  Int       @default(0)   // Primary SMS/WA unit count
+  currencyWallet Float     @default(0)   // Auxiliary raw TZS balance
+  smsRate        Float     @default(21)  // Baseline: 21 TZS
   
-  // Relations
-  senderIds     SenderId[]
-  messageLogs   MessageLog[]
-  transactions  Transaction[]
-  campaigns     Campaign[]
-  apiKeys       ApiKey[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  // Handshake Relations
+  senderIds      SenderId[]
+  messageLogs    MessageLog[]
+  transactions   Transaction[]
+  campaigns      Campaign[]
+  apiKeys        ApiKey[]
+  contacts       Contact[]
+  contactGroups  ContactGroup[]
 }
 
 model ApiKey {
   id        String   @id @default(cuid())
   key       String   @unique
   isActive  Boolean  @default(true)
-  
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -53,6 +56,7 @@ model ApiKey {
 model SenderId {
   id            String       @id @default(cuid())
   senderId      String
+  justification String?      // For Admin/Beem Approval
   status        SenderStatus @default(PENDING)
   user          User         @relation(fields: [userId], references: [id])
   userId        String
@@ -60,46 +64,78 @@ model SenderId {
   updatedAt     DateTime     @updatedAt
 }
 
+model ContactGroup {
+  id          String    @id @default(cuid())
+  name        String    // e.g., "VIP RETAILERS"
+  description String?
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  contacts    Contact[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Contact {
+  id          String    @id @default(cuid())
+  name        String
+  phone       String    // Normalized to 255...
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  groupId     String?
+  group       ContactGroup? @relation(fields: [groupId], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
 model Campaign {
-  id            String         @id @default(cuid())
-  name          String
-  message       String
-  status        CampaignStatus @default(DRAFT)
-  user          User           @relation(fields: [userId], references: [id])
-  userId        String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id             String         @id @default(cuid())
+  name           String
+  message        String
+  channel        Channel        @default(SMS)
+  status         CampaignStatus @default(DRAFT)
+  user           User           @relation(fields: [userId], references: [id])
+  userId         String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model MessageLog {
-  id            String        @id @default(cuid())
-  content       String
-  recipient     String
-  status        MessageStatus @default(PENDING)
+  id             String        @id @default(cuid())
+  content        String
+  recipient      String        // Handshake target
+  status         MessageStatus @default(PENDING)
+  channel        Channel       @default(SMS) // Unified Log Logic
   
-  costToTenant  Float         @default(28)
-  costToAdmin   Float         @default(18)
-  segmentCount  Int           @default(1)
+  costToTenant   Float         @default(21)
+  costToAdmin    Float         @default(18)
+  segmentCount   Int           @default(1)
   
   providerMessageId String?
-  providerError     String?
+  providerError      String?
   
-  user          User          @relation(fields: [userId], references: [id])
-  userId        String
-  sentAt        DateTime      @default(now())
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String
+  sentAt         DateTime      @default(now())
 }
 
 model Transaction {
   id            String    @id @default(cuid())
-  amount        Float
-  type          String    // "CREDIT" or "DEBIT"
-  reference     String?
-  user          User      @relation(fields: [userId], references: [id])
   userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  
+  // SAKURAPAY METRICS
+  amount        Float     // TZS Paid
+  creditsAdded  Int       // Units granted on approval
+  tierName      String?   // e.g., "Business"
+  
+  type          String    @default("CREDIT") // "CREDIT" or "DEBIT"
+  reference     String    @unique            // Bank/MNO Ref
+  provider      String?                      // M-Pesa, CRDB, etc.
+  status        TransactionStatus @default(PENDING)
+  
   createdAt     DateTime  @default(now())
+  approvedAt    DateTime?
 }
 
-// [NEW] The Missing Table
 model SystemConfig {
   id        String   @id @default(cuid())
   key       String   @unique
@@ -107,9 +143,16 @@ model SystemConfig {
   updatedAt DateTime @updatedAt
 }
 
+// --- ENUMS ---
+
 enum Role {
   USER
   ADMIN
+}
+
+enum Channel {
+  SMS
+  WHATSAPP
 }
 
 enum SenderStatus {
@@ -132,4 +175,10 @@ enum MessageStatus {
   SENT
   DELIVERED
   FAILED
+}
+
+enum TransactionStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
