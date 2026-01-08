@@ -1,0 +1,27 @@
+// SAKURAPAY INDEPENDENT LEDGER
+datasource db {
+  provider = "postgresql"
+  url      = env("SAKURAPAY_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Merchant {
+  id            String    @id @default(cuid())
+  apiKey        String    @unique // Shared with Axis or 3rd Party
+  webhookUrl    String?   // Where to send the "Success" signal
+  mpesaNamba    String?   // Merchant's Lipa Namba
+  handshakes    Handshake[]
+}
+
+model Handshake {
+  id            String    @id @default(cuid())
+  reference     String    @unique // M-Pesa Ref
+  amount        Float
+  status        String    @default("PENDING") // PENDING, VERIFIED
+  merchantId    String
+  merchant      Merchant  @relation(fields: [merchantId], references: [id])
+  createdAt     DateTime  @default(now())
+}
